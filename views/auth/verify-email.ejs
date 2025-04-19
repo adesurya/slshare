@@ -1,5 +1,29 @@
-<%- include('../layout', { 
-    body: `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <a href="/">MOVA</a>
+        <span class="tagline">Belanja Sambil Cuan</span>
+      </div>
+      <div class="header-right">
+        <a href="/faq" class="faq-link">FAQ</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
     <div class="auth-container">
       <div class="auth-header">
         <h1>Verify Your Email</h1>
@@ -12,19 +36,19 @@
         </div>
         
         <h2>Check Your Inbox</h2>
-        <p>We've sent a verification link to: <strong>${email}</strong></p>
+        <p>We've sent a verification link to: <strong><%= email %></strong></p>
         <p>Please check your email and click the verification link to complete your registration.</p>
         
         <% if (locals.message) { %>
           <div class="success-message">
             <i class="fas fa-check-circle"></i>
-            <p>${message}</p>
+            <p><%= message %></p>
           </div>
         <% } %>
         
         <% if (locals.error) { %>
           <div class="error-message">
-            <p>${error}</p>
+            <p><%= error %></p>
           </div>
         <% } %>
         
@@ -40,81 +64,101 @@
         <p>Once verified, you can <a href="/user/dashboard">go to your dashboard</a></p>
       </div>
     </div>
-    `,
-    title,
-    currentPage: 'profile',
-    showSearchBar: false,
-    scripts: `
-    <style>
-      .verification-box {
-        background-color: white;
-        border-radius: 8px;
-        padding: 30px 20px;
-        text-align: center;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-      }
-      
-      .verification-icon {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 20px;
-        background-color: #f5f5f5;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .verification-icon i {
-        font-size: 40px;
-        color: #ff0033;
-      }
-      
-      .verification-box h2 {
-        margin-bottom: 15px;
-      }
-      
-      .verification-box p {
-        margin-bottom: 15px;
-        color: #666;
-      }
-      
-      .success-message {
-        background-color: rgba(40, 167, 69, 0.1);
-        border-left: 3px solid #28a745;
-        padding: 10px 15px;
-        margin: 20px 0;
-        text-align: left;
-        display: flex;
-        align-items: center;
-      }
-      
-      .success-message i {
-        color: #28a745;
-        margin-right: 10px;
-        font-size: 20px;
-      }
-      
-      .verification-actions {
-        margin-top: 30px;
-      }
-      
-      .resend-button {
-        background-color: transparent;
-        border: 1px solid #ff0033;
-        color: #ff0033;
-        padding: 10px 20px;
-        border-radius: 4px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-      }
-      
-      .resend-button:hover {
-        background-color: #ff0033;
-        color: white;
-      }
-    </style>
-    `
-  }) %>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="/" class="nav-item">
+      <i class="fas fa-home"></i>
+      <span>Beranda</span>
+    </a>
+    <a href="/brands" class="nav-item">
+      <i class="fas fa-tag"></i>
+      <span>Brand</span>
+    </a>
+    <a href="/user/dashboard" class="nav-item">
+      <i class="fas fa-wallet"></i>
+      <span>Pendapatan</span>
+    </a>
+    <a href="/user/profile" class="nav-item active">
+      <i class="fas fa-user"></i>
+      <span>Saya</span>
+    </a>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="/js/main.js"></script>
+  <style>
+    .verification-box {
+      background-color: white;
+      border-radius: 8px;
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    
+    .verification-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background-color: #f5f5f5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .verification-icon i {
+      font-size: 40px;
+      color: #ff0033;
+    }
+    
+    .verification-box h2 {
+      margin-bottom: 15px;
+    }
+    
+    .verification-box p {
+      margin-bottom: 15px;
+      color: #666;
+    }
+    
+    .success-message {
+      background-color: rgba(40, 167, 69, 0.1);
+      border-left: 3px solid #28a745;
+      padding: 10px 15px;
+      margin: 20px 0;
+      text-align: left;
+      display: flex;
+      align-items: center;
+    }
+    
+    .success-message i {
+      color: #28a745;
+      margin-right: 10px;
+      font-size: 20px;
+    }
+    
+    .verification-actions {
+      margin-top: 30px;
+    }
+    
+    .resend-button {
+      background-color: transparent;
+      border: 1px solid #ff0033;
+      color: #ff0033;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .resend-button:hover {
+      background-color: #ff0033;
+      color: white;
+    }
+  </style>
+    <script src="/js/page-specific-fix.js"></script>
+</body>
+</html>

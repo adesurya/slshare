@@ -1,5 +1,36 @@
-<%- include('layout', { 
-    body: `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <a href="/">MOVA</a>
+        <span class="tagline">Belanja Sambil Cuan</span>
+      </div>
+      <div class="header-right">
+        <a href="/faq" class="faq-link">FAQ</a>
+      </div>
+    </div>
+    <% if (locals.showSearchBar) { %>
+    <div class="search-bar">
+      <form action="/search" method="GET">
+        <input type="text" name="q" placeholder="Tempelkan tautan Shopee/TikTok">
+        <button type="submit">Tempel</button>
+      </form>
+    </div>
+    <% } %>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
     <div class="hero-section">
       <div class="hero-content">
         <h1 class="hero-title">Dapatkan</h1>
@@ -57,46 +88,6 @@
             <div class="current-price">Rp0</div>
           </div>
         </div>
-        
-        <div class="gift-item">
-          <div class="gift-image">
-            <img src="/images/products/gift2.jpg" alt="Free Gift 2">
-          </div>
-          <div class="gift-price">
-            <div class="original-price">Rp699.000</div>
-            <div class="current-price">Rp0</div>
-          </div>
-        </div>
-        
-        <div class="gift-item">
-          <div class="gift-image">
-            <img src="/images/products/gift3.jpg" alt="Free Gift 3">
-          </div>
-          <div class="gift-price">
-            <div class="original-price">Rp165.000</div>
-            <div class="current-price">Rp0</div>
-          </div>
-        </div>
-        
-        <div class="gift-item">
-          <div class="gift-image">
-            <img src="/images/products/gift4.jpg" alt="Free Gift 4">
-          </div>
-          <div class="gift-price">
-            <div class="original-price">Rp159.999</div>
-            <div class="current-price">Rp0</div>
-          </div>
-        </div>
-        
-        <div class="gift-item">
-          <div class="gift-image">
-            <img src="/images/products/gift5.jpg" alt="Free Gift 5">
-          </div>
-          <div class="gift-price">
-            <div class="original-price">Rp69.000</div>
-            <div class="current-price">Rp0</div>
-          </div>
-        </div>
       </div>
     </div>
   
@@ -108,28 +99,59 @@
       </div>
       
       <div class="category-products">
-        <% featuredProducts.forEach(product => { %>
-          <div class="product-card">
-            <a href="/products/<%= product.id %>">
-              <div class="product-image">
-                <img src="<%= product.image_url %>" alt="<%= product.name %>">
-              </div>
-              <div class="product-info">
-                <h3 class="product-name"><%= product.name %></h3>
-                <div class="product-price">Rp<%= product.price.toLocaleString('id-ID') %></div>
-                <div class="product-cashback">
-                  <span class="cashback-label">Est. Cashback</span>
-                  <span class="cashback-amount">Rp<%= product.cashback.toLocaleString('id-ID') %></span>
+        <% if (featuredProducts && featuredProducts.length > 0) { %>
+          <% featuredProducts.forEach(function(product) { %>
+            <div class="product-card">
+              <a href="/products/<%= product.id %>">
+                <div class="product-image">
+                  <img src="<%= product.image_url %>" alt="<%= product.name %>">
                 </div>
-              </div>
-            </a>
+                <div class="product-info">
+                  <h3 class="product-name"><%= product.name %></h3>
+                  <div class="product-price">Rp<%= product.price.toLocaleString('id-ID') %></div>
+                  <div class="product-cashback">
+                    <span class="cashback-label">Est. Cashback</span>
+                    <span class="cashback-amount">Rp<%= product.cashback.toLocaleString('id-ID') %></span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <div class="empty-state">
+            <p>No products found</p>
           </div>
-        <% }); %>
+        <% } %>
       </div>
     </div>
-    `,
-    title,
-    currentPage: 'home',
-    showSearchBar: true,
-    scripts: ''
-  }) %>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="/" class="nav-item active">
+      <i class="fas fa-home"></i>
+      <span>Beranda</span>
+    </a>
+    <a href="/brands" class="nav-item">
+      <i class="fas fa-tag"></i>
+      <span>Brand</span>
+    </a>
+    <a href="/user/dashboard" class="nav-item">
+      <i class="fas fa-wallet"></i>
+      <span>Pendapatan</span>
+    </a>
+    <a href="/user/profile" class="nav-item">
+      <i class="fas fa-user"></i>
+      <span>Saya</span>
+    </a>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="/js/main.js"></script>
+  <!-- Sebelum closing </body>-->
+<script src="/js/bottom-nav-fix.js"></script> 
+<script src="/js/page-specific-fix.js"></script>
+
+
+</body>
+</html>

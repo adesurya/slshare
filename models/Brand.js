@@ -41,4 +41,4 @@ class Brand {
   }
 }
 
-module.exports = { Product, Brand };
+module.exports = Brand; // Fixed: Only exporting Brand instead of { Product, Brand }

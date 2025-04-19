@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <a href="/">MOVA</a>
+        <span class="tagline">Belanja Sambil Cuan</span>
+      </div>
+      <div class="header-right">
+        <a href="/faq" class="faq-link">FAQ</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="brands-container">
+      <div class="brands-header">
+        <h1>Brand Pilihan untukmu</h1>
+        <p>Temukan brand favoritmu dan nikmati belanja hemat!</p>
+      </div>
+      
+      <div class="brands-list">
+        <% if (brands && brands.length > 0) { %>
+          <% brands.forEach(function(brand) { %>
+            <div class="brand-card">
+              <div class="brand-header">
+                <div class="brand-logo">
+                  <img src="<%= brand.logo_url %>" alt="<%= brand.name %>">
+                </div>
+                <div class="brand-info">
+                  <h3 class="brand-name"><%= brand.name %></h3>
+                  <div class="brand-cashback">
+                    Cashback s/d <span class="highlight-text"><%= brand.cashback_percentage %>%</span>
+                  </div>
+                  <div class="product-count">
+                    <%= brand.products_count %> Produk
+                  </div>
+                </div>
+              </div>
+              
+              <div class="brand-products">
+                <!-- Sample products would go here, fetched from the database -->
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <div class="empty-state">
+            <p>No brands found</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="/" class="nav-item">
+      <i class="fas fa-home"></i>
+      <span>Beranda</span>
+    </a>
+    <a href="/brands" class="nav-item active">
+      <i class="fas fa-tag"></i>
+      <span>Brand</span>
+    </a>
+    <a href="/user/dashboard" class="nav-item">
+      <i class="fas fa-wallet"></i>
+      <span>Pendapatan</span>
+    </a>
+    <a href="/user/profile" class="nav-item">
+      <i class="fas fa-user"></i>
+      <span>Saya</span>
+    </a>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="/js/main.js"></script>
+  <script src="/js/bottom-nav-fix.js"></script> 
+  <script src="/js/page-specific-fix.js"></script>
+</body>
+</html>

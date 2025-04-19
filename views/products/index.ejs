@@ -1,5 +1,37 @@
-<%- include('../layout', { 
-    body: `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <a href="/">MOVA</a>
+        <span class="tagline">Belanja Sambil Cuan</span>
+      </div>
+      <div class="header-right">
+        <a href="/faq" class="faq-link">FAQ</a>
+      </div>
+    </div>
+    <% if (locals.showSearchBar) { %>
+    <div class="search-bar">
+      <form action="/search" method="GET">
+        <input type="text" name="q" placeholder="Tempelkan tautan Shopee/TikTok">
+        <button type="submit">Tempel</button>
+      </form>
+    </div>
+    <% } %>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
     <div class="products-container">
       <div class="page-header">
         <h1>Semua Produk</h1>
@@ -16,63 +48,91 @@
       </div>
   
       <div class="products-grid">
-        <% products.forEach(product => { %>
-          <div class="product-card">
-            <a href="/products/<%= product.id %>">
-              <div class="product-image">
-                <img src="<%= product.image_url %>" alt="<%= product.name %>">
-              </div>
-              <div class="product-info">
-                <h3 class="product-name"><%= product.name %></h3>
-                <div class="product-price">Rp<%= product.price.toLocaleString('id-ID') %></div>
-                <div class="product-cashback">
-                  <span class="cashback-label">Est. Cashback</span>
-                  <span class="cashback-amount">Rp<%= product.cashback.toLocaleString('id-ID') %></span>
+        <% if (products && products.length > 0) { %>
+          <% products.forEach(function(product) { %>
+            <div class="product-card">
+              <a href="/products/<%= product.id %>">
+                <div class="product-image">
+                  <img src="<%= product.image_url %>" alt="<%= product.name %>">
                 </div>
-              </div>
-            </a>
+                <div class="product-info">
+                  <h3 class="product-name"><%= product.name %></h3>
+                  <div class="product-price">Rp<%= product.price.toLocaleString('id-ID') %></div>
+                  <div class="product-cashback">
+                    <span class="cashback-label">Est. Cashback</span>
+                    <span class="cashback-amount">Rp<%= product.cashback.toLocaleString('id-ID') %></span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <div class="empty-state">
+            <p>No products found</p>
           </div>
-        <% }); %>
+        <% } %>
       </div>
   
       <div class="pagination">
         <button class="load-more-button">Load More</button>
       </div>
     </div>
-    `,
-    title,
-    currentPage: 'home',
-    showSearchBar: true,
-    scripts: `
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Filter functionality
-        const filterButton = document.querySelector('.filter-button');
-        if (filterButton) {
-          filterButton.addEventListener('click', function() {
-            // Show filter modal
-            alert('Filter functionality would be implemented here');
-          });
-        }
-        
-        // Sort functionality
-        const sortButton = document.querySelector('.sort-button');
-        if (sortButton) {
-          sortButton.addEventListener('click', function() {
-            // Show sort options
-            alert('Sort functionality would be implemented here');
-          });
-        }
-        
-        // Load more functionality
-        const loadMoreButton = document.querySelector('.load-more-button');
-        if (loadMoreButton) {
-          loadMoreButton.addEventListener('click', function() {
-            // Load more products via AJAX
-            alert('Load more functionality would be implemented here');
-          });
-        }
-      });
-    </script>
-    `
-  }) %>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="/" class="nav-item">
+      <i class="fas fa-home"></i>
+      <span>Beranda</span>
+    </a>
+    <a href="/brands" class="nav-item">
+      <i class="fas fa-tag"></i>
+      <span>Brand</span>
+    </a>
+    <a href="/user/dashboard" class="nav-item">
+      <i class="fas fa-wallet"></i>
+      <span>Pendapatan</span>
+    </a>
+    <a href="/user/profile" class="nav-item">
+      <i class="fas fa-user"></i>
+      <span>Saya</span>
+    </a>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Filter functionality
+      const filterButton = document.querySelector('.filter-button');
+      if (filterButton) {
+        filterButton.addEventListener('click', function() {
+          // Show filter modal
+          alert('Filter functionality would be implemented here');
+        });
+      }
+      
+      // Sort functionality
+      const sortButton = document.querySelector('.sort-button');
+      if (sortButton) {
+        sortButton.addEventListener('click', function() {
+          // Show sort options
+          alert('Sort functionality would be implemented here');
+        });
+      }
+      
+      // Load more functionality
+      const loadMoreButton = document.querySelector('.load-more-button');
+      if (loadMoreButton) {
+        loadMoreButton.addEventListener('click', function() {
+          // Load more products via AJAX
+          alert('Load more functionality would be implemented here');
+        });
+      }
+    });
+  </script>
+    <!-- Sebelum closing </body>-->
+  <script src="/js/bottom-nav-fix.js"></script> 
+  <script src="/js/page-specific-fix.js"></script>
+</body>
+</html>

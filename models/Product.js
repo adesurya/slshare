@@ -4,9 +4,12 @@ const db = require('../config/database');
 class Product {
   static async findAll(limit = 10, offset = 0) {
     try {
-      const [rows] = await db.execute(
-        'SELECT * FROM products ORDER BY id DESC LIMIT ? OFFSET ?',
-        [limit, offset]
+      // Convert to numbers and use directly in the query
+      const numLimit = Number(limit);
+      const numOffset = Number(offset);
+      
+      const [rows] = await db.query(
+        `SELECT * FROM products ORDER BY id DESC LIMIT ${numLimit} OFFSET ${numOffset}`
       );
       return rows;
     } catch (error) {
@@ -30,9 +33,13 @@ class Product {
 
   static async findByBrand(brandName, limit = 10, offset = 0) {
     try {
-      const [rows] = await db.execute(
-        'SELECT * FROM products WHERE brand = ? ORDER BY id DESC LIMIT ? OFFSET ?',
-        [brandName, limit, offset]
+      // Convert to numbers and use directly in the query
+      const numLimit = Number(limit);
+      const numOffset = Number(offset);
+      
+      const [rows] = await db.query(
+        `SELECT * FROM products WHERE brand = ? ORDER BY id DESC LIMIT ${numLimit} OFFSET ${numOffset}`,
+        [brandName]
       );
       return rows;
     } catch (error) {
@@ -43,9 +50,13 @@ class Product {
 
   static async findByCategory(category, limit = 10, offset = 0) {
     try {
-      const [rows] = await db.execute(
-        'SELECT * FROM products WHERE category = ? ORDER BY id DESC LIMIT ? OFFSET ?',
-        [category, limit, offset]
+      // Convert to numbers and use directly in the query
+      const numLimit = Number(limit);
+      const numOffset = Number(offset);
+      
+      const [rows] = await db.query(
+        `SELECT * FROM products WHERE category = ? ORDER BY id DESC LIMIT ${numLimit} OFFSET ${numOffset}`,
+        [category]
       );
       return rows;
     } catch (error) {

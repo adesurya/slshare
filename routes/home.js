@@ -6,22 +6,28 @@ const { setCurrentUser } = require('../middlewares/auth');
 // Home page - accessible to all users
 router.get('/', async (req, res) => {
   try {
-    // Get featured products
-    const featuredProducts = await Product.findAll(6, 0);
-    
-    // Calculate cashback for each product
-    for (let product of featuredProducts) {
-      product.cashback = await Product.calculateCashback(product.id);
+    // Get featured products - using a try-catch for safety
+    let featuredProducts = [];
+    try {
+      featuredProducts = await Product.findAll(6, 0);
+      
+      // Calculate cashback for each product
+      for (let product of featuredProducts) {
+        product.cashback = await Product.calculateCashback(product.id);
+      }
+    } catch (productError) {
+      console.error('Error fetching products:', productError);
+      // Continue with empty products array
     }
     
     res.render('home', {
       title: 'MOVA - Belanja Sambil Cuan',
-      featuredProducts,
+      featuredProducts: featuredProducts || [],
       currentPage: 'home',
       showSearchBar: true,
       showAppPrompt: res.locals.showAppDownloadPrompt,
-      appStoreUrl: process.env.IOS_APP_URL,
-      playStoreUrl: process.env.ANDROID_APP_URL
+      appStoreUrl: process.env.IOS_APP_URL || '#',
+      playStoreUrl: process.env.ANDROID_APP_URL || '#'
     });
   } catch (error) {
     console.error('Home page error:', error);
@@ -56,17 +62,23 @@ router.get('/search', async (req, res) => {
     }
     
     // Search products
-    const products = await Product.search(searchTerm);
-    
-    // Calculate cashback for each product
-    for (let product of products) {
-      product.cashback = await Product.calculateCashback(product.id);
+    let products = [];
+    try {
+      products = await Product.search(searchTerm);
+      
+      // Calculate cashback for each product
+      for (let product of products) {
+        product.cashback = await Product.calculateCashback(product.id);
+      }
+    } catch (searchError) {
+      console.error('Error searching products:', searchError);
+      // Continue with empty products array
     }
     
     res.render('search', {
       title: `Search Results for "${searchTerm}" - MOVA`,
       searchTerm,
-      products,
+      products: products || [],
       currentPage: 'home',
       showSearchBar: true
     });

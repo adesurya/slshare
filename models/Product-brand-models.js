@@ -1,12 +1,15 @@
-// models/Product.js
+// models/Product-brand-models.js
 const db = require('../config/database');
 
 class Product {
   static async findAll(limit = 10, offset = 0) {
     try {
-      const [rows] = await db.execute(
-        'SELECT * FROM products ORDER BY id DESC LIMIT ? OFFSET ?',
-        [limit, offset]
+      // Convert to numbers and use directly in the query
+      const numLimit = Number(limit);
+      const numOffset = Number(offset);
+      
+      const [rows] = await db.query(
+        `SELECT * FROM products ORDER BY id DESC LIMIT ${numLimit} OFFSET ${numOffset}`
       );
       return rows;
     } catch (error) {
@@ -30,9 +33,13 @@ class Product {
 
   static async findByBrand(brandName, limit = 10, offset = 0) {
     try {
-      const [rows] = await db.execute(
-        'SELECT * FROM products WHERE brand = ? ORDER BY id DESC LIMIT ? OFFSET ?',
-        [brandName, limit, offset]
+      // Convert to numbers and use directly in the query
+      const numLimit = Number(limit);
+      const numOffset = Number(offset);
+      
+      const [rows] = await db.query(
+        `SELECT * FROM products WHERE brand = ? ORDER BY id DESC LIMIT ${numLimit} OFFSET ${numOffset}`,
+        [brandName]
       );
       return rows;
     } catch (error) {
@@ -43,9 +50,13 @@ class Product {
 
   static async findByCategory(category, limit = 10, offset = 0) {
     try {
-      const [rows] = await db.execute(
-        'SELECT * FROM products WHERE category = ? ORDER BY id DESC LIMIT ? OFFSET ?',
-        [category, limit, offset]
+      // Convert to numbers and use directly in the query
+      const numLimit = Number(limit);
+      const numOffset = Number(offset);
+      
+      const [rows] = await db.query(
+        `SELECT * FROM products WHERE category = ? ORDER BY id DESC LIMIT ${numLimit} OFFSET ${numOffset}`,
+        [category]
       );
       return rows;
     } catch (error) {
@@ -56,20 +67,22 @@ class Product {
 
   static async search(searchTerm, limit = 20, offset = 0) {
     try {
-      const [rows] = await db.execute(
-        'SELECT * FROM products WHERE ' +
-        'name LIKE ? OR ' +
-        'description LIKE ? OR ' +
-        'brand LIKE ? OR ' +
-        'category LIKE ? ' +
-        'ORDER BY id DESC LIMIT ? OFFSET ?',
+      // Convert to numbers and use directly in the query
+      const numLimit = Number(limit);
+      const numOffset = Number(offset);
+      
+      const [rows] = await db.query(
+        `SELECT * FROM products WHERE 
+        name LIKE ? OR 
+        description LIKE ? OR 
+        brand LIKE ? OR 
+        category LIKE ? 
+        ORDER BY id DESC LIMIT ${numLimit} OFFSET ${numOffset}`,
         [
           `%${searchTerm}%`, 
           `%${searchTerm}%`, 
           `%${searchTerm}%`, 
-          `%${searchTerm}%`,
-          limit,
-          offset
+          `%${searchTerm}%`
         ]
       );
       return rows;
@@ -109,9 +122,12 @@ class Product {
       const category = product[0].category;
       
       // Get other products in the same category
-      const [rows] = await db.execute(
-        'SELECT * FROM products WHERE category = ? AND id != ? ORDER BY id DESC LIMIT ?',
-        [category, productId, limit]
+      // Convert limit to number and use directly in the query
+      const numLimit = Number(limit);
+      
+      const [rows] = await db.query(
+        `SELECT * FROM products WHERE category = ? AND id != ? ORDER BY id DESC LIMIT ${numLimit}`,
+        [category, productId]
       );
       
       return rows;
@@ -163,9 +179,12 @@ class Brand {
   
   static async search(searchTerm, limit = 10) {
     try {
-      const [rows] = await db.execute(
-        'SELECT * FROM brands WHERE name LIKE ? ORDER BY cashback_percentage DESC LIMIT ?',
-        [`%${searchTerm}%`, limit]
+      // Convert limit to number and use directly in the query
+      const numLimit = Number(limit);
+      
+      const [rows] = await db.query(
+        `SELECT * FROM brands WHERE name LIKE ? ORDER BY cashback_percentage DESC LIMIT ${numLimit}`,
+        [`%${searchTerm}%`]
       );
       return rows;
     } catch (error) {

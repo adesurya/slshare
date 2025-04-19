@@ -16,79 +16,134 @@
   <meta name="apple-itunes-app" content="app-id=123456789, app-argument=mova://home">
   <meta name="google-play-app" content="app-id=com.mova.app">
 </head>
-<body>
-  <!-- App Download Popup -->
-  <% if (locals.showAppPrompt) { %>
-  <div id="app-download-prompt">
-    <div class="prompt-content">
-      <h3>Pengalaman Lebih Baik di App</h3>
-      <p>Download MOVA App untuk pengalaman lengkap dan cashback lebih besar</p>
-      <div class="prompt-buttons">
-        <% if (locals.isAndroid) { %>
-          <a href="<%= locals.playStoreUrl %>" class="download-btn">Download dari Play Store</a>
-        <% } else if (locals.isIOS) { %>
-          <a href="<%= locals.appStoreUrl %>" class="download-btn">Download dari App Store</a>
-        <% } else { %>
-          <a href="<%= locals.playStoreUrl %>" class="download-btn">Download dari Play Store</a>
-          <a href="<%= locals.appStoreUrl %>" class="download-btn">Download dari App Store</a>
-        <% } %>
-        <button id="close-prompt" class="close-btn">Lanjutkan ke Web</button>
-      </div>
+<body data-current-page="<%= currentPage %>">
+  <!-- Desktop-only background elements -->
+  <div class="desktop-background desktop-only">
+    <div class="desktop-logo">MOVA</div>
+    <div class="desktop-slogan">Belanja Sambil Cuan</div>
+    
+    <div class="desktop-links">
+      <a href="/" class="desktop-link">Home</a>
+      <a href="/about" class="desktop-link">About</a>
+      <a href="/faq" class="desktop-link">FAQ</a>
+      <a href="/contact" class="desktop-link">Contact</a>
+    </div>
+    
+    <div class="desktop-background-shape shape-1"></div>
+    <div class="desktop-background-shape shape-2"></div>
+    <div class="desktop-background-shape shape-3"></div>
+    
+    <div class="desktop-footer">
+      &copy; <%= new Date().getFullYear() %> MOVA App. All rights reserved.
     </div>
   </div>
-  <% } %>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="header-content">
-      <div class="logo">
-        <a href="/">MOVA</a>
-        <span class="tagline">Belanja Sambil Cuan</span>
-      </div>
-      <div class="header-right">
-        <a href="/faq" class="faq-link">FAQ</a>
-      </div>
+  <!-- Mobile view container (same width on desktop) -->
+  <div class="app-container">
+    <!-- Phone frame elements (visible only on desktop) -->
+    <div class="phone-frame-top desktop-only">
+      <div class="phone-frame-notch"></div>
     </div>
-    <% if (locals.showSearchBar) { %>
-    <div class="search-bar">
-      <form action="/search" method="GET">
-        <input type="text" name="q" placeholder="Tempelkan tautan Shopee/TikTok">
-        <button type="submit">Tempel</button>
-      </form>
+    
+    <!-- App Download Popup -->
+    <% if (locals.showAppPrompt) { %>
+    <div id="app-download-prompt">
+      <div class="prompt-content">
+        <h3>Pengalaman Lebih Baik di App</h3>
+        <p>Download MOVA App untuk pengalaman lengkap dan cashback lebih besar</p>
+        <div class="prompt-buttons">
+          <% if (locals.isAndroid) { %>
+            <a href="<%= locals.playStoreUrl %>" class="download-btn">Download dari Play Store</a>
+          <% } else if (locals.isIOS) { %>
+            <a href="<%= locals.appStoreUrl %>" class="download-btn">Download dari App Store</a>
+          <% } else { %>
+            <a href="<%= locals.playStoreUrl %>" class="download-btn">Download dari Play Store</a>
+            <a href="<%= locals.appStoreUrl %>" class="download-btn">Download dari App Store</a>
+          <% } %>
+          <button id="close-prompt" class="close-btn">Lanjutkan ke Web</button>
+        </div>
+      </div>
     </div>
     <% } %>
-  </header>
+  
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <a href="/">MOVA</a>
+          <span class="tagline">Belanja Sambil Cuan</span>
+        </div>
+        <div class="header-right">
+          <a href="/faq" class="faq-link">FAQ</a>
+        </div>
+      </div>
+      <% if (locals.showSearchBar) { %>
+      <div class="search-bar">
+        <form action="/search" method="GET">
+          <input type="text" name="q" placeholder="Tempelkan tautan Shopee/TikTok">
+          <button type="submit">Tempel</button>
+        </form>
+      </div>
+      <% } %>
+    </header>
+  
+    <!-- Main Content -->
+    <main class="main-content">
+      <%- body %>
+    </main>
+  
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="/" class="nav-item <%= currentPage === 'home' ? 'active' : '' %>">
+        <i class="fas fa-home"></i>
+        <span>Beranda</span>
+      </a>
+      <a href="/brands" class="nav-item <%= currentPage === 'brands' ? 'active' : '' %>">
+        <i class="fas fa-tag"></i>
+        <span>Brand</span>
+      </a>
+      <a href="/user/dashboard" class="nav-item <%= currentPage === 'earnings' ? 'active' : '' %>">
+        <i class="fas fa-wallet"></i>
+        <span>Pendapatan</span>
+      </a>
+      <a href="/user/profile" class="nav-item <%= currentPage === 'profile' ? 'active' : '' %>">
+        <i class="fas fa-user"></i>
+        <span>Saya</span>
+      </a>
+    </nav>
+    
+    <!-- Phone frame bottom (visible only on desktop) -->
+    <div class="phone-frame-bottom desktop-only">
+      <div class="phone-home-button"></div>
+    </div>
+  </div>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <%- body %>
-  </main>
-
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <a href="/" class="nav-item <%= currentPage === 'home' ? 'active' : '' %>">
-      <i class="fas fa-home"></i>
-      <span>Beranda</span>
-    </a>
-    <a href="/brands" class="nav-item <%= currentPage === 'brands' ? 'active' : '' %>">
-      <i class="fas fa-tag"></i>
-      <span>Brand</span>
-    </a>
-    <a href="/user/dashboard" class="nav-item <%= currentPage === 'earnings' ? 'active' : '' %>">
-      <i class="fas fa-wallet"></i>
-      <span>Pendapatan</span>
-    </a>
-    <a href="/user/profile" class="nav-item <%= currentPage === 'profile' ? 'active' : '' %>">
-      <i class="fas fa-user"></i>
-      <span>Saya</span>
-    </a>
-  </nav>
+  <!-- Desktop-only download indicator -->
+  <div class="download-indicator desktop-only">
+    <i class="fas fa-download"></i>
+  </div>
+  
+  <!-- Desktop-only download popup -->
+  <div class="download-popup desktop-only">
+    <h3>Download MOVA App</h3>
+    <p>Dapatkan pengalaman terbaik dengan aplikasi mobile kami</p>
+    <div class="download-popup-buttons">
+      <a href="<%= locals.playStoreUrl %>" class="download-popup-btn playstore-btn">
+        <i class="fab fa-google-play"></i> Google Play
+      </a>
+      <a href="<%= locals.appStoreUrl %>" class="download-popup-btn appstore-btn">
+        <i class="fab fa-apple"></i> App Store
+      </a>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script src="/js/main.js"></script>
   <% if (locals.showAppPrompt) { %>
   <script src="/js/app-prompt.js"></script>
   <% } %>
-  <%- scripts %>
+  <script src="/js/bottom-nav-fix.js"></script>
+  <script src="/js/bottom-nav-fix.js"></script> 
+  <script src="/js/page-specific-fix.js"></script>
 </body>
 </html>

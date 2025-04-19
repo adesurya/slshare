@@ -1,11 +1,35 @@
-<%- include('../layout', { 
-    body: `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <a href="/">MOVA</a>
+        <span class="tagline">Belanja Sambil Cuan</span>
+      </div>
+      <div class="header-right">
+        <a href="/faq" class="faq-link">FAQ</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
     <div class="dashboard-container">
       <div class="user-header">
         <div class="user-avatar">
-          <img src="${user.profile_image || '/images/default-avatar.png'}" alt="${user.username}">
+          <img src="<%= user.profile_image || '/images/default-avatar.png' %>" alt="<%= user.username %>">
         </div>
-        <h3>${user.username}</h3>
+        <h3><%= user.username %></h3>
       </div>
       
       <div class="earnings-card">
@@ -14,7 +38,7 @@
           <span class="mova-label">MOVA</span>
         </div>
         
-        <div class="earnings-amount">Rp${earnings.total.toLocaleString('id-ID')}</div>
+        <div class="earnings-amount">Rp<%= earnings.total.toLocaleString('id-ID') %></div>
         
         <div class="today-earnings">
           Hari ini +Rp0
@@ -23,13 +47,13 @@
         <div class="earnings-status">
           <div class="status-box">
             <h3>Tertunda</h3>
-            <div class="status-amount">Rp${earnings.pending.toLocaleString('id-ID')}</div>
+            <div class="status-amount">Rp<%= earnings.pending.toLocaleString('id-ID') %></div>
             <a href="#" class="status-details">></a>
           </div>
           
           <div class="status-box">
             <h3>Berhasil</h3>
-            <div class="status-amount">Rp${earnings.successful.toLocaleString('id-ID')}</div>
+            <div class="status-amount">Rp<%= earnings.successful.toLocaleString('id-ID') %></div>
             <a href="#" class="status-details">></a>
           </div>
         </div>
@@ -37,7 +61,7 @@
         <div class="withdrawable">
           <div class="withdrawable-text">
             <h3>Saldo Yang Bisa Dicairkan</h3>
-            <div class="withdrawable-amount">Rp${earnings.successful.toLocaleString('id-ID')}</div>
+            <div class="withdrawable-amount">Rp<%= earnings.successful.toLocaleString('id-ID') %></div>
             <a href="#" class="transaction-history">Rincian Transaksi ></a>
           </div>
           
@@ -52,15 +76,21 @@
         </div>
         
         <div class="earners-list">
-          <% topEarners.forEach((earner, index) => { %>
-            <div class="earner-item">
-              <div class="earner-avatar">
-                <img src="${earner.profile_image || '/images/default-avatar.png'}" alt="${earner.username}">
-                <div class="rank-badge rank-${index + 1}">TOP ${index + 1}</div>
+          <% if (topEarners && topEarners.length > 0) { %>
+            <% topEarners.forEach(function(earner, index) { %>
+              <div class="earner-item">
+                <div class="earner-avatar">
+                  <img src="<%= earner.profile_image || '/images/default-avatar.png' %>" alt="<%= earner.username %>">
+                  <div class="rank-badge rank-<%= index + 1 %>">TOP <%= index + 1 %></div>
+                </div>
+                <div class="earner-name"><%= earner.username.substring(0, 2) %>****<%= earner.username.slice(-2) %></div>
               </div>
-              <div class="earner-name">${earner.username.substring(0, 2)}****${earner.username.slice(-2)}</div>
+            <% }); %>
+          <% } else { %>
+            <div class="empty-state">
+              <p>No top earners yet</p>
             </div>
-          <% }); %>
+          <% } %>
         </div>
       </div>
       
@@ -71,13 +101,13 @@
         </div>
         
         <div class="transactions-list">
-          <% if (transactions.length === 0) { %>
+          <% if (!transactions || transactions.length === 0) { %>
             <div class="empty-state">
               <img src="/images/empty-transactions.png" alt="No Transactions">
               <p>Belum ada transaksi</p>
             </div>
           <% } else { %>
-            <% transactions.forEach(transaction => { %>
+            <% transactions.forEach(function(transaction) { %>
               <div class="transaction-item">
                 <div class="transaction-info">
                   <div class="transaction-date">
@@ -102,34 +132,54 @@
         </div>
       </div>
     </div>
-    `,
-    title,
-    currentPage: 'earnings',
-    showSearchBar: false,
-    scripts: `
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Withdraw button functionality
-        const withdrawBtn = document.querySelector('.withdraw-btn');
-        if (withdrawBtn) {
-          withdrawBtn.addEventListener('click', function(e) {
-            if (parseFloat('${earnings.successful}') === 0) {
-              e.preventDefault();
-              alert('Tidak ada saldo yang dapat ditarik');
-            }
-          });
-        }
-        
-        // Transaction history link functionality
-        const transactionHistoryLink = document.querySelector('.transaction-history');
-        if (transactionHistoryLink) {
-          transactionHistoryLink.addEventListener('click', function(e) {
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="/" class="nav-item">
+      <i class="fas fa-home"></i>
+      <span>Beranda</span>
+    </a>
+    <a href="/brands" class="nav-item">
+      <i class="fas fa-tag"></i>
+      <span>Brand</span>
+    </a>
+    <a href="/user/dashboard" class="nav-item active">
+      <i class="fas fa-wallet"></i>
+      <span>Pendapatan</span>
+    </a>
+    <a href="/user/profile" class="nav-item">
+      <i class="fas fa-user"></i>
+      <span>Saya</span>
+    </a>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Withdraw button functionality
+      const withdrawBtn = document.querySelector('.withdraw-btn');
+      if (withdrawBtn) {
+        withdrawBtn.addEventListener('click', function(e) {
+          if (parseFloat('<%= earnings.successful %>') === 0) {
             e.preventDefault();
-            // Scroll to transactions section
-            document.querySelector('.transactions').scrollIntoView({ behavior: 'smooth' });
-          });
-        }
-      });
-    </script>
-    `
-  }) %>
+            alert('Tidak ada saldo yang dapat ditarik');
+          }
+        });
+      }
+      
+      // Transaction history link functionality
+      const transactionHistoryLink = document.querySelector('.transaction-history');
+      if (transactionHistoryLink) {
+        transactionHistoryLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          // Scroll to transactions section
+          document.querySelector('.transactions').scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+    });
+  </script>
+    <script src="/js/page-specific-fix.js"></script>
+</body>
+</html>

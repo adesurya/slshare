@@ -1,5 +1,29 @@
-<%- include('../layout', { 
-    body: `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <a href="/">MOVA</a>
+        <span class="tagline">Belanja Sambil Cuan</span>
+      </div>
+      <div class="header-right">
+        <a href="/faq" class="faq-link">FAQ</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
     <div class="withdraw-container">
       <div class="page-header">
         <a href="/user/dashboard" class="back-button">
@@ -15,7 +39,7 @@
   
       <% if (locals.errors && errors.length > 0) { %>
         <div class="error-message">
-          <% errors.forEach(error => { %>
+          <% errors.forEach(function(error) { %>
             <p><%= error.msg %></p>
           <% }); %>
         </div>
@@ -90,27 +114,197 @@
         </ul>
       </div>
     </div>
-    `,
-    title,
-    currentPage: 'earnings',
-    showSearchBar: false,
-    scripts: `
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const withdrawalMethod = document.getElementById('withdrawal_method');
-        const bankDetails = document.getElementById('bank_details');
-        const ewalletDetails = document.getElementById('ewallet_details');
-        
-        withdrawalMethod.addEventListener('change', function() {
-          if (this.value === 'bank_transfer') {
-            bankDetails.style.display = 'block';
-            ewalletDetails.style.display = 'none';
-          } else if (this.value === 'e_wallet') {
-            bankDetails.style.display = 'none';
-            ewalletDetails.style.display = 'block';
-          }
-        });
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="/" class="nav-item">
+      <i class="fas fa-home"></i>
+      <span>Beranda</span>
+    </a>
+    <a href="/brands" class="nav-item">
+      <i class="fas fa-tag"></i>
+      <span>Brand</span>
+    </a>
+    <a href="/user/dashboard" class="nav-item active">
+      <i class="fas fa-wallet"></i>
+      <span>Pendapatan</span>
+    </a>
+    <a href="/user/profile" class="nav-item">
+      <i class="fas fa-user"></i>
+      <span>Saya</span>
+    </a>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const withdrawalMethod = document.getElementById('withdrawal_method');
+      const bankDetails = document.getElementById('bank_details');
+      const ewalletDetails = document.getElementById('ewallet_details');
+      
+      withdrawalMethod.addEventListener('change', function() {
+        if (this.value === 'bank_transfer') {
+          bankDetails.style.display = 'block';
+          ewalletDetails.style.display = 'none';
+        } else if (this.value === 'e_wallet') {
+          bankDetails.style.display = 'none';
+          ewalletDetails.style.display = 'block';
+        }
       });
-    </script>
-    `
-  }) %>
+
+      // Form validation
+      const withdrawForm = document.querySelector('.withdraw-form');
+      withdrawForm.addEventListener('submit', function(e) {
+        const amountInput = document.getElementById('amount');
+        const amount = parseInt(amountInput.value);
+        const minAmount = 10000;
+        const maxAmount = parseInt('<%= earnings.successful %>');
+
+        if (isNaN(amount) || amount < minAmount) {
+          e.preventDefault();
+          alert('Minimum penarikan adalah Rp10.000');
+          amountInput.focus();
+          return false;
+        }
+
+        if (amount > maxAmount) {
+          e.preventDefault();
+          alert('Jumlah penarikan melebihi saldo tersedia');
+          amountInput.focus();
+          return false;
+        }
+
+        // Additional validation based on withdrawal method
+        if (withdrawalMethod.value === 'bank_transfer') {
+          const accountNumber = document.getElementById('account_number').value;
+          const accountName = document.getElementById('account_name').value;
+          
+          if (!accountNumber || accountNumber.length < 5) {
+            e.preventDefault();
+            alert('Mohon masukkan nomor rekening yang valid');
+            return false;
+          }
+          
+          if (!accountName || accountName.length < 3) {
+            e.preventDefault();
+            alert('Mohon masukkan nama pemilik rekening');
+            return false;
+          }
+        } else if (withdrawalMethod.value === 'e_wallet') {
+          const phoneNumber = document.getElementById('phone_number').value;
+          
+          if (!phoneNumber || phoneNumber.length < 10) {
+            e.preventDefault();
+            alert('Mohon masukkan nomor telepon yang valid');
+            return false;
+          }
+        }
+
+        return true;
+      });
+    });
+  </script>
+  <style>
+    .withdraw-container {
+      padding: 15px;
+    }
+    
+    .page-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .back-button {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background-color: #f5f5f5;
+      margin-right: 15px;
+    }
+    
+    .page-header h1 {
+      font-size: 20px;
+    }
+    
+    .balance-info {
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .balance-label {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    
+    .balance-amount {
+      font-size: 28px;
+      font-weight: bold;
+    }
+    
+    .withdraw-form {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--box-shadow);
+    }
+    
+    .amount-input {
+      position: relative;
+    }
+    
+    .amount-input .currency {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+    .amount-input input {
+      padding-left: 40px;
+    }
+    
+    .withdraw-button {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: var(--border-radius);
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    
+    .withdrawal-info {
+      background-color: #f9f9f9;
+      border-radius: var(--border-radius);
+      padding: 15px;
+    }
+    
+    .withdrawal-info h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    
+    .withdrawal-info ul {
+      padding-left: 20px;
+      list-style: disc;
+    }
+    
+    .withdrawal-info li {
+      margin-bottom: 5px;
+      color: var(--light-text);
+    }
+  </style>
+    <script src="/js/page-specific-fix.js"></script>
+</body>
+</html>

@@ -1,14 +1,38 @@
-<%- include('../layout', { 
-    body: `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <a href="/">MOVA</a>
+        <span class="tagline">Belanja Sambil Cuan</span>
+      </div>
+      <div class="header-right">
+        <a href="/faq" class="faq-link">FAQ</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
     <div class="profile-container">
       <div class="profile-header">
         <div class="profile-avatar">
-          <img src="${user.profile_image || '/images/default-avatar.png'}" alt="${user.username}">
+          <img src="<%= user.profile_image || '/images/default-avatar.png' %>" alt="<%= user.username %>">
           <a href="#" class="edit-avatar-btn">
             <i class="fas fa-pencil-alt"></i>
           </a>
         </div>
-        <h2 class="profile-name">Hi, ${user.username}</h2>
+        <h2 class="profile-name">Hi, <%= user.username %></h2>
         <a href="#" class="edit-profile-btn">
           <i class="fas fa-pencil-alt"></i>
         </a>
@@ -85,37 +109,64 @@
           <span>Wishlist</span>
           <i class="fas fa-chevron-right"></i>
         </a>
+        
+        <a href="/user/change-password" class="menu-item">
+          <i class="fas fa-lock"></i>
+          <span>Ubah Password</span>
+          <i class="fas fa-chevron-right"></i>
+        </a>
       </div>
   
       <a href="/auth/logout" class="logout-btn">Logout</a>
     </div>
-    `,
-    title,
-    currentPage: 'profile',
-    showSearchBar: false,
-    scripts: `
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Edit profile functionality would go here
-        const editProfileBtn = document.querySelector('.edit-profile-btn');
-        if (editProfileBtn) {
-          editProfileBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Show edit profile modal or redirect to edit page
-            alert('Edit profile functionality would be implemented here');
-          });
-        }
-        
-        // Edit avatar functionality
-        const editAvatarBtn = document.querySelector('.edit-avatar-btn');
-        if (editAvatarBtn) {
-          editAvatarBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Show avatar upload modal
-            alert('Avatar upload functionality would be implemented here');
-          });
-        }
-      });
-    </script>
-    `
-  }) %>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="/" class="nav-item">
+      <i class="fas fa-home"></i>
+      <span>Beranda</span>
+    </a>
+    <a href="/brands" class="nav-item">
+      <i class="fas fa-tag"></i>
+      <span>Brand</span>
+    </a>
+    <a href="/user/dashboard" class="nav-item">
+      <i class="fas fa-wallet"></i>
+      <span>Pendapatan</span>
+    </a>
+    <a href="/user/profile" class="nav-item active">
+      <i class="fas fa-user"></i>
+      <span>Saya</span>
+    </a>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="/js/main.js"></script>
+  <script src="/js/dark-mode.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Edit profile functionality would go here
+      const editProfileBtn = document.querySelector('.edit-profile-btn');
+      if (editProfileBtn) {
+        editProfileBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          // Show edit profile modal or redirect to edit page
+          alert('Edit profile functionality would be implemented here');
+        });
+      }
+      
+      // Edit avatar functionality
+      const editAvatarBtn = document.querySelector('.edit-avatar-btn');
+      if (editAvatarBtn) {
+        editAvatarBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          // Show avatar upload modal
+          alert('Avatar upload functionality would be implemented here');
+        });
+      }
+    });
+  </script>
+    <script src="/js/page-specific-fix.js"></script>
+</body>
+</html>
