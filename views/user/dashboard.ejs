@@ -1,0 +1,135 @@
+<%- include('../layout', { 
+    body: `
+    <div class="dashboard-container">
+      <div class="user-header">
+        <div class="user-avatar">
+          <img src="${user.profile_image || '/images/default-avatar.png'}" alt="${user.username}">
+        </div>
+        <h3>${user.username}</h3>
+      </div>
+      
+      <div class="earnings-card">
+        <div class="earnings-header">
+          <h2>Est. Total Pendapatan</h2>
+          <span class="mova-label">MOVA</span>
+        </div>
+        
+        <div class="earnings-amount">Rp${earnings.total.toLocaleString('id-ID')}</div>
+        
+        <div class="today-earnings">
+          Hari ini +Rp0
+        </div>
+        
+        <div class="earnings-status">
+          <div class="status-box">
+            <h3>Tertunda</h3>
+            <div class="status-amount">Rp${earnings.pending.toLocaleString('id-ID')}</div>
+            <a href="#" class="status-details">></a>
+          </div>
+          
+          <div class="status-box">
+            <h3>Berhasil</h3>
+            <div class="status-amount">Rp${earnings.successful.toLocaleString('id-ID')}</div>
+            <a href="#" class="status-details">></a>
+          </div>
+        </div>
+        
+        <div class="withdrawable">
+          <div class="withdrawable-text">
+            <h3>Saldo Yang Bisa Dicairkan</h3>
+            <div class="withdrawable-amount">Rp${earnings.successful.toLocaleString('id-ID')}</div>
+            <a href="#" class="transaction-history">Rincian Transaksi ></a>
+          </div>
+          
+          <a href="/user/withdraw" class="withdraw-btn">Tarik</a>
+        </div>
+      </div>
+      
+      <div class="top-earners">
+        <div class="section-header">
+          <h2>Peringkat Tertinggi</h2>
+          <a href="#" class="view-all">></a>
+        </div>
+        
+        <div class="earners-list">
+          <% topEarners.forEach((earner, index) => { %>
+            <div class="earner-item">
+              <div class="earner-avatar">
+                <img src="${earner.profile_image || '/images/default-avatar.png'}" alt="${earner.username}">
+                <div class="rank-badge rank-${index + 1}">TOP ${index + 1}</div>
+              </div>
+              <div class="earner-name">${earner.username.substring(0, 2)}****${earner.username.slice(-2)}</div>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+      
+      <div class="transactions">
+        <div class="section-header">
+          <h2>Detail Pendapatan</h2>
+          <a href="#" class="view-all">></a>
+        </div>
+        
+        <div class="transactions-list">
+          <% if (transactions.length === 0) { %>
+            <div class="empty-state">
+              <img src="/images/empty-transactions.png" alt="No Transactions">
+              <p>Belum ada transaksi</p>
+            </div>
+          <% } else { %>
+            <% transactions.forEach(transaction => { %>
+              <div class="transaction-item">
+                <div class="transaction-info">
+                  <div class="transaction-date">
+                    <%= new Date(transaction.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                  </div>
+                  <div class="transaction-desc"><%= transaction.description %></div>
+                  <div class="transaction-reference">Ref: <%= transaction.reference_id || '-' %></div>
+                </div>
+                <div class="transaction-amount <%= transaction.amount > 0 ? 'positive' : 'negative' %>">
+                  <%= transaction.amount > 0 ? '+' : '' %>Rp<%= Math.abs(transaction.amount).toLocaleString('id-ID') %>
+                </div>
+              </div>
+            <% }); %>
+          <% } %>
+        </div>
+      </div>
+      
+      <div class="orders-section">
+        <div class="section-header">
+          <h2>Pesanan Saya</h2>
+          <a href="/user/orders" class="view-all">></a>
+        </div>
+      </div>
+    </div>
+    `,
+    title,
+    currentPage: 'earnings',
+    showSearchBar: false,
+    scripts: `
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Withdraw button functionality
+        const withdrawBtn = document.querySelector('.withdraw-btn');
+        if (withdrawBtn) {
+          withdrawBtn.addEventListener('click', function(e) {
+            if (parseFloat('${earnings.successful}') === 0) {
+              e.preventDefault();
+              alert('Tidak ada saldo yang dapat ditarik');
+            }
+          });
+        }
+        
+        // Transaction history link functionality
+        const transactionHistoryLink = document.querySelector('.transaction-history');
+        if (transactionHistoryLink) {
+          transactionHistoryLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Scroll to transactions section
+            document.querySelector('.transactions').scrollIntoView({ behavior: 'smooth' });
+          });
+        }
+      });
+    </script>
+    `
+  }) %>

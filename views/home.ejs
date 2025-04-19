@@ -1,0 +1,135 @@
+<%- include('layout', { 
+    body: `
+    <div class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">Dapatkan</h1>
+        <div class="hero-amount">Rp100.000.000</div>
+        <h2 class="hero-subtitle">per bulan</h2>
+        <p class="hero-description">Jadi yang pertama menguasai bisnis baru >>></p>
+      </div>
+    </div>
+  
+    <div class="cashback-section">
+      <h2>Mulai kumpulkan Cashback</h2>
+      <a href="#" class="view-more">Lihat</a>
+      
+      <div class="cashback-steps">
+        <div class="step">
+          <div class="step-icon">
+            <img src="/images/icons/link.svg" alt="Copy Link">
+          </div>
+          <p>Salin tautan produk</p>
+        </div>
+        
+        <div class="step">
+          <div class="step-icon">
+            <img src="/images/icons/mova.svg" alt="MOVA">
+          </div>
+          <p>Buka MOVA cek Cashback</p>
+        </div>
+        
+        <div class="step">
+          <div class="step-icon">
+            <img src="/images/icons/shop.svg" alt="Shop">
+          </div>
+          <p>Lanjutkan ke Shopee/TikTok</p>
+        </div>
+        
+        <div class="step">
+          <div class="step-icon">
+            <img src="/images/icons/cashback.svg" alt="Cashback">
+          </div>
+          <p>Dapatkan Cashback</p>
+        </div>
+      </div>
+    </div>
+  
+    <div class="free-gifts-section">
+      <h2>Ambil Hadiah Gratis</h2>
+      
+      <div class="gifts-slider">
+        <div class="gift-item">
+          <div class="gift-image">
+            <img src="/images/products/gift1.jpg" alt="Free Gift 1">
+          </div>
+          <div class="gift-price">
+            <div class="original-price">Rp129.000</div>
+            <div class="current-price">Rp0</div>
+          </div>
+        </div>
+        
+        <div class="gift-item">
+          <div class="gift-image">
+            <img src="/images/products/gift2.jpg" alt="Free Gift 2">
+          </div>
+          <div class="gift-price">
+            <div class="original-price">Rp699.000</div>
+            <div class="current-price">Rp0</div>
+          </div>
+        </div>
+        
+        <div class="gift-item">
+          <div class="gift-image">
+            <img src="/images/products/gift3.jpg" alt="Free Gift 3">
+          </div>
+          <div class="gift-price">
+            <div class="original-price">Rp165.000</div>
+            <div class="current-price">Rp0</div>
+          </div>
+        </div>
+        
+        <div class="gift-item">
+          <div class="gift-image">
+            <img src="/images/products/gift4.jpg" alt="Free Gift 4">
+          </div>
+          <div class="gift-price">
+            <div class="original-price">Rp159.999</div>
+            <div class="current-price">Rp0</div>
+          </div>
+        </div>
+        
+        <div class="gift-item">
+          <div class="gift-image">
+            <img src="/images/products/gift5.jpg" alt="Free Gift 5">
+          </div>
+          <div class="gift-price">
+            <div class="original-price">Rp69.000</div>
+            <div class="current-price">Rp0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="categories-section">
+      <div class="category-tabs">
+        <button class="tab-button active">For You</button>
+        <button class="tab-button">Telepon & Elektronik</button>
+        <button class="tab-button">Perawatan &</button>
+      </div>
+      
+      <div class="category-products">
+        <% featuredProducts.forEach(product => { %>
+          <div class="product-card">
+            <a href="/products/<%= product.id %>">
+              <div class="product-image">
+                <img src="<%= product.image_url %>" alt="<%= product.name %>">
+              </div>
+              <div class="product-info">
+                <h3 class="product-name"><%= product.name %></h3>
+                <div class="product-price">Rp<%= product.price.toLocaleString('id-ID') %></div>
+                <div class="product-cashback">
+                  <span class="cashback-label">Est. Cashback</span>
+                  <span class="cashback-amount">Rp<%= product.cashback.toLocaleString('id-ID') %></span>
+                </div>
+              </div>
+            </a>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+    `,
+    title,
+    currentPage: 'home',
+    showSearchBar: true,
+    scripts: ''
+  }) %>

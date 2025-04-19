@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Open Graph meta tags -->
+  <meta property="og:title" content="MOVA - Belanja Sambil Cuan">
+  <meta property="og:description" content="Dapatkan cashback untuk setiap belanja di MOVA">
+  <meta property="og:image" content="/images/mova-og-image.jpg">
+  <meta property="og:url" content="https://mova.app">
+  <!-- App linking -->
+  <meta name="apple-itunes-app" content="app-id=123456789, app-argument=mova://home">
+  <meta name="google-play-app" content="app-id=com.mova.app">
+</head>
+<body data-current-page="<%= currentPage %>">
+  <div class="app-container">
+    <!-- App Download Popup -->
+    <% if (locals.showAppPrompt) { %>
+    <div id="app-download-prompt">
+      <div class="prompt-content">
+        <h3>Pengalaman Lebih Baik di App</h3>
+        <p>Download MOVA App untuk pengalaman lengkap dan cashback lebih besar</p>
+        <div class="prompt-buttons">
+          <% if (locals.isAndroid) { %>
+            <a href="<%= locals.playStoreUrl %>" class="download-btn">Download dari Play Store</a>
+          <% } else if (locals.isIOS) { %>
+            <a href="<%= locals.appStoreUrl %>" class="download-btn">Download dari App Store</a>
+          <% } else { %>
+            <a href="<%= locals.playStoreUrl %>" class="download-btn">Download dari Play Store</a>
+            <a href="<%= locals.appStoreUrl %>" class="download-btn">Download dari App Store</a>
+          <% } %>
+          <button id="close-prompt" class="close-btn">Lanjutkan ke Web</button>
+        </div>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <a href="/">MOVA</a>
+          <span class="tagline">Belanja Sambil Cuan</span>
+        </div>
+        <div class="header-right">
+          <a href="/faq" class="faq-link">FAQ</a>
+        </div>
+      </div>
+      <% if (locals.showSearchBar) { %>
+      <div class="search-bar">
+        <form action="/search" method="GET">
+          <input type="text" name="q" placeholder="Tempelkan tautan Shopee/TikTok">
+          <button type="submit">Tempel</button>
+        </form>
+      </div>
+      <% } %>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <%- body %>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="/" class="nav-item <%= currentPage === 'home' ? 'active' : '' %>" data-page="home">
+        <i class="fas fa-home"></i>
+        <span>Beranda</span>
+      </a>
+      <a href="/brands" class="nav-item <%= currentPage === 'brands' ? 'active' : '' %>" data-page="brands">
+        <i class="fas fa-tag"></i>
+        <span>Brand</span>
+      </a>
+      <a href="/user/dashboard" class="nav-item <%= currentPage === 'earnings' ? 'active' : '' %>" data-page="earnings">
+        <i class="fas fa-wallet"></i>
+        <span>Pendapatan</span>
+      </a>
+      <a href="/user/profile" class="nav-item <%= currentPage === 'profile' ? 'active' : '' %>" data-page="profile">
+        <i class="fas fa-user"></i>
+        <span>Saya</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/main.js"></script>
+  <script src="/js/toast-notifications.js"></script>
+  <script src="/js/dark-mode.js"></script>
+  <% if (locals.showAppPrompt) { %>
+  <script src="/js/app-prompt.js"></script>
+  <% } %>
+  <%- scripts %>
+</body>
+</html>

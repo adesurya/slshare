@@ -1,0 +1,121 @@
+<%- include('../layout', { 
+    body: `
+    <div class="profile-container">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <img src="${user.profile_image || '/images/default-avatar.png'}" alt="${user.username}">
+          <a href="#" class="edit-avatar-btn">
+            <i class="fas fa-pencil-alt"></i>
+          </a>
+        </div>
+        <h2 class="profile-name">Hi, ${user.username}</h2>
+        <a href="#" class="edit-profile-btn">
+          <i class="fas fa-pencil-alt"></i>
+        </a>
+      </div>
+  
+      <div class="partner-benefits">
+        <div class="benefits-header">
+          <h3>Keuntungan Partner</h3>
+          <a href="#" class="view-all">Lihat Semua</a>
+        </div>
+        <p class="benefits-description">Gabung jadi Partner, Hemat & Cuan!</p>
+        
+        <div class="benefits-cards">
+          <div class="benefit-card">
+            <div class="benefit-icon">
+              <i class="fas fa-gift"></i>
+            </div>
+            <p>Bonus Undangan</p>
+          </div>
+          
+          <div class="benefit-card">
+            <div class="benefit-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <p>Bonus Pengembangan Tim</p>
+          </div>
+          
+          <div class="benefit-card">
+            <div class="benefit-icon">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <p>Komisi Belanja Tim</p>
+          </div>
+        </div>
+      </div>
+  
+      <div class="profile-section">
+        <div class="section-header">
+          <h3>Riwayat Aktivitas</h3>
+          <i class="fas fa-chevron-right"></i>
+        </div>
+      </div>
+  
+      <div class="profile-section">
+        <div class="section-header">
+          <h3>Panduan</h3>
+        </div>
+        <div class="guide-link">
+          <div class="guide-info">
+            <p>Hemat Bersama MOVA</p>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+          <div class="guide-icon">
+            <img src="/images/icons/piggy-bank.png" alt="Savings">
+          </div>
+        </div>
+      </div>
+  
+      <div class="profile-menu">
+        <a href="/user/orders" class="menu-item">
+          <i class="fas fa-box"></i>
+          <span>Pesanan Saya</span>
+          <i class="fas fa-chevron-right"></i>
+        </a>
+        
+        <a href="/user/free-gifts" class="menu-item">
+          <i class="fas fa-gift"></i>
+          <span>Riwayat Hadiah Gratis</span>
+          <i class="fas fa-chevron-right"></i>
+        </a>
+        
+        <a href="/user/wishlist" class="menu-item">
+          <i class="fas fa-star"></i>
+          <span>Wishlist</span>
+          <i class="fas fa-chevron-right"></i>
+        </a>
+      </div>
+  
+      <a href="/auth/logout" class="logout-btn">Logout</a>
+    </div>
+    `,
+    title,
+    currentPage: 'profile',
+    showSearchBar: false,
+    scripts: `
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Edit profile functionality would go here
+        const editProfileBtn = document.querySelector('.edit-profile-btn');
+        if (editProfileBtn) {
+          editProfileBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Show edit profile modal or redirect to edit page
+            alert('Edit profile functionality would be implemented here');
+          });
+        }
+        
+        // Edit avatar functionality
+        const editAvatarBtn = document.querySelector('.edit-avatar-btn');
+        if (editAvatarBtn) {
+          editAvatarBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Show avatar upload modal
+            alert('Avatar upload functionality would be implemented here');
+          });
+        }
+      });
+    </script>
+    `
+  }) %>

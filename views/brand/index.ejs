@@ -1,0 +1,39 @@
+<%- include('../layout', { 
+    body: `
+    <div class="brands-container">
+      <div class="brands-header">
+        <h1>Brand Pilihan untukmu</h1>
+        <p>Temukan brand favoritmu dan nikmati belanja hemat!</p>
+      </div>
+      
+      <div class="brands-list">
+        <% brands.forEach(brand => { %>
+          <div class="brand-card">
+            <div class="brand-header">
+              <div class="brand-logo">
+                <img src="<%= brand.logo_url %>" alt="<%= brand.name %>">
+              </div>
+              <div class="brand-info">
+                <h3 class="brand-name"><%= brand.name %></h3>
+                <div class="brand-cashback">
+                  Cashback s/d <span class="highlight-text"><%= brand.cashback_percentage %>%</span>
+                </div>
+                <div class="product-count">
+                  <%= brand.products_count %> Produk
+                </div>
+              </div>
+            </div>
+            
+            <div class="brand-products">
+              <!-- Sample products would go here, fetched from the database -->
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+    `,
+    title,
+    currentPage: 'brands',
+    showSearchBar: false,
+    scripts: ''
+  }) %>

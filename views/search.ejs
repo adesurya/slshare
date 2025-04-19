@@ -1,0 +1,312 @@
+<%- include('layout', { 
+    body: `
+    <div class="search-results-container">
+      <div class="search-header">
+        <h1>Search Results</h1>
+        <p>Results for "<span class="search-term">${searchTerm}</span>"</p>
+      </div>
+  
+      <% if (products.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-search"></i>
+          </div>
+          <h2>No products found</h2>
+          <p>We couldn't find any products matching your search term.</p>
+          <p>Try a different search or browse our categories.</p>
+          <a href="/" class="primary-button">Go to Home</a>
+        </div>
+      <% } else { %>
+        <div class="search-filters">
+          <button class="filter-button">
+            <i class="fas fa-filter"></i>
+            <span>Filter</span>
+          </button>
+          <div class="sort-dropdown">
+            <button class="sort-button">
+              <i class="fas fa-sort"></i>
+              <span>Sort by: <strong>Relevance</strong></span>
+            </button>
+            <div class="sort-options">
+              <a href="#" class="sort-option active" data-sort="relevance">Relevance</a>
+              <a href="#" class="sort-option" data-sort="price-asc">Price: Low to High</a>
+              <a href="#" class="sort-option" data-sort="price-desc">Price: High to Low</a>
+              <a href="#" class="sort-option" data-sort="cashback">Highest Cashback</a>
+            </div>
+          </div>
+        </div>
+  
+        <div class="products-grid">
+          <% products.forEach(product => { %>
+            <div class="product-card">
+              <a href="/products/<%= product.id %>">
+                <div class="product-image">
+                  <img src="<%= product.image_url %>" alt="<%= product.name %>">
+                  <div class="cashback-badge"><%=product.cashback_percentage%>% Cashback</div>
+                </div>
+                <div class="product-info">
+                  <h3 class="product-name"><%= product.name %></h3>
+                  <div class="product-price">Rp<%= product.price.toLocaleString('id-ID') %></div>
+                  <div class="product-cashback">
+                    <span class="cashback-label">Est. Cashback</span>
+                    <span class="cashback-amount">Rp<%= product.cashback.toLocaleString('id-ID') %></span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          <% }); %>
+        </div>
+  
+        <div class="pagination">
+          <button class="load-more-button">Load More</button>
+        </div>
+      <% } %>
+    </div>
+    `,
+    title,
+    currentPage: 'home',
+    showSearchBar: true,
+    scripts: `
+    <style>
+      .search-header {
+        margin-bottom: 20px;
+      }
+      
+      .search-header h1 {
+        font-size: 22px;
+        margin-bottom: 5px;
+      }
+      
+      .search-header p {
+        color: #666;
+      }
+      
+      .search-term {
+        font-weight: bold;
+      }
+      
+      .search-filters {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+      
+      .filter-button {
+        display: flex;
+        align-items: center;
+        padding: 8px 15px;
+        background-color: #f5f5f5;
+        border-radius: 20px;
+        border: none;
+      }
+      
+      .filter-button i {
+        margin-right: 5px;
+      }
+      
+      .sort-dropdown {
+        position: relative;
+      }
+      
+      .sort-button {
+        display: flex;
+        align-items: center;
+        padding: 8px 15px;
+        background-color: #f5f5f5;
+        border-radius: 20px;
+        border: none;
+      }
+      
+      .sort-button i {
+        margin-right: 5px;
+      }
+      
+      .sort-options {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        min-width: 200px;
+        z-index: 10;
+        display: none;
+      }
+      
+      .sort-options.show {
+        display: block;
+      }
+      
+      .sort-option {
+        display: block;
+        padding: 10px 15px;
+        border-bottom: 1px solid #eee;
+      }
+      
+      .sort-option:last-child {
+        border-bottom: none;
+      }
+      
+      .sort-option.active {
+        background-color: #f5f5f5;
+        font-weight: bold;
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+      }
+      
+      .empty-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 20px;
+        background-color: #f5f5f5;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .empty-icon i {
+        font-size: 40px;
+        color: #666;
+      }
+      
+      .empty-state h2 {
+        margin-bottom: 10px;
+      }
+      
+      .empty-state p {
+        color: #666;
+        margin-bottom: 5px;
+      }
+      
+      .primary-button {
+        display: inline-block;
+        background-color: #ff0033;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        margin-top: 20px;
+        font-weight: bold;
+      }
+      
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+      
+      .pagination {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      
+      .load-more-button {
+        background-color: transparent;
+        border: 1px solid #ddd;
+        color: #333;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-weight: bold;
+      }
+      
+      .cashback-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #ff0033;
+        color: white;
+        font-size: 10px;
+        padding: 3px 6px;
+        border-radius: 10px;
+        font-weight: bold;
+      }
+    </style>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Sort dropdown functionality
+        const sortButton = document.querySelector('.sort-button');
+        const sortOptions = document.querySelector('.sort-options');
+        
+        if (sortButton && sortOptions) {
+          sortButton.addEventListener('click', function() {
+            sortOptions.classList.toggle('show');
+          });
+          
+          // Close dropdown when clicking outside
+          document.addEventListener('click', function(e) {
+            if (!sortButton.contains(e.target)) {
+              sortOptions.classList.remove('show');
+            }
+          });
+          
+          // Sort options functionality
+          const sortOptionLinks = document.querySelectorAll('.sort-option');
+          sortOptionLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+              e.preventDefault();
+              
+              // Remove active class from all options
+              sortOptionLinks.forEach(opt => opt.classList.remove('active'));
+              
+              // Add active class to clicked option
+              this.classList.add('active');
+              
+              // Update sort button text
+              const sortType = this.textContent;
+              sortButton.querySelector('strong').textContent = sortType;
+              
+              // Close dropdown
+              sortOptions.classList.remove('show');
+              
+              // Here you would implement actual sorting
+              // For demo, let's just show a toast notification
+              if (window.toastNotifications) {
+                window.toastNotifications.info('Sorting by ' + sortType);
+              }
+            });
+          });
+        }
+        
+        // Filter button functionality
+        const filterButton = document.querySelector('.filter-button');
+        if (filterButton) {
+          filterButton.addEventListener('click', function() {
+            // Show filter modal or sidebar
+            if (window.toastNotifications) {
+              window.toastNotifications.info('Filter functionality would be implemented here');
+            }
+          });
+        }
+        
+        // Load more functionality
+        const loadMoreButton = document.querySelector('.load-more-button');
+        if (loadMoreButton) {
+          loadMoreButton.addEventListener('click', function() {
+            // Load more products
+            if (window.toastNotifications) {
+              window.toastNotifications.info('Loading more products...');
+            }
+            
+            // Simulate loading delay
+            this.textContent = 'Loading...';
+            this.disabled = true;
+            
+            setTimeout(() => {
+              this.textContent = 'Load More';
+              this.disabled = false;
+              
+              if (window.toastNotifications) {
+                window.toastNotifications.info('No more products to load');
+              }
+            }, 1500);
+          });
+        }
+      });
+    </script>
+    `
+  }) %>

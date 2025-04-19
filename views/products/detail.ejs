@@ -1,0 +1,532 @@
+<%- include('../layout', { 
+  body: `
+  <div class="product-detail-container">
+    <div class="page-header">
+      <a href="javascript:history.back()" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <h1>Detail Produk</h1>
+      <a href="#" class="share-button" id="shareProduct">
+        <i class="fas fa-share-alt"></i>
+      </a>
+    </div>
+
+    <div class="product-gallery">
+      <div class="main-image">
+        <img src="<%= product.image_url %>" alt="<%= product.name %>">
+      </div>
+      <!-- Thumbnail gallery would go here if we had multiple images -->
+    </div>
+
+    <div class="product-info">
+      <div class="product-price-info">
+        <div class="product-price">Rp<%= product.price.toLocaleString('id-ID') %></div>
+        <div class="product-cashback">
+          <span class="cashback-label">Est. Cashback</span>
+          <span class="cashback-amount">Rp<%= product.cashback.toLocaleString('id-ID') %></span>
+        </div>
+      </div>
+
+      <h1 class="product-name"><%= product.name %></h1>
+      
+      <div class="product-brand">
+        <img src="/images/brands/<%= product.brand.toLowerCase().replace(/ /g, '-') %>.png" alt="<%= product.brand %>" class="brand-logo">
+        <span class="brand-name"><%= product.brand %></span>
+      </div>
+
+      <div class="product-actions">
+        <% if (locals.requiresAuth) { %>
+          <!-- Show login-required buttons for guests -->
+          <a href="/auth/login?redirect=/products/<%= product.id %>" class="wishlist-button login-required">
+            <i class="far fa-heart"></i>
+            <span>Wishlist</span>
+          </a>
+          <a href="/auth/login?redirect=/products/<%= product.id %>" class="buy-button login-required">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Buy Now</span>
+          </a>
+        <% } else { %>
+          <!-- Show full functionality for logged-in users -->
+          <a href="#" class="wishlist-button <%= locals.isInWishlist ? 'in-wishlist' : '' %>" data-product-id="<%= product.id %>">
+            <i class="<%= locals.isInWishlist ? 'fas' : 'far' %> fa-heart"></i>
+            <span><%= locals.isInWishlist ? 'In Wishlist' : 'Wishlist' %></span>
+          </a>
+          <a href="#" class="buy-button" data-product-id="<%= product.id %>">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Buy Now</span>
+          </a>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="product-description">
+      <h2>Deskripsi Produk</h2>
+      <div class="description-content">
+        <%= product.description %>
+      </div>
+    </div>
+
+    <div class="product-specifications">
+      <h2>Spesifikasi</h2>
+      <div class="specifications-list">
+        <div class="spec-item">
+          <div class="spec-name">Kategori</div>
+          <div class="spec-value"><%= product.category %></div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-name">Brand</div>
+          <div class="spec-value"><%= product.brand %></div>
+        </div>
+        <!-- More specifications would go here -->
+      </div>
+    </div>
+
+    <div class="related-products">
+      <h2>Produk Terkait</h2>
+      <div class="products-slider">
+        <% relatedProducts.forEach(relatedProduct => { %>
+          <div class="product-card">
+            <a href="/products/<%= relatedProduct.id %>">
+              <div class="product-image">
+                <img src="<%= relatedProduct.image_url %>" alt="<%= relatedProduct.name %>">
+              </div>
+              <div class="product-info">
+                <h3 class="product-name"><%= relatedProduct.name %></h3>
+                <div class="product-price">Rp<%= relatedProduct.price.toLocaleString('id-ID') %></div>
+                <div class="product-cashback">
+                  <span class="cashback-label">Est. Cashback</span>
+                  <span class="cashback-amount">Rp<%= relatedProduct.cashback.toLocaleString('id-ID') %></span>
+                </div>
+              </div>
+            </a>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+    
+    <!-- Login Modal for Guest Users -->
+    <% if (locals.requiresAuth) { %>
+    <div id="login-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Login Required</h2>
+          <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <p>Please login or register to access this feature.</p>
+          <div class="modal-actions">
+            <a href="/auth/login?redirect=/products/<%= product.id %>" class="modal-button primary">Login</a>
+            <a href="/auth/register?redirect=/products/<%= product.id %>" class="modal-button secondary">Register</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% } %>
+    
+    <!-- Share Modal -->
+    <div id="share-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Share Product</h2>
+          <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <% if (locals.isAuthenticated) { %>
+            <!-- Logged in user - show affiliate link -->
+            <p>Share this product to earn cashback when someone purchases through your link:</p>
+            <div class="affiliate-link-container">
+              <input type="text" id="affiliate-link" class="affiliate-link-input" readonly>
+              <button id="copy-link-btn" class="copy-button">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+            <div class="share-buttons">
+              <a href="#" class="share-button-social whatsapp">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp</span>
+              </a>
+              <a href="#" class="share-button-social facebook">
+                <i class="fab fa-facebook"></i>
+                <span>Facebook</span>
+              </a>
+              <a href="#" class="share-button-social twitter">
+                <i class="fab fa-twitter"></i>
+                <span>Twitter</span>
+              </a>
+            </div>
+          <% } else { %>
+            <!-- Guest user - prompt to login -->
+            <p>Login to generate a unique affiliate link and earn cashback when someone purchases through your link.</p>
+            <div class="modal-actions">
+              <a href="/auth/login?redirect=/products/<%= product.id %>" class="modal-button primary">Login</a>
+              <a href="/auth/register?redirect=/products/<%= product.id %>" class="modal-button secondary">Register</a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+  `,
+  title,
+  currentPage: 'home',
+  showSearchBar: false,
+  scripts: `
+  <style>
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background-color: white;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      animation: slideUp 0.3s ease-out;
+    }
+    
+    .modal-header {
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .modal-header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+    
+    .close-modal {
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+    
+    .modal-body {
+      padding: 20px;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .modal-button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 4px;
+      text-align: center;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    
+    .modal-button.primary {
+      background-color: #ff0033;
+      color: white;
+    }
+    
+    .modal-button.secondary {
+      background-color: #f5f5f5;
+      color: #333;
+      border: 1px solid #ddd;
+    }
+    
+    .affiliate-link-container {
+      display: flex;
+      margin: 15px 0;
+    }
+    
+    .affiliate-link-input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px 0 0 4px;
+      font-size: 14px;
+    }
+    
+    .copy-button {
+      padding: 0 15px;
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-left: none;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+    }
+    
+    .share-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    
+    .share-button-social {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      border-radius: 4px;
+      color: white;
+      text-decoration: none;
+    }
+    
+    .share-button-social i {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    .whatsapp {
+      background-color: #25D366;
+    }
+    
+    .facebook {
+      background-color: #3b5998;
+    }
+    
+    .twitter {
+      background-color: #1DA1F2;
+    }
+    
+    .wishlist-button.in-wishlist {
+      color: #ff0033;
+    }
+    
+    .wishlist-button.in-wishlist i {
+      color: #ff0033;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Show login modal when clicking on login-required buttons
+      const loginRequiredButtons = document.querySelectorAll('.login-required');
+      const loginModal = document.getElementById('login-modal');
+      
+      loginRequiredButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (loginModal) {
+            loginModal.style.display = 'flex';
+          } else {
+            // If modal doesn't exist, redirect to login page
+            window.location.href = this.getAttribute('href');
+          }
+        });
+      });
+      
+      // Handle wishlist functionality
+      const wishlistButton = document.querySelector('.wishlist-button:not(.login-required)');
+      if (wishlistButton) {
+        wishlistButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          const productId = this.dataset.productId;
+          const isInWishlist = this.classList.contains('in-wishlist');
+          const icon = this.querySelector('i');
+          const text = this.querySelector('span');
+          
+          if (isInWishlist) {
+            // Remove from wishlist
+            fetch(\`/products/\${productId}/wishlist\`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                this.classList.remove('in-wishlist');
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                text.textContent = 'Wishlist';
+                
+                // Show toast notification
+                if (window.toastNotifications) {
+                  window.toastNotifications.success('Removed from wishlist');
+                }
+              }
+            })
+            .catch(error => {
+              console.error('Error removing from wishlist:', error);
+              if (window.toastNotifications) {
+                window.toastNotifications.error('Failed to remove from wishlist');
+              }
+            });
+          } else {
+            // Add to wishlist
+            fetch(\`/products/\${productId}/wishlist\`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                this.classList.add('in-wishlist');
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                text.textContent = 'In Wishlist';
+                
+                // Show toast notification
+                if (window.toastNotifications) {
+                  window.toastNotifications.success('Added to wishlist');
+                }
+              }
+            })
+            .catch(error => {
+              console.error('Error adding to wishlist:', error);
+              if (window.toastNotifications) {
+                window.toastNotifications.error('Failed to add to wishlist');
+              }
+            });
+          }
+        });
+      }
+      
+      // Buy button functionality
+      const buyButton = document.querySelector('.buy-button:not(.login-required)');
+      if (buyButton) {
+        buyButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          // Generate affiliate link and redirect
+          const productId = this.dataset.productId;
+          
+          fetch(\`/products/\${productId}/affiliate-link\`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // Redirect to the affiliate link
+              window.location.href = data.data.affiliateLink;
+            }
+          })
+          .catch(error => {
+            console.error('Error generating affiliate link:', error);
+            if (window.toastNotifications) {
+              window.toastNotifications.error('Failed to generate affiliate link');
+            }
+          });
+        });
+      }
+      
+      // Share modal functionality
+      const shareButton = document.getElementById('shareProduct');
+      const shareModal = document.getElementById('share-modal');
+      
+      if (shareButton && shareModal) {
+        shareButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          shareModal.style.display = 'flex';
+          
+          // If user is logged in, generate affiliate link
+          if (!document.querySelector('.login-required')) {
+            const productId = document.querySelector('[data-product-id]').dataset.productId;
+            const affiliateLinkInput = document.getElementById('affiliate-link');
+            
+            if (affiliateLinkInput) {
+              fetch(\`/products/\${productId}/affiliate-link\`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  affiliateLinkInput.value = data.data.affiliateLink;
+                  
+                  // Set up share buttons
+                  const whatsappBtn = document.querySelector('.share-button-social.whatsapp');
+                  const facebookBtn = document.querySelector('.share-button-social.facebook');
+                  const twitterBtn = document.querySelector('.share-button-social.twitter');
+                  
+                  const shareText = \`Check out \${data.data.productName} and get cashback!\`;
+                  
+                  if (whatsappBtn) {
+                    whatsappBtn.href = \`https://wa.me/?text=\${encodeURIComponent(shareText + ' ' + data.data.affiliateLink)}\`;
+                  }
+                  
+                  if (facebookBtn) {
+                    facebookBtn.href = \`https://www.facebook.com/sharer/sharer.php?u=\${encodeURIComponent(data.data.affiliateLink)}\`;
+                  }
+                  
+                  if (twitterBtn) {
+                    twitterBtn.href = \`https://twitter.com/intent/tweet?text=\${encodeURIComponent(shareText)}&url=\${encodeURIComponent(data.data.affiliateLink)}\`;
+                  }
+                }
+              })
+              .catch(error => {
+                console.error('Error generating affiliate link for sharing:', error);
+              });
+            }
+          }
+        });
+      }
+      
+      // Copy link functionality
+      const copyLinkBtn = document.getElementById('copy-link-btn');
+      const affiliateLinkInput = document.getElementById('affiliate-link');
+      
+      if (copyLinkBtn && affiliateLinkInput) {
+        copyLinkBtn.addEventListener('click', function() {
+          affiliateLinkInput.select();
+          document.execCommand('copy');
+          
+          // Show feedback
+          this.innerHTML = '<i class="fas fa-check"></i>';
+          setTimeout(() => {
+            this.innerHTML = '<i class="fas fa-copy"></i>';
+          }, 2000);
+          
+          // Show toast notification
+          if (window.toastNotifications) {
+            window.toastNotifications.success('Link copied to clipboard');
+          }
+        });
+      }
+      
+      // Close modals
+      const closeButtons = document.querySelectorAll('.close-modal');
+      closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const modal = this.closest('.modal');
+          if (modal) {
+            modal.style.display = 'none';
+          }
+        });
+      });
+      
+      // Close modal when clicking outside
+      window.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal')) {
+          e.target.style.display = 'none';
+        }
+      });
+    });
+  </script>
+  `
+}) %>

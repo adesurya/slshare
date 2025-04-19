@@ -1,0 +1,120 @@
+<%- include('../layout', { 
+    body: `
+    <div class="auth-container">
+      <div class="auth-header">
+        <h1>Verify Your Email</h1>
+        <p>Please verify your email address to access all features</p>
+      </div>
+  
+      <div class="verification-box">
+        <div class="verification-icon">
+          <i class="fas fa-envelope"></i>
+        </div>
+        
+        <h2>Check Your Inbox</h2>
+        <p>We've sent a verification link to: <strong>${email}</strong></p>
+        <p>Please check your email and click the verification link to complete your registration.</p>
+        
+        <% if (locals.message) { %>
+          <div class="success-message">
+            <i class="fas fa-check-circle"></i>
+            <p>${message}</p>
+          </div>
+        <% } %>
+        
+        <% if (locals.error) { %>
+          <div class="error-message">
+            <p>${error}</p>
+          </div>
+        <% } %>
+        
+        <div class="verification-actions">
+          <p>Didn't receive the email?</p>
+          <form action="/auth/resend-verification" method="POST">
+            <button type="submit" class="resend-button">Resend Verification Email</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="auth-alternative">
+        <p>Once verified, you can <a href="/user/dashboard">go to your dashboard</a></p>
+      </div>
+    </div>
+    `,
+    title,
+    currentPage: 'profile',
+    showSearchBar: false,
+    scripts: `
+    <style>
+      .verification-box {
+        background-color: white;
+        border-radius: 8px;
+        padding: 30px 20px;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      
+      .verification-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        background-color: #f5f5f5;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .verification-icon i {
+        font-size: 40px;
+        color: #ff0033;
+      }
+      
+      .verification-box h2 {
+        margin-bottom: 15px;
+      }
+      
+      .verification-box p {
+        margin-bottom: 15px;
+        color: #666;
+      }
+      
+      .success-message {
+        background-color: rgba(40, 167, 69, 0.1);
+        border-left: 3px solid #28a745;
+        padding: 10px 15px;
+        margin: 20px 0;
+        text-align: left;
+        display: flex;
+        align-items: center;
+      }
+      
+      .success-message i {
+        color: #28a745;
+        margin-right: 10px;
+        font-size: 20px;
+      }
+      
+      .verification-actions {
+        margin-top: 30px;
+      }
+      
+      .resend-button {
+        background-color: transparent;
+        border: 1px solid #ff0033;
+        color: #ff0033;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      
+      .resend-button:hover {
+        background-color: #ff0033;
+        color: white;
+      }
+    </style>
+    `
+  }) %>

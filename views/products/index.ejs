@@ -1,0 +1,78 @@
+<%- include('../layout', { 
+    body: `
+    <div class="products-container">
+      <div class="page-header">
+        <h1>Semua Produk</h1>
+        <div class="filter-sort">
+          <button class="filter-button">
+            <i class="fas fa-filter"></i>
+            <span>Filter</span>
+          </button>
+          <button class="sort-button">
+            <i class="fas fa-sort"></i>
+            <span>Sort</span>
+          </button>
+        </div>
+      </div>
+  
+      <div class="products-grid">
+        <% products.forEach(product => { %>
+          <div class="product-card">
+            <a href="/products/<%= product.id %>">
+              <div class="product-image">
+                <img src="<%= product.image_url %>" alt="<%= product.name %>">
+              </div>
+              <div class="product-info">
+                <h3 class="product-name"><%= product.name %></h3>
+                <div class="product-price">Rp<%= product.price.toLocaleString('id-ID') %></div>
+                <div class="product-cashback">
+                  <span class="cashback-label">Est. Cashback</span>
+                  <span class="cashback-amount">Rp<%= product.cashback.toLocaleString('id-ID') %></span>
+                </div>
+              </div>
+            </a>
+          </div>
+        <% }); %>
+      </div>
+  
+      <div class="pagination">
+        <button class="load-more-button">Load More</button>
+      </div>
+    </div>
+    `,
+    title,
+    currentPage: 'home',
+    showSearchBar: true,
+    scripts: `
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Filter functionality
+        const filterButton = document.querySelector('.filter-button');
+        if (filterButton) {
+          filterButton.addEventListener('click', function() {
+            // Show filter modal
+            alert('Filter functionality would be implemented here');
+          });
+        }
+        
+        // Sort functionality
+        const sortButton = document.querySelector('.sort-button');
+        if (sortButton) {
+          sortButton.addEventListener('click', function() {
+            // Show sort options
+            alert('Sort functionality would be implemented here');
+          });
+        }
+        
+        // Load more functionality
+        const loadMoreButton = document.querySelector('.load-more-button');
+        if (loadMoreButton) {
+          loadMoreButton.addEventListener('click', function() {
+            // Load more products via AJAX
+            alert('Load more functionality would be implemented here');
+          });
+        }
+      });
+    </script>
+    `
+  }) %>
