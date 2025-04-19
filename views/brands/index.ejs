@@ -44,13 +44,20 @@
                     Cashback s/d <span class="highlight-text"><%= brand.cashback_percentage %>%</span>
                   </div>
                   <div class="product-count">
-                    <%= brand.products_count %> Produk
+                    <%= brand.products_count || 0 %> Produk
                   </div>
                 </div>
+                <a href="/brands/<%= brand.id %>" class="show-all-btn">
+                  <span>Show All</span>
+                  <i class="fas fa-arrow-right"></i>
+                </a>
               </div>
               
-              <div class="brand-products">
-                <!-- Sample products would go here, fetched from the database -->
+              <div class="brand-products-container">
+                <div class="brand-products" data-brand-id="<%= brand.id %>">
+                  <!-- Products will be loaded here dynamically -->
+                  <div class="loading-spinner brand-products-loader"></div>
+                </div>
               </div>
             </div>
           <% }); %>
@@ -83,9 +90,371 @@
     </a>
   </nav>
 
+  <!-- Custom Styles for Brand Page -->
+  <style>
+    .brand-card {
+      margin-bottom: 20px;
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .brand-header {
+      display: flex;
+      align-items: center;
+      position: relative;
+      margin-bottom: 15px;
+    }
+    
+    .show-all-btn {
+      position: absolute;
+      right: 0;
+      top: 0;
+      display: flex;
+      align-items: center;
+      color: #ff0033;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .show-all-btn i {
+      margin-left: 5px;
+    }
+    
+    .brand-products-container {
+      position: relative;
+      overflow: hidden;
+      min-height: 160px; /* Set minimum height to prevent layout shifts */
+    }
+    
+    .brand-products {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 5px 0;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      scrollbar-width: none; /* Firefox */
+    }
+    
+    .brand-products::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+    
+    .brand-product-card {
+      flex: 0 0 calc(40% - 10px);
+      min-width: 120px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .brand-product-image {
+      width: 100%;
+      aspect-ratio: 1/1;
+      background-color: #eee;
+    }
+    
+    .brand-product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .brand-product-info {
+      padding: 8px;
+    }
+    
+    .brand-product-name {
+      font-size: 12px;
+      margin-bottom: 5px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      height: 32px;
+    }
+    
+    .brand-product-price {
+      font-weight: bold;
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+    
+    .brand-product-cashback {
+      font-size: 10px;
+      color: #666;
+    }
+    
+    .brand-product-cashback .cashback-amount {
+      color: #ff0033;
+      font-weight: bold;
+    }
+    
+    .brand-products-loader {
+      margin: 30px auto;
+    }
+    
+    .error-state {
+      color: #dc3545;
+      text-align: center;
+      padding: 20px 0;
+    }
+    
+    .error-state i {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    /* Touch indicators */
+    .scroll-indicator {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .scroll-left {
+      left: 5px;
+    }
+    
+    .scroll-right {
+      right: 5px;
+    }
+    
+    .brand-products-container:hover .scroll-indicator {
+      opacity: 1;
+    }
+    
+    .retry-btn {
+      display: inline-block;
+      background-color: #ff0033;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  </style>
+
   <!-- Scripts -->
   <script src="/js/main.js"></script>
-  <script src="/js/bottom-nav-fix.js"></script> 
   <script src="/js/page-specific-fix.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load products for each brand
+      const productContainers = document.querySelectorAll('.brand-products');
+      
+      productContainers.forEach(container => {
+        const brandId = container.dataset.brandId;
+        loadBrandProducts(brandId, container);
+      });
+      
+      // Initialize horizontal scroll handling
+      initHorizontalScroll();
+    });
+    
+    // Function to load products for a brand
+    function loadBrandProducts(brandId, container) {
+      // Show loading indicator
+      container.innerHTML = '<div class="loading-spinner brand-products-loader"></div>';
+      
+      // Fetch products from API
+      fetch(`/brands/${brandId}/products?limit=5`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success && data.products && data.products.length > 0) {
+            // Clear loading indicator
+            container.innerHTML = '';
+            
+            // Add products to container
+            data.products.forEach(product => {
+              const productCard = createProductCard(product);
+              container.appendChild(productCard);
+            });
+            
+            // Add scroll indicators if more than 2 products
+            if (data.products.length > 2) {
+              addScrollIndicators(container);
+            }
+          } else {
+            // Display empty state
+            container.innerHTML = '<div class="empty-state">No products available for this brand</div>';
+          }
+        })
+        .catch(error => {
+          console.error('Error loading products:', error);
+          // Enhanced error message with retry button
+          container.innerHTML = `
+            <div class="error-state">
+              <i class="fas fa-exclamation-circle"></i>
+              <p>Failed to load products</p>
+              <button class="retry-btn" onclick="retryLoadProducts('${brandId}', this.parentNode.parentNode)">
+                <i class="fas fa-sync-alt"></i> Retry
+              </button>
+            </div>
+          `;
+        });
+    }
+    
+    // Function to retry loading products
+    function retryLoadProducts(brandId, container) {
+      loadBrandProducts(brandId, container);
+    }
+    
+    // Function to add scroll indicators
+    function addScrollIndicators(container) {
+      const parentContainer = container.closest('.brand-products-container');
+      
+      if (parentContainer) {
+        const leftIndicator = document.createElement('div');
+        leftIndicator.className = 'scroll-indicator scroll-left';
+        leftIndicator.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        
+        const rightIndicator = document.createElement('div');
+        rightIndicator.className = 'scroll-indicator scroll-right';
+        rightIndicator.innerHTML = '<i class="fas fa-chevron-right"></i>';
+        
+        parentContainer.appendChild(leftIndicator);
+        parentContainer.appendChild(rightIndicator);
+        
+        // Add event listeners to indicators
+        leftIndicator.addEventListener('click', () => {
+          container.scrollBy({ left: -200, behavior: 'smooth' });
+        });
+        
+        rightIndicator.addEventListener('click', () => {
+          container.scrollBy({ left: 200, behavior: 'smooth' });
+        });
+      }
+    }
+    
+    // Function to create a product card element
+    function createProductCard(product) {
+      const card = document.createElement('div');
+      card.className = 'brand-product-card';
+      
+      const productLink = document.createElement('a');
+      productLink.href = `/products/${product.id}`;
+      
+      const imageContainer = document.createElement('div');
+      imageContainer.className = 'brand-product-image';
+      
+      const image = document.createElement('img');
+      image.src = product.image_url || '/images/product-placeholder.jpg';
+      image.alt = product.name;
+      image.onerror = function() {
+        this.src = '/images/product-placeholder.jpg';
+      };
+      imageContainer.appendChild(image);
+      
+      const infoContainer = document.createElement('div');
+      infoContainer.className = 'brand-product-info';
+      
+      const name = document.createElement('h4');
+      name.className = 'brand-product-name';
+      name.textContent = product.name;
+      
+      const price = document.createElement('div');
+      price.className = 'brand-product-price';
+      price.textContent = `Rp${product.price.toLocaleString('id-ID')}`;
+      
+      const cashback = document.createElement('div');
+      cashback.className = 'brand-product-cashback';
+      
+      const cashbackLabel = document.createElement('span');
+      cashbackLabel.className = 'cashback-label';
+      cashbackLabel.textContent = 'Est. Cashback ';
+      
+      const cashbackAmount = document.createElement('span');
+      cashbackAmount.className = 'cashback-amount';
+      cashbackAmount.textContent = `Rp${product.cashback.toLocaleString('id-ID')}`;
+      
+      cashback.appendChild(cashbackLabel);
+      cashback.appendChild(cashbackAmount);
+      
+      infoContainer.appendChild(name);
+      infoContainer.appendChild(price);
+      infoContainer.appendChild(cashback);
+      
+      productLink.appendChild(imageContainer);
+      productLink.appendChild(infoContainer);
+      
+      card.appendChild(productLink);
+      
+      return card;
+    }
+    
+    // Function to initialize horizontal scroll
+    function initHorizontalScroll() {
+      const containers = document.querySelectorAll('.brand-products');
+      
+      containers.forEach(container => {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        
+        container.addEventListener('mousedown', (e) => {
+          isDown = true;
+          container.style.cursor = 'grabbing';
+          startX = e.pageX - container.offsetLeft;
+          scrollLeft = container.scrollLeft;
+          e.preventDefault();
+        });
+        
+        container.addEventListener('mouseleave', () => {
+          isDown = false;
+          container.style.cursor = 'grab';
+        });
+        
+        container.addEventListener('mouseup', () => {
+          isDown = false;
+          container.style.cursor = 'grab';
+        });
+        
+        container.addEventListener('mousemove', (e) => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - container.offsetLeft;
+          const walk = (x - startX) * 2; // Scroll speed
+          container.scrollLeft = scrollLeft - walk;
+        });
+        
+        // Set initial cursor style
+        container.style.cursor = 'grab';
+        
+        // Touch event handling for mobile
+        container.addEventListener('touchstart', (e) => {
+          startX = e.touches[0].pageX - container.offsetLeft;
+          scrollLeft = container.scrollLeft;
+        }, { passive: true });
+        
+        container.addEventListener('touchmove', (e) => {
+          const x = e.touches[0].pageX - container.offsetLeft;
+          const walk = (x - startX) * 2;
+          container.scrollLeft = scrollLeft - walk;
+        }, { passive: true });
+      });
+    }
+  </script>
 </body>
 </html>

@@ -69,15 +69,17 @@ class Transaction {
 
   static async getTopEarners(limit = 5) {
     try {
-      const [rows] = await db.execute(
-        'SELECT u.id, u.username, u.profile_image, ' +
-        'SUM(CASE WHEN t.type = "successful" THEN t.amount ELSE 0 END) AS total_earnings ' +
-        'FROM users u ' +
-        'JOIN user_transactions t ON u.id = t.user_id ' +
-        'GROUP BY u.id ' +
-        'ORDER BY total_earnings DESC ' +
-        'LIMIT ?',
-        [limit]
+      // Convert limit to a number and use directly in the query
+      const numLimit = Number(limit);
+      
+      const [rows] = await db.query(
+        `SELECT u.id, u.username, u.profile_image, 
+        SUM(CASE WHEN t.type = "successful" THEN t.amount ELSE 0 END) AS total_earnings 
+        FROM users u 
+        JOIN user_transactions t ON u.id = t.user_id 
+        GROUP BY u.id 
+        ORDER BY total_earnings DESC 
+        LIMIT ${numLimit}`
       );
       
       return rows;
