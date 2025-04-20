@@ -73,6 +73,7 @@ const homeRoutes = require('./routes/home');
 const brandRoutes = require('./routes/brands');
 const productRoutes = require('./routes/products');
 const userRoutes = require('./routes/user');
+const adminRoutes = require('./routes/admin/index'); // Add admin routes
 
 // Use routes
 app.use('/', homeRoutes);
@@ -80,6 +81,10 @@ app.use('/auth', authRoutes);
 app.use('/brands', brandRoutes);
 app.use('/products', productRoutes);
 app.use('/user', userRoutes);
+app.use('/admin', adminRoutes); // Add admin routes
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Error handling middleware
 app.use((req, res, next) => {

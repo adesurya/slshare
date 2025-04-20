@@ -1,0 +1,502 @@
+<!-- Dashboard Overview -->
+<div class="dashboard-stats">
+    <div class="row">
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card stat-card-primary">
+          <div class="stat-card-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-card-value"><%= stats.users.total %></div>
+          <div class="stat-card-label">Total Users</div>
+          <div class="stat-card-change">
+            <span class="text-success"><i class="fas fa-arrow-up"></i> <%= stats.users.new %> new this week</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card stat-card-success">
+          <div class="stat-card-icon">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+          <div class="stat-card-value">Rp<%= Number(stats.transactions.successful).toLocaleString('id-ID') %></div>
+          <div class="stat-card-label">Total Cashback</div>
+          <div class="stat-card-change">
+            <span class="text-info"><i class="fas fa-wallet"></i> <%= stats.transactions.new %> transactions this week</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card stat-card-warning">
+          <div class="stat-card-icon">
+            <i class="fas fa-hand-holding-usd"></i>
+          </div>
+          <div class="stat-card-value">Rp<%= Number(stats.transactions.withdrawals).toLocaleString('id-ID') %></div>
+          <div class="stat-card-label">Total Withdrawals</div>
+          <div class="stat-card-change">
+            <span class="text-muted"><i class="fas fa-calendar"></i> All time</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card stat-card-info">
+          <div class="stat-card-icon">
+            <i class="fas fa-tag"></i>
+          </div>
+          <div class="stat-card-value"><%= stats.brands.total %> / <%= stats.products.total %></div>
+          <div class="stat-card-label">Brands / Products</div>
+          <div class="stat-card-change">
+            <span class="text-muted"><i class="fas fa-shopping-cart"></i> Active items</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Monthly Transactions</h5>
+          <div class="card-actions">
+            <button class="btn btn-sm btn-outline-secondary" id="refreshTransactionsChart">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="monthlyTransactionsChart" data-chart='<%= JSON.stringify(chartData) %>'></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">User Growth</h5>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="usersGrowthChart" data-chart='<%= JSON.stringify(userGrowthData || {labels: [], users: []}) %>'></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity and Top Performers -->
+<div class="row mb-4">
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Recent Transactions</h5>
+          <div class="card-actions">
+            <a href="/admin/transactions" class="btn btn-sm btn-primary">View All</a>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Amount</th>
+                  <th>Type</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (recentTransactions && recentTransactions.length > 0) { %>
+                  <% recentTransactions.forEach(function(transaction) { %>
+                    <tr>
+                      <td><%= transaction.username %></td>
+                      <td class="<%= transaction.amount > 0 ? 'text-success' : 'text-danger' %>">
+                        <%= transaction.amount > 0 ? '+' : '' %>Rp<%= Number(transaction.amount).toLocaleString('id-ID') %>
+                      </td>
+                      <td>
+                        <% if (transaction.type === 'successful') { %>
+                          <span class="badge bg-success">Successful</span>
+                        <% } else if (transaction.type === 'pending') { %>
+                          <span class="badge bg-warning text-dark">Pending</span>
+                        <% } else { %>
+                          <span class="badge bg-secondary"><%= transaction.type %></span>
+                        <% } %>
+                      </td>
+                      <td><%= new Date(transaction.created_at).toLocaleDateString('id-ID') %></td>
+                    </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="4" class="text-center py-3">No recent transactions found</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Recent Users</h5>
+          <div class="card-actions">
+            <a href="/admin/users" class="btn btn-sm btn-primary">View All</a>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (recentUsers && recentUsers.length > 0) { %>
+                  <% recentUsers.forEach(function(user) { %>
+                    <tr>
+                      <td><%= user.username %></td>
+                      <td><%= user.email %></td>
+                      <td>
+                        <% if (user.is_verified) { %>
+                          <span class="badge bg-success">Verified</span>
+                        <% } else { %>
+                          <span class="badge bg-warning text-dark">Unverified</span>
+                        <% } %>
+                      </td>
+                      <td><%= new Date(user.created_at).toLocaleDateString('id-ID') %></td>
+                    </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="4" class="text-center py-3">No recent users found</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Performers -->
+<div class="row mb-4">
+    <!-- Top Brands -->
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Top Brands</h5>
+          <div class="card-actions">
+            <a href="/admin/brands" class="btn btn-sm btn-primary">View All</a>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Brand</th>
+                  <th>Cashback</th>
+                  <th>Products</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (topBrands && topBrands.length > 0) { %>
+                  <% topBrands.forEach(function(brand) { %>
+                    <tr>
+                      <td>
+                        <a href="/admin/brands/<%= brand.id %>"><%= brand.name %></a>
+                      </td>
+                      <td><%= brand.cashback_percentage %>%</td>
+                      <td><%= brand.products_count || 0 %></td>
+                    </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="3" class="text-center py-3">No brands found</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Top Products -->
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Top Products</h5>
+          <div class="card-actions">
+            <a href="/admin/products" class="btn btn-sm btn-primary">View All</a>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th>Cashback</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (topProducts && topProducts.length > 0) { %>
+                  <% topProducts.forEach(function(product) { %>
+                    <tr>
+                      <td>
+                        <a href="/admin/products/<%= product.id %>"><%= product.name %></a>
+                      </td>
+                      <td>Rp<%= Number(product.price).toLocaleString('id-ID') %></td>
+                      <td><%= product.cashback_percentage %>%</td>
+                    </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="3" class="text-center py-3">No products found</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Top Earners -->
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Top Earners</h5>
+          <div class="card-actions">
+            <a href="/admin/users" class="btn btn-sm btn-primary">View All</a>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Earnings</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (topEarners && topEarners.length > 0) { %>
+                  <% topEarners.forEach(function(earner) { %>
+                    <tr>
+                      <td>
+                        <a href="/admin/users/<%= earner.id %>"><%= earner.username %></a>
+                      </td>
+                      <td>Rp<%= Number(earner.total_earnings).toLocaleString('id-ID') %></td>
+                    </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="2" class="text-center py-3">No earners found</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3 col-sm-6 mb-3">
+              <a href="/admin/products/new" class="btn btn-primary btn-lg w-100">
+                <i class="fas fa-plus"></i> Add Product
+              </a>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+              <a href="/admin/brands/new" class="btn btn-success btn-lg w-100">
+                <i class="fas fa-plus"></i> Add Brand
+              </a>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+              <a href="/admin/transactions" class="btn btn-warning btn-lg w-100">
+                <i class="fas fa-money-bill-wave"></i> View Transactions
+              </a>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+              <a href="/admin/dashboard/settings" class="btn btn-info btn-lg w-100">
+                <i class="fas fa-cogs"></i> System Settings
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Initialize Charts Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Monthly Transactions Chart
+      const transactionsChartEl = document.getElementById('monthlyTransactionsChart');
+      if (transactionsChartEl) {
+        // Get chart data from data attribute
+        let chartData;
+        try {
+          chartData = JSON.parse(transactionsChartEl.dataset.chart);
+        } catch (e) {
+          console.error('Error parsing chart data:', e);
+          chartData = {
+            labels: [],
+            income: [],
+            withdrawals: []
+          };
+        }
+        
+        new Chart(transactionsChartEl, {
+          type: 'bar',
+          data: {
+            labels: chartData.labels,
+            datasets: [
+              {
+                label: 'Income',
+                data: chartData.income,
+                backgroundColor: 'rgba(40, 167, 69, 0.4)',
+                borderColor: 'rgba(40, 167, 69, 1)',
+                borderWidth: 1
+              },
+              {
+                label: 'Withdrawals',
+                data: chartData.withdrawals,
+                backgroundColor: 'rgba(255, 193, 7, 0.4)',
+                borderColor: 'rgba(255, 193, 7, 1)',
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.05)'
+                }
+              },
+              x: {
+                grid: {
+                  display: false
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              tooltip: {
+                mode: 'index',
+                intersect: false
+              }
+            }
+          }
+        });
+      }
+      
+      // Users Growth Chart
+      const usersChartEl = document.getElementById('usersGrowthChart');
+      if (usersChartEl) {
+        // Get chart data from data attribute
+        let chartData;
+        try {
+          chartData = JSON.parse(usersChartEl.dataset.chart);
+        } catch (e) {
+          console.error('Error parsing chart data:', e);
+          chartData = {
+            labels: [],
+            users: []
+          };
+        }
+        
+        new Chart(usersChartEl, {
+          type: 'line',
+          data: {
+            labels: chartData.labels,
+            datasets: [
+              {
+                label: 'New Users',
+                data: chartData.users,
+                backgroundColor: 'rgba(255, 0, 51, 0.1)',
+                borderColor: 'rgba(255, 0, 51, 1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.05)'
+                }
+              },
+              x: {
+                grid: {
+                  display: false
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                mode: 'index',
+                intersect: false
+              }
+            }
+          }
+        });
+      }
+      
+      // Refresh Transaction Chart button
+      const refreshButton = document.getElementById('refreshTransactionsChart');
+      if (refreshButton) {
+        refreshButton.addEventListener('click', function() {
+          fetch('/admin/dashboard/api/transaction-stats')
+            .then(response => response.json())
+            .then(data => {
+              if (data.success && transactionsChartEl) {
+                const chart = Chart.getChart(transactionsChartEl);
+                if (chart) {
+                  chart.data.labels = data.data.labels;
+                  chart.data.datasets[0].data = data.data.income;
+                  chart.data.datasets[1].data = data.data.withdrawals;
+                  chart.update();
+                }
+              }
+            })
+            .catch(error => {
+              console.error('Error refreshing chart:', error);
+            });
+        });
+      }
+    });
+  </script>

@@ -161,6 +161,8 @@ After initialization, you can log in with:
 - Username: testuser
 - Password: password123
 
+- Username: admin
+- Password: admin123
 ## Creating Your Own Templates
 
 If you need to create additional templates:
