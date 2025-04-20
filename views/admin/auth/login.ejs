@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Admin auth CSS -->
+  <style>
+    body {
+      height: 100vh;
+      background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .auth-container {
+      max-width: 400px;
+      width: 100%;
+      padding: 2rem;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .auth-logo {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #ff0033;
+      margin-bottom: 0.5rem;
+    }
+    
+    .auth-subtitle {
+      font-size: 1rem;
+      color: #6c757d;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      font-weight: 500;
+    }
+    
+    .btn-primary {
+      background-color: #ff0033;
+      border-color: #ff0033;
+    }
+    
+    .btn-primary:hover,
+    .btn-primary:focus,
+    .btn-primary:active {
+      background-color: #e60026;
+      border-color: #e60026;
+    }
+    
+    .password-toggle {
+      cursor: pointer;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+    }
+    
+    .form-floating .password-toggle {
+      right: 10px;
+      top: 1.2rem;
+    }
+    
+    .auth-footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+    
+    .auth-footer a {
+      color: #ff0033;
+      text-decoration: none;
+    }
+    
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-5 col-md-7 col-sm-9">
+        <div class="auth-container">
+          <div class="auth-header">
+            <div class="auth-logo">MOVA Admin</div>
+            <div class="auth-subtitle">Administration Panel</div>
+          </div>
+          
+          <!-- Alert Messages -->
+          <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="fas fa-check-circle me-1"></i> <%= successMessage %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% } %>
+
+          <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="fas fa-exclamation-circle me-1"></i> <%= errorMessage %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% } %>
+
+          <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <ul class="mb-0">
+                <% errors.forEach(function(error) { %>
+                  <li><%= error.msg %></li>
+                <% }) %>
+              </ul>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% } %>
+          
+          <!-- Login Form -->
+          <form class="login-form" action="/admin/login" method="POST">
+            <% if (redirect) { %>
+              <input type="hidden" name="redirect" value="<%= redirect %>">
+            <% } %>
+            
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="<%= locals.formData ? formData.username : '' %>" required>
+              <label for="username">Username</label>
+            </div>
+            
+            <div class="form-floating mb-4 position-relative">
+              <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+              <label for="password">Password</label>
+              <span class="password-toggle"><i class="fas fa-eye"></i></span>
+            </div>
+            
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">Login</button>
+            </div>
+          </form>
+          
+          <div class="auth-footer">
+            &copy; <%= new Date().getFullYear() %> MOVA Admin Panel. All rights reserved.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Show/hide password toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const togglePasswordBtns = document.querySelectorAll('.password-toggle');
+      togglePasswordBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const input = this.previousElementSibling;
+          const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+          input.setAttribute('type', type);
+          
+          // Toggle eye icon
+          this.innerHTML = type === 'password' ? 
+            '<i class="fas fa-eye"></i>' : 
+            '<i class="fas fa-eye-slash"></i>';
+        });
+      });
+      
+      // Auto dismiss alerts after 5 seconds
+      setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+          const bsAlert = new bootstrap.Alert(alert);
+          bsAlert.close();
+        });
+      }, 5000);
+    });
+  </script>
+</body>
+</html>
