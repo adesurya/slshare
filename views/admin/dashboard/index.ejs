@@ -1,5 +1,101 @@
-<!-- Dashboard Overview -->
-<div class="dashboard-stats">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <!-- Include Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Include Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Include Chart.js library - THIS FIXES THE ERROR -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <!-- Custom CSS -->
+  <style>
+    .stat-card {
+      padding: 20px;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,.1);
+      height: 100%;
+    }
+    
+    .stat-card-primary {
+      background: linear-gradient(45deg, #4e73df, #6f42c1);
+      color: white;
+    }
+    
+    .stat-card-success {
+      background: linear-gradient(45deg, #1cc88a, #36b9cc);
+      color: white;
+    }
+    
+    .stat-card-warning {
+      background: linear-gradient(45deg, #f6c23e, #fd7e14);
+      color: white;
+    }
+    
+    .stat-card-info {
+      background: linear-gradient(45deg, #36b9cc, #4e73df);
+      color: white;
+    }
+    
+    .stat-card-icon {
+      font-size: 2rem;
+      opacity: 0.7;
+      margin-bottom: 10px;
+    }
+    
+    .stat-card-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+    
+    .stat-card-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    
+    .chart-container {
+      height: 300px;
+      width: 100%;
+    }
+    
+    .card {
+      box-shadow: 0 4px 6px rgba(0,0,0,.05);
+      margin-bottom: 20px;
+    }
+    
+    .card-header {
+      background-color: #f8f9fc;
+      border-bottom: 1px solid #e3e6f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-title {
+      margin-bottom: 0;
+      color: #5a5c69;
+      font-weight: 700;
+    }
+    
+    .card-actions {
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Your main content here -->
+<div class="container-fluid p-4">
+    
+  <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
+  
+  <!-- Dashboard Overview -->
+  <div class="dashboard-stats">
     <div class="row">
       <div class="col-xl-3 col-md-6 mb-4">
         <div class="stat-card stat-card-primary">
@@ -53,7 +149,7 @@
   </div>
 
   <!-- Charts -->
-<div class="row mb-4">
+  <div class="row mb-4">
     <div class="col-lg-8">
       <div class="card">
         <div class="card-header">
@@ -86,7 +182,7 @@
   </div>
 
   <!-- Recent Activity and Top Performers -->
-<div class="row mb-4">
+  <div class="row mb-4">
     <div class="col-lg-6">
       <div class="card">
         <div class="card-header">
@@ -186,7 +282,7 @@
   </div>
 
   <!-- Top Performers -->
-<div class="row mb-4">
+  <div class="row mb-4">
     <!-- Top Brands -->
     <div class="col-lg-4">
       <div class="card">
@@ -313,7 +409,7 @@
   </div>
 
   <!-- Quick Actions -->
-<div class="row">
+  <div class="row">
     <div class="col-12">
       <div class="card">
         <div class="card-header">
@@ -346,157 +442,163 @@
       </div>
     </div>
   </div>
-  
-  <!-- Initialize Charts Script -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Monthly Transactions Chart
-      const transactionsChartEl = document.getElementById('monthlyTransactionsChart');
-      if (transactionsChartEl) {
-        // Get chart data from data attribute
-        let chartData;
-        try {
-          chartData = JSON.parse(transactionsChartEl.dataset.chart);
-        } catch (e) {
-          console.error('Error parsing chart data:', e);
-          chartData = {
-            labels: [],
-            income: [],
-            withdrawals: []
-          };
-        }
-        
-        new Chart(transactionsChartEl, {
-          type: 'bar',
-          data: {
-            labels: chartData.labels,
-            datasets: [
-              {
-                label: 'Income',
-                data: chartData.income,
-                backgroundColor: 'rgba(40, 167, 69, 0.4)',
-                borderColor: 'rgba(40, 167, 69, 1)',
-                borderWidth: 1
-              },
-              {
-                label: 'Withdrawals',
-                data: chartData.withdrawals,
-                backgroundColor: 'rgba(255, 193, 7, 0.4)',
-                borderColor: 'rgba(255, 193, 7, 1)',
-                borderWidth: 1
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                grid: {
-                  color: 'rgba(0, 0, 0, 0.05)'
-                }
-              },
-              x: {
-                grid: {
-                  display: false
-                }
-              }
-            },
-            plugins: {
-              legend: {
-                position: 'top',
-              },
-              tooltip: {
-                mode: 'index',
-                intersect: false
-              }
-            }
-          }
-        });
+</div>
+
+<!-- Include Bootstrap JS and jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Initialize Charts Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Monthly Transactions Chart
+    const transactionsChartEl = document.getElementById('monthlyTransactionsChart');
+    if (transactionsChartEl) {
+      // Get chart data from data attribute
+      let chartData;
+      try {
+        chartData = JSON.parse(transactionsChartEl.dataset.chart);
+      } catch (e) {
+        console.error('Error parsing chart data:', e);
+        chartData = {
+          labels: [],
+          income: [],
+          withdrawals: []
+        };
       }
       
-      // Users Growth Chart
-      const usersChartEl = document.getElementById('usersGrowthChart');
-      if (usersChartEl) {
-        // Get chart data from data attribute
-        let chartData;
-        try {
-          chartData = JSON.parse(usersChartEl.dataset.chart);
-        } catch (e) {
-          console.error('Error parsing chart data:', e);
-          chartData = {
-            labels: [],
-            users: []
-          };
-        }
-        
-        new Chart(usersChartEl, {
-          type: 'line',
-          data: {
-            labels: chartData.labels,
-            datasets: [
-              {
-                label: 'New Users',
-                data: chartData.users,
-                backgroundColor: 'rgba(255, 0, 51, 0.1)',
-                borderColor: 'rgba(255, 0, 51, 1)',
-                borderWidth: 2,
-                tension: 0.4,
-                fill: true
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                grid: {
-                  color: 'rgba(0, 0, 0, 0.05)'
-                }
-              },
-              x: {
-                grid: {
-                  display: false
-                }
+      new Chart(transactionsChartEl, {
+        type: 'bar',
+        data: {
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: 'Income',
+              data: chartData.income,
+              backgroundColor: 'rgba(40, 167, 69, 0.4)',
+              borderColor: 'rgba(40, 167, 69, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'Withdrawals',
+              data: chartData.withdrawals,
+              backgroundColor: 'rgba(255, 193, 7, 0.4)',
+              borderColor: 'rgba(255, 193, 7, 1)',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
               }
             },
-            plugins: {
-              legend: {
+            x: {
+              grid: {
                 display: false
-              },
-              tooltip: {
-                mode: 'index',
-                intersect: false
               }
             }
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false
+            }
           }
-        });
+        }
+      });
+    }
+    
+    // Users Growth Chart
+    const usersChartEl = document.getElementById('usersGrowthChart');
+    if (usersChartEl) {
+      // Get chart data from data attribute
+      let chartData;
+      try {
+        chartData = JSON.parse(usersChartEl.dataset.chart);
+      } catch (e) {
+        console.error('Error parsing chart data:', e);
+        chartData = {
+          labels: [],
+          users: []
+        };
       }
       
-      // Refresh Transaction Chart button
-      const refreshButton = document.getElementById('refreshTransactionsChart');
-      if (refreshButton) {
-        refreshButton.addEventListener('click', function() {
-          fetch('/admin/dashboard/api/transaction-stats')
-            .then(response => response.json())
-            .then(data => {
-              if (data.success && transactionsChartEl) {
-                const chart = Chart.getChart(transactionsChartEl);
-                if (chart) {
-                  chart.data.labels = data.data.labels;
-                  chart.data.datasets[0].data = data.data.income;
-                  chart.data.datasets[1].data = data.data.withdrawals;
-                  chart.update();
-                }
+      new Chart(usersChartEl, {
+        type: 'line',
+        data: {
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: 'New Users',
+              data: chartData.users,
+              backgroundColor: 'rgba(255, 0, 51, 0.1)',
+              borderColor: 'rgba(255, 0, 51, 1)',
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
               }
-            })
-            .catch(error => {
-              console.error('Error refreshing chart:', error);
-            });
-        });
-      }
-    });
-  </script>
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false
+            }
+          }
+        }
+      });
+    }
+    
+    // Refresh Transaction Chart button
+    const refreshButton = document.getElementById('refreshTransactionsChart');
+    if (refreshButton) {
+      refreshButton.addEventListener('click', function() {
+        fetch('/admin/dashboard/api/transaction-stats')
+          .then(response => response.json())
+          .then(data => {
+            if (data.success && transactionsChartEl) {
+              const chart = Chart.getChart(transactionsChartEl);
+              if (chart) {
+                chart.data.labels = data.data.labels;
+                chart.data.datasets[0].data = data.data.income;
+                chart.data.datasets[1].data = data.data.withdrawals;
+                chart.update();
+              }
+            }
+          })
+          .catch(error => {
+            console.error('Error refreshing chart:', error);
+          });
+      });
+    }
+  });
+</script>
+</body>
+</html>

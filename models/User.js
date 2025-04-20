@@ -536,6 +536,99 @@ class User {
       throw error;
     }
   }
+
+// Log user activity
+static async logActivity(userId, type, description, ipAddress = null, deviceInfo = null) {
+  try {
+    const [result] = await db.execute(
+      'INSERT INTO user_activities (user_id, type, description, ip_address, device_info) VALUES (?, ?, ?, ?, ?)',
+      [userId, type, description, ipAddress, deviceInfo]
+    );
+    
+    return result.insertId;
+  } catch (error) {
+    console.error('Error logging user activity:', error);
+    // Don't throw the error - activity logging should not break main functionality
+    return null;
+  }
+}
+
+static async getUserActivities(userId, limit = 10, offset = 0) {
+  try {
+    const [activities] = await db.query(
+      'SELECT * FROM user_activities WHERE user_id = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?',
+      [userId, Number(limit), Number(offset)]
+    );
+    return activities;
+  } catch (error) {
+    console.error('Error getting user activities:', error);
+    return []; // Return empty array on error
+  }
+}
+
+// Get user order statistics - improved version
+static async getUserStats(userId) {
+  try {
+    // Get total orders
+    const [ordersResult] = await db.query(
+      'SELECT COUNT(*) as count FROM orders WHERE user_id = ?',
+      [userId]
+    );
+    const totalOrders = ordersResult[0].count;
+    
+    // Get total spent
+    const [spentResult] = await db.query(
+      'SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE user_id = ? AND status != "cancelled"',
+      [userId]
+    );
+    const totalSpent = spentResult[0].total;
+    
+    // Get total cashback
+    const [cashbackResult] = await db.query(
+      'SELECT COALESCE(SUM(cashback_amount), 0) as total FROM orders WHERE user_id = ? AND status = "completed"',
+      [userId]
+    );
+    const totalCashback = cashbackResult[0].total;
+    
+    // Get last order date
+    const [lastOrderResult] = await db.query(
+      'SELECT created_at FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 1',
+      [userId]
+    );
+    const lastOrder = lastOrderResult.length > 0 ? lastOrderResult[0].created_at : null;
+    
+    return {
+      total_orders: totalOrders,
+      total_spent: totalSpent,
+      total_cashback: totalCashback,
+      last_order: lastOrder
+    };
+  } catch (error) {
+    console.error('Error in User.getUserStats:', error);
+    // Return default values if error
+    return {
+      total_orders: 0,
+      total_spent: 0,
+      total_cashback: 0,
+      last_order: null
+    };
+  }
+}
+
+// Get user recent orders with pagination
+static async getUserOrders(userId, limit = 5, offset = 0) {
+  try {
+    const [orders] = await db.query(
+      'SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+      [userId, Number(limit), Number(offset)]
+    );
+    return orders;
+  } catch (error) {
+    console.error('Error in User.getUserOrders:', error);
+    return []; // Return empty array on error
+  }
+}
+
 }
 
 module.exports = User;

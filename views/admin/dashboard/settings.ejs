@@ -1,0 +1,415 @@
+<!-- System Settings Page -->
+<div class="row">
+    <div class="col-lg-8 col-xl-9">
+      <!-- General Settings -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title">General Settings</h5>
+        </div>
+        <div class="card-body">
+          <form action="/admin/dashboard/settings" method="POST">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="site_name" class="form-label">Site Name</label>
+                  <input type="text" class="form-control" id="site_name" name="site_name" value="MOVA" required>
+                  <div class="form-text">The name of your application.</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="contact_email" class="form-label">Contact Email</label>
+                  <input type="email" class="form-control" id="contact_email" name="contact_email" value="contact@mova.app" required>
+                  <div class="form-text">Primary contact email for your application.</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="default_cashback_percentage" class="form-label">Default Cashback Percentage</label>
+                  <div class="input-group">
+                    <input type="number" class="form-control" id="default_cashback_percentage" name="default_cashback_percentage" value="5" min="0" max="100" step="0.1" required>
+                    <span class="input-group-text">%</span>
+                  </div>
+                  <div class="form-text">Default cashback percentage for new products.</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="minimum_withdrawal" class="form-label">Minimum Withdrawal Amount</label>
+                  <div class="input-group">
+                    <span class="input-group-text">Rp</span>
+                    <input type="number" class="form-control" id="minimum_withdrawal" name="minimum_withdrawal" value="10000" min="0" step="1000" required>
+                  </div>
+                  <div class="form-text">Minimum amount users can withdraw.</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label class="form-label">Features</label>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="enable_registration" name="enable_registration" checked>
+                <label class="form-check-label" for="enable_registration">
+                  Allow New User Registration
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="enable_withdrawals" name="enable_withdrawals" checked>
+                <label class="form-check-label" for="enable_withdrawals">
+                  Allow Withdrawals
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="require_email_verification" name="require_email_verification" checked>
+                <label class="form-check-label" for="require_email_verification">
+                  Require Email Verification
+                </label>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save Settings
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Email Settings -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title">Email Settings</h5>
+        </div>
+        <div class="card-body">
+          <form action="/admin/dashboard/settings/email" method="POST">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="email_host" class="form-label">SMTP Host</label>
+                  <input type="text" class="form-control" id="email_host" name="email_host" value="smtp.mailtrap.io">
+                  <div class="form-text">SMTP server hostname.</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="email_port" class="form-label">SMTP Port</label>
+                  <input type="number" class="form-control" id="email_port" name="email_port" value="2525">
+                  <div class="form-text">SMTP server port.</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="email_user" class="form-label">SMTP Username</label>
+                  <input type="text" class="form-control" id="email_user" name="email_user" value="">
+                  <div class="form-text">SMTP authentication username.</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="email_pass" class="form-label">SMTP Password</label>
+                  <input type="password" class="form-control" id="email_pass" name="email_pass" value="">
+                  <div class="form-text">SMTP authentication password.</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="email_from" class="form-label">From Email Address</label>
+              <input type="email" class="form-control" id="email_from" name="email_from" value="noreply@mova.app">
+              <div class="form-text">The email address that will be shown as the sender.</div>
+            </div>
+            
+            <div class="d-flex justify-content-end">
+              <button type="button" class="btn btn-outline-secondary me-2" id="testEmailButton">
+                <i class="fas fa-paper-plane"></i> Send Test Email
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save Email Settings
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- API Settings -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">API Settings</h5>
+        </div>
+        <div class="card-body">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">API Key</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="api_key" value="****************************************" readonly>
+                  <button class="btn btn-outline-secondary" type="button" id="showApiKey">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="btn btn-outline-secondary" type="button" id="copyApiKey">
+                    <i class="fas fa-copy"></i>
+                  </button>
+                </div>
+                <div class="form-text">Your API key for external integrations.</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">API Status</label>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="api_enabled" checked>
+                  <label class="form-check-label" for="api_enabled">API Enabled</label>
+                </div>
+                <div class="form-text">Enable or disable API access.</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label class="form-label">Allowed Origins (CORS)</label>
+            <input type="text" class="form-control" id="allowed_origins" value="*">
+            <div class="form-text">Comma-separated list of allowed origins for API requests (use * for all).</div>
+          </div>
+          
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-danger me-2" id="regenerateApiKey">
+              <i class="fas fa-sync-alt"></i> Regenerate API Key
+            </button>
+            <button class="btn btn-primary" id="saveApiSettings">
+              <i class="fas fa-save"></i> Save API Settings
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4 col-xl-3">
+      <!-- System Information -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title">System Information</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>App Version</span>
+              <span class="badge bg-primary">1.0.0</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>Node.js Version</span>
+              <span class="badge bg-secondary">16.x</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>Database</span>
+              <span class="badge bg-success">MySQL</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>Last Backup</span>
+              <span class="badge bg-warning text-dark">Never</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- System Stats -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title">System Stats</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>Total Transactions</span>
+              <span class="badge bg-primary rounded-pill"><%= systemStats.transactions_count %></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>Total Withdrawals</span>
+              <span class="badge bg-danger rounded-pill"><%= systemStats.withdrawals_count %></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>Pending Transactions</span>
+              <span class="badge bg-warning text-dark rounded-pill"><%= systemStats.pending_count %></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a href="/admin/dashboard/maintenance" class="btn btn-outline-primary">
+              <i class="fas fa-tools"></i> System Maintenance
+            </a>
+            <button class="btn btn-outline-success" id="backupButton">
+              <i class="fas fa-database"></i> Backup Database
+            </button>
+            <button class="btn btn-outline-danger" id="clearCacheButton">
+              <i class="fas fa-trash"></i> Clear Cache
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Test Email Modal -->
+  <div class="modal fade" id="testEmailModal" tabindex="-1" aria-labelledby="testEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="testEmailModalLabel">Send Test Email</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="test_email" class="form-label">Recipient Email</label>
+            <input type="email" class="form-control" id="test_email" placeholder="Enter email address">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="sendTestEmail">
+            <i class="fas fa-paper-plane"></i> Send Test Email
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Settings Scripts -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Test Email Button
+      const testEmailButton = document.getElementById('testEmailButton');
+      const sendTestEmailButton = document.getElementById('sendTestEmail');
+      
+      if (testEmailButton && sendTestEmailButton) {
+        testEmailButton.addEventListener('click', function() {
+          const testEmailModal = new bootstrap.Modal(document.getElementById('testEmailModal'));
+          testEmailModal.show();
+        });
+        
+        sendTestEmailButton.addEventListener('click', function() {
+          const email = document.getElementById('test_email').value;
+          if (!email) {
+            alert('Please enter a valid email address');
+            return;
+          }
+          
+          // Send test email
+          this.disabled = true;
+          this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+          
+          setTimeout(() => {
+            alert('Test email has been sent to ' + email);
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-paper-plane"></i> Send Test Email';
+            const testEmailModal = bootstrap.Modal.getInstance(document.getElementById('testEmailModal'));
+            testEmailModal.hide();
+          }, 2000);
+        });
+      }
+      
+      // API Key functionality
+      const showApiKeyButton = document.getElementById('showApiKey');
+      const copyApiKeyButton = document.getElementById('copyApiKey');
+      const regenerateApiKeyButton = document.getElementById('regenerateApiKey');
+      const apiKeyInput = document.getElementById('api_key');
+      
+      if (showApiKeyButton && apiKeyInput) {
+        const apiKey = 'sk_test_' + Array(32).fill(0).map(() => Math.random().toString(36).charAt(2)).join('');
+        
+        showApiKeyButton.addEventListener('click', function() {
+          if (apiKeyInput.type === 'text') {
+            apiKeyInput.type = 'password';
+            apiKeyInput.value = '****************************************';
+            this.innerHTML = '<i class="fas fa-eye"></i>';
+          } else {
+            apiKeyInput.type = 'text';
+            apiKeyInput.value = apiKey;
+            this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+          }
+        });
+        
+        if (copyApiKeyButton) {
+          copyApiKeyButton.addEventListener('click', function() {
+            apiKeyInput.type = 'text';
+            apiKeyInput.value = apiKey;
+            apiKeyInput.select();
+            document.execCommand('copy');
+            
+            // Change button to show copied
+            this.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+              this.innerHTML = '<i class="fas fa-copy"></i>';
+            }, 2000);
+            
+            // Reset display
+            apiKeyInput.type = 'password';
+            apiKeyInput.value = '****************************************';
+          });
+        }
+        
+        if (regenerateApiKeyButton) {
+          regenerateApiKeyButton.addEventListener('click', function() {
+            if (confirm('Are you sure you want to regenerate your API key? This will invalidate the existing key.')) {
+              const newApiKey = 'sk_test_' + Array(32).fill(0).map(() => Math.random().toString(36).charAt(2)).join('');
+              
+              apiKeyInput.type = 'text';
+              apiKeyInput.value = newApiKey;
+              
+              alert('API key has been regenerated. Make sure to update any applications using the old key.');
+              
+              setTimeout(() => {
+                apiKeyInput.type = 'password';
+                apiKeyInput.value = '****************************************';
+              }, 5000);
+            }
+          });
+        }
+      }
+      
+      // Quick Action Buttons
+      const backupButton = document.getElementById('backupButton');
+      const clearCacheButton = document.getElementById('clearCacheButton');
+      
+      if (backupButton) {
+        backupButton.addEventListener('click', function() {
+          this.disabled = true;
+          this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Backing up...';
+          
+          setTimeout(() => {
+            alert('Database backup completed successfully.');
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-database"></i> Backup Database';
+          }, 3000);
+        });
+      }
+      
+      if (clearCacheButton) {
+        clearCacheButton.addEventListener('click', function() {
+          if (confirm('Are you sure you want to clear the system cache?')) {
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Clearing...';
+            
+            setTimeout(() => {
+              alert('System cache cleared successfully.');
+              this.disabled = false;
+              this.innerHTML = '<i class="fas fa-trash"></i> Clear Cache';
+            }, 2000);
+          }
+        });
+      }
+    });
+  </script>

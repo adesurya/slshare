@@ -48,27 +48,55 @@ const upload = multer({
 // Products list
 router.get('/', isAdminAuthenticated, logAdminActivity('view_products'), async (req, res) => {
   try {
-    // Get products with pagination
+    // Get pagination parameters
     const page = parseInt(req.query.page) || 1;
     const limit = 20;
     const offset = (page - 1) * limit;
     
-    const products = await Product.findAll(limit, offset);
+    // Get sort parameters (default to ID ascending)
+    const sortField = req.query.sort || 'id';
+    const sortOrder = req.query.order || 'ASC';
+    
+    // Validate sort field to prevent SQL injection
+    const validSortFields = ['id', 'name', 'price', 'brand', 'category', 'created_at'];
+    const validatedSortField = validSortFields.includes(sortField) ? sortField : 'id';
+    
+    // Validate sort order to prevent SQL injection
+    const validatedSortOrder = sortOrder === 'DESC' ? 'DESC' : 'ASC';
+    
+    // Use a simpler query without parameters for LIMIT/OFFSET
+    const query = `
+      SELECT * FROM products 
+      ORDER BY ${validatedSortField} ${validatedSortOrder}
+      LIMIT ${limit} OFFSET ${offset}
+    `;
+    
+    // Execute the query without parameters for LIMIT/OFFSET
+    const [products] = await db.query(query);
     
     // Count total products for pagination
-    const [countResult] = await db.execute('SELECT COUNT(*) as count FROM products');
+    const [countResult] = await db.query('SELECT COUNT(*) as count FROM products');
     const totalProducts = countResult[0].count;
     const totalPages = Math.ceil(totalProducts / limit);
+    
+    // Get all categories for filter dropdown
+    const [categoriesResult] = await db.query('SELECT DISTINCT category FROM products ORDER BY category ASC');
+    const categories = categoriesResult.map(row => row.category);
     
     res.render('admin/products/index', {
       title: 'Manage Products - MOVA Admin',
       layout: 'admin/layouts/main',
       products,
+      categories,
       pagination: {
         page,
         limit,
         totalProducts,
         totalPages
+      },
+      sorting: {
+        field: validatedSortField,
+        order: validatedSortOrder
       },
       section: 'products',
       successMessage: req.session.successMessage,
@@ -82,7 +110,7 @@ router.get('/', isAdminAuthenticated, logAdminActivity('view_products'), async (
     console.error('Error loading admin products page:', error);
     res.status(500).render('admin/error', {
       title: 'Error',
-      message: 'Failed to load products list',
+      message: 'Failed to load products list: ' + error.message,
       layout: 'admin/layouts/main',
       section: 'products'
     });
@@ -99,13 +127,14 @@ router.get('/new', isAdminAuthenticated, logAdminActivity('view_new_product'), a
       title: 'Add New Product - MOVA Admin',
       layout: 'admin/layouts/main',
       brands,
-      section: 'products'
+      section: 'products',
+      req: req  // Pass the req object to the template
     });
   } catch (error) {
     console.error('Error loading new product form:', error);
     res.status(500).render('admin/error', {
       title: 'Error',
-      message: 'Failed to load new product form',
+      message: 'Failed to load new product form: ' + error.message,
       layout: 'admin/layouts/main',
       section: 'products'
     });
@@ -122,7 +151,7 @@ router.post('/new', isAdminAuthenticated, upload.single('image'), [
   body('cashback_percentage').isFloat({ min: 0, max: 100 }).withMessage('Cashback percentage must be between 0 and 100')
 ], logAdminActivity('create_product'), async (req, res) => {
   try {
-    const { name, price, brand, category, description, cashback_percentage } = req.body;
+    const { name, price, brand, category, description, cashback_percentage, featured } = req.body;
     
     // Validate input
     const errors = validationResult(req);
@@ -146,10 +175,13 @@ router.post('/new', isAdminAuthenticated, upload.single('image'), [
       imageUrl = `/images/products/${req.file.filename}`;
     }
     
+    // Set featured status (0 if not checked, 1 if checked)
+    const isFeatured = featured ? 1 : 0;
+    
     // Create product in database
     const [result] = await db.execute(
-      'INSERT INTO products (name, price, brand, category, description, image_url, cashback_percentage) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [name, price, brand, category, description, imageUrl, cashback_percentage]
+      'INSERT INTO products (name, price, brand, category, description, image_url, cashback_percentage, featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [name, price, brand, category, description, imageUrl, cashback_percentage, isFeatured]
     );
     
     // Update product count for the brand
@@ -170,7 +202,7 @@ router.post('/new', isAdminAuthenticated, upload.single('image'), [
       layout: 'admin/layouts/main',
       formData: req.body,
       brands,
-      errors: [{ msg: 'Failed to create product' }],
+      errors: [{ msg: 'Failed to create product: ' + error.message }],
       section: 'products'
     });
   }
@@ -192,6 +224,11 @@ router.get('/:id', isAdminAuthenticated, logAdminActivity('view_product_details'
         section: 'products'
       });
     }
+    
+    // Ensure numeric fields are properly converted to numbers
+    product.price = Number(product.price);
+    product.cashback_percentage = product.cashback_percentage === null ? 
+      0 : Number(product.cashback_percentage);
     
     // Get brand details
     const brand = await Brand.findByName(product.brand);
@@ -217,7 +254,7 @@ router.get('/:id', isAdminAuthenticated, logAdminActivity('view_product_details'
     console.error('Error loading product details:', error);
     res.status(500).render('admin/error', {
       title: 'Error',
-      message: 'Failed to load product details',
+      message: 'Failed to load product details: ' + error.message,
       layout: 'admin/layouts/main',
       section: 'products'
     });

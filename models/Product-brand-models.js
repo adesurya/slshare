@@ -2,48 +2,41 @@
 const db = require('../config/database');
 
 class Product {
-  static async findAll(limit = 10, offset = 0) {
+  static async findAll(limit = 20, offset = 0, sortField = 'id', sortOrder = 'ASC') {
     try {
-      // Convert to numbers and use directly in the query
-      const numLimit = Number(limit);
-      const numOffset = Number(offset);
-      
-      const [rows] = await db.query(
-        `SELECT * FROM products ORDER BY id DESC LIMIT ${numLimit} OFFSET ${numOffset}`
+      const [products] = await db.execute(
+        `SELECT * FROM products ORDER BY ${sortField} ${sortOrder} LIMIT ? OFFSET ?`,
+        [limit, offset]
       );
-      return rows;
+      return products;
     } catch (error) {
-      console.error('Error finding all products:', error);
+      console.error('Error in Product.findAll:', error);
       throw error;
     }
   }
 
   static async findById(id) {
     try {
-      const [rows] = await db.execute(
+      const [products] = await db.execute(
         'SELECT * FROM products WHERE id = ?',
         [id]
       );
-      return rows.length ? rows[0] : null;
+      return products.length > 0 ? products[0] : null;
     } catch (error) {
-      console.error('Error finding product by id:', error);
+      console.error('Error in Product.findById:', error);
       throw error;
     }
   }
 
-  static async findByBrand(brandName, limit = 10, offset = 0) {
+  static async findByBrand(brand, limit = 20, offset = 0, sortField = 'id', sortOrder = 'ASC') {
     try {
-      // Convert to numbers and use directly in the query
-      const numLimit = Number(limit);
-      const numOffset = Number(offset);
-      
-      const [rows] = await db.query(
-        `SELECT * FROM products WHERE brand = ? ORDER BY id DESC LIMIT ${numLimit} OFFSET ${numOffset}`,
-        [brandName]
+      const [products] = await db.execute(
+        `SELECT * FROM products WHERE brand = ? ORDER BY ${sortField} ${sortOrder} LIMIT ? OFFSET ?`,
+        [brand, limit, offset]
       );
-      return rows;
+      return products;
     } catch (error) {
-      console.error('Error finding products by brand:', error);
+      console.error('Error in Product.findByBrand:', error);
       throw error;
     }
   }
@@ -65,49 +58,41 @@ class Product {
     }
   }
 
-  static async search(searchTerm, limit = 20, offset = 0) {
+  static async search(searchTerm, limit = 20, offset = 0, sortField = 'id', sortOrder = 'ASC') {
     try {
-      // Convert to numbers and use directly in the query
-      const numLimit = Number(limit);
-      const numOffset = Number(offset);
-      
-      const [rows] = await db.query(
-        `SELECT * FROM products WHERE 
-        name LIKE ? OR 
-        description LIKE ? OR 
-        brand LIKE ? OR 
-        category LIKE ? 
-        ORDER BY id DESC LIMIT ${numLimit} OFFSET ${numOffset}`,
-        [
-          `%${searchTerm}%`, 
-          `%${searchTerm}%`, 
-          `%${searchTerm}%`, 
-          `%${searchTerm}%`
-        ]
+      const searchPattern = `%${searchTerm}%`;
+      const [products] = await db.execute(
+        `SELECT * FROM products 
+         WHERE name LIKE ? OR description LIKE ? OR brand LIKE ? OR category LIKE ?
+         ORDER BY ${sortField} ${sortOrder} LIMIT ? OFFSET ?`,
+        [searchPattern, searchPattern, searchPattern, searchPattern, limit, offset]
       );
-      return rows;
+      return products;
     } catch (error) {
-      console.error('Error searching products:', error);
+      console.error('Error in Product.search:', error);
       throw error;
     }
   }
 
   static async calculateCashback(productId) {
     try {
-      const [rows] = await db.execute(
+      const [products] = await db.execute(
         'SELECT price, cashback_percentage FROM products WHERE id = ?',
         [productId]
       );
       
-      if (!rows.length) return 0;
+      if (products.length === 0) {
+        return 0;
+      }
       
-      const { price, cashback_percentage } = rows[0];
-      return Math.round(price * cashback_percentage / 100);
+      const { price, cashback_percentage } = products[0];
+      return (price * cashback_percentage) / 100;
     } catch (error) {
-      console.error('Error calculating cashback:', error);
+      console.error('Error in Product.calculateCashback:', error);
       throw error;
     }
   }
+
   
   static async getRelatedProducts(productId, limit = 4) {
     try {

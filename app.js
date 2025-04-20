@@ -74,6 +74,7 @@ const brandRoutes = require('./routes/brands');
 const productRoutes = require('./routes/products');
 const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin/index'); // Add admin routes
+const adminUsersRoutes = require('./routes/admin/users');
 
 // Use routes
 app.use('/', homeRoutes);
@@ -82,6 +83,10 @@ app.use('/brands', brandRoutes);
 app.use('/products', productRoutes);
 app.use('/user', userRoutes);
 app.use('/admin', adminRoutes); // Add admin routes
+app.use('/admin/users', adminUsersRoutes);
+
+
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

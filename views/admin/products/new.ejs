@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Product - MOVA Admin</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3f37c9;
+      --success-color: #4cc9f0;
+      --info-color: #4895ef;
+      --warning-color: #f72585;
+      --danger-color: #e63946;
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      padding: 20px 0;
+    }
+    
+    .required-field::after {
+      content: "*";
+      color: #dc3545;
+      margin-left: 4px;
+    }
+    
+    .card {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      border: none;
+      overflow: hidden;
+    }
+    
+    .card-header {
+      background-color: #fff;
+      border-bottom: 1px solid rgba(0,0,0,.05);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    .form-label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #444;
+    }
+    
+    .form-text {
+      color: #6c757d;
+      font-size: 0.875rem;
+      margin-top: 0.3rem;
+    }
+    
+    .form-control, .form-select {
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      border: 1px solid #dce0e6;
+      transition: all 0.2s;
+    }
+    
+    .form-control:focus, .form-select:focus {
+      border-color: #a4cafe;
+      box-shadow: 0 0 0 3px rgba(164, 202, 254, 0.25);
+    }
+    
+    .input-group-text {
+      background-color: #f8f9fa;
+      border: 1px solid #dce0e6;
+      border-radius: 8px 0 0 8px;
+      color: #495057;
+    }
+    
+    .btn {
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+    
+    .btn-light {
+      background-color: #f8f9fa;
+      border-color: #dce0e6;
+      color: #495057;
+    }
+    
+    .btn-light:hover {
+      background-color: #e9ecef;
+      border-color: #dee2e6;
+    }
+    
+    .btn-outline-secondary {
+      color: #6c757d;
+      border-color: #dce0e6;
+    }
+    
+    .btn-outline-secondary:hover {
+      background-color: #f8f9fa;
+      color: #495057;
+      border-color: #dce0e6;
+    }
+    
+    #imagePreview {
+      border: 1px dashed #dce0e6;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    
+    #imagePreview:hover {
+      background-color: #e9ecef;
+    }
+    
+    .image-preview-img {
+      max-height: 200px;
+      max-width: 100%;
+      border-radius: 4px;
+      object-fit: contain;
+    }
+    
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .featured-switch {
+      display: flex;
+      align-items: center;
+    }
+    
+    .featured-switch .form-check-input {
+      width: 3rem;
+      height: 1.5rem;
+      margin-right: 0.75rem;
+    }
+    
+    .form-check-input:checked {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .form-error {
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: 0.3rem;
+    }
+    
+    .is-invalid {
+      border-color: #dc3545;
+    }
+    
+    .is-invalid:focus {
+      border-color: #dc3545;
+      box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+    }
+    
+    /* Increase spacing between sections */
+    .form-section {
+      margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+      
+      .card-actions {
+        align-self: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title">Add New Product</h5>
+            <div class="card-actions">
+              <a href="/admin/products" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Products
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Display validation errors if any -->
+            <% if (locals.errors && errors.length > 0) { %>
+              <div class="alert alert-danger mb-4">
+                <h6 class="mb-2"><i class="fas fa-exclamation-triangle me-2"></i> Please fix the following errors:</h6>
+                <ul class="mb-0">
+                  <% errors.forEach(function(error) { %>
+                    <li><%= error.msg %></li>
+                  <% }); %>
+                </ul>
+              </div>
+            <% } %>
+            
+            <form action="/admin/products/new" method="POST" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-md-8">
+                  <!-- Product Information Section -->
+                  <div class="section-title">Basic Information</div>
+                  
+                  <!-- Product Name -->
+                  <div class="mb-3 form-section">
+                    <label for="name" class="form-label required-field">Product Name</label>
+                    <input type="text" class="form-control <%= locals.errors && errors.find(e => e.param === 'name') ? 'is-invalid' : '' %>" 
+                      id="name" name="name" value="<%= locals.formData ? formData.name : '' %>" required>
+                    <div class="form-text">Enter the full product name.</div>
+                    <% if (locals.errors && errors.find(e => e.param === 'name')) { %>
+                      <div class="form-error"><%= errors.find(e => e.param === 'name').msg %></div>
+                    <% } %>
+                  </div>
+                  
+                  <!-- Product Price -->
+                  <div class="mb-3 form-section">
+                    <label for="price" class="form-label required-field">Price</label>
+                    <div class="input-group">
+                      <span class="input-group-text">Rp</span>
+                      <input type="text" class="form-control <%= locals.errors && errors.find(e => e.param === 'price') ? 'is-invalid' : '' %>" 
+                        id="price" name="price" value="<%= locals.formData ? formData.price : '' %>" required>
+                    </div>
+                    <div class="form-text">Enter the product price in IDR (without thousand separators).</div>
+                    <% if (locals.errors && errors.find(e => e.param === 'price')) { %>
+                      <div class="form-error"><%= errors.find(e => e.param === 'price').msg %></div>
+                    <% } %>
+                  </div>
+                  
+                  <div class="row">
+                    <!-- Brand Selection -->
+                    <div class="col-md-6">
+                      <div class="mb-3 form-section">
+                        <label for="brand" class="form-label required-field">Brand</label>
+                        <select class="form-select <%= locals.errors && errors.find(e => e.param === 'brand') ? 'is-invalid' : '' %>" 
+                          id="brand" name="brand" required>
+                          <option value="">-- Select Brand --</option>
+                          <% if (locals.brands && brands.length > 0) { %>
+                            <% brands.forEach(function(brand) { %>
+                              <option value="<%= brand.name %>" <%= (locals.formData && formData.brand === brand.name) ? 'selected' : '' %>>
+                                <%= brand.name %> (<%= brand.cashback_percentage %>% cashback)
+                              </option>
+                            <% }); %>
+                          <% } %>
+                        </select>
+                        <div class="form-text">Select the brand this product belongs to.</div>
+                        <% if (locals.errors && errors.find(e => e.param === 'brand')) { %>
+                          <div class="form-error"><%= errors.find(e => e.param === 'brand').msg %></div>
+                        <% } %>
+                      </div>
+                    </div>
+                    
+                    <!-- Category Selection -->
+                    <div class="col-md-6">
+                      <div class="mb-3 form-section">
+                        <label for="category" class="form-label required-field">Category</label>
+                        <input type="text" class="form-control <%= locals.errors && errors.find(e => e.param === 'category') ? 'is-invalid' : '' %>" 
+                          id="category" name="category" list="categories" value="<%= locals.formData ? formData.category : '' %>" required>
+                        <datalist id="categories">
+                          <option value="Electronics">
+                          <option value="Fashion">
+                          <option value="Home & Living">
+                          <option value="Beauty">
+                          <option value="Sports">
+                          <option value="Toys & Kids">
+                          <option value="Automotive">
+                          <option value="Health">
+                          <option value="Food & Beverages">
+                        </datalist>
+                        <div class="form-text">Enter or select a category for this product.</div>
+                        <% if (locals.errors && errors.find(e => e.param === 'category')) { %>
+                          <div class="form-error"><%= errors.find(e => e.param === 'category').msg %></div>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Cashback Percentage -->
+                  <div class="mb-3 form-section">
+                    <label for="cashback_percentage" class="form-label required-field">Cashback Percentage</label>
+                    <div class="input-group">
+                      <input type="text" class="form-control <%= locals.errors && errors.find(e => e.param === 'cashback_percentage') ? 'is-invalid' : '' %>" 
+                        id="cashback_percentage" name="cashback_percentage" value="<%= locals.formData ? formData.cashback_percentage : '' %>" required>
+                      <span class="input-group-text">%</span>
+                    </div>
+                    <div class="form-text">The percentage of cashback users will receive for this product (0-100).</div>
+                    <% if (locals.errors && errors.find(e => e.param === 'cashback_percentage')) { %>
+                      <div class="form-error"><%= errors.find(e => e.param === 'cashback_percentage').msg %></div>
+                    <% } %>
+                  </div>
+                  
+                  <!-- Featured Option -->
+                  <div class="mb-4 form-section">
+                    <label class="form-label">Featured Product</label>
+                    <div class="featured-switch">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="featured" name="featured" value="1" 
+                          <%= (locals.formData && formData.featured === '1') ? 'checked' : '' %>>
+                        <label class="form-check-label" for="featured">Show product on homepage and featured collections</label>
+                      </div>
+                    </div>
+                    <div class="form-text">Featured products will be displayed prominently in the store.</div>
+                  </div>
+                  
+                  <!-- Product Description -->
+                  <div class="mb-3 form-section">
+                    <label for="description" class="form-label required-field">Product Description</label>
+                    <textarea class="form-control <%= locals.errors && errors.find(e => e.param === 'description') ? 'is-invalid' : '' %>" 
+                      id="description" name="description" rows="5" required><%= locals.formData ? formData.description : '' %></textarea>
+                    <div class="form-text">Provide a detailed description of the product.</div>
+                    <% if (locals.errors && errors.find(e => e.param === 'description')) { %>
+                      <div class="form-error"><%= errors.find(e => e.param === 'description').msg %></div>
+                    <% } %>
+                  </div>
+                </div>
+                
+                <div class="col-md-4">
+                  <!-- Product Image Upload -->
+                  <div class="mb-3 form-section">
+                    <div class="section-title">Product Image</div>
+                    <label for="image" class="form-label required-field">Upload Image</label>
+                    <div class="custom-file-upload">
+                      <input type="file" class="form-control <%= locals.errors && errors.find(e => e.param === 'image') ? 'is-invalid' : '' %>" 
+                        id="image" name="image" accept="image/*" required>
+                      <div id="imagePreview" class="mt-3 text-center">
+                        <img src="/images/products/default-product.jpg" alt="Product Preview" class="image-preview-img">
+                      </div>
+                    </div>
+                    <div class="form-text mt-3">Upload a product image (JPG, PNG). Recommended size: 600x600px.</div>
+                    <% if (locals.errors && errors.find(e => e.param === 'image')) { %>
+                      <div class="form-error"><%= errors.find(e => e.param === 'image').msg %></div>
+                    <% } %>
+                  </div>
+                  
+                  <!-- Additional Help -->
+                  <div class="card bg-light mt-4">
+                    <div class="card-body">
+                      <h6 class="mb-3"><i class="fas fa-info-circle text-primary me-2"></i> Tips for Adding Products</h6>
+                      <ul class="ps-3 mb-0">
+                        <li class="mb-2">Use clear and descriptive product names</li>
+                        <li class="mb-2">Add detailed descriptions to improve sales</li> 
+                        <li class="mb-2">Use high-quality images (600x600px or larger)</li>
+                        <li>Featured products appear on the homepage</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Submit Buttons -->
+              <div class="d-flex justify-content-end mt-4">
+                <a href="/admin/products" class="btn btn-light me-2">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save"></i> Create Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Image preview handling
+      const imageInput = document.getElementById('image');
+      const imagePreview = document.getElementById('imagePreview').querySelector('img');
+      
+      imageInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+          const reader = new FileReader();
+          
+          reader.onload = function(e) {
+            imagePreview.src = e.target.result;
+          }
+          
+          reader.readAsDataURL(this.files[0]);
+        }
+      });
+  
+      // Update cashback percentage based on brand selection
+      const brandSelect = document.getElementById('brand');
+      const cashbackInput = document.getElementById('cashback_percentage');
+  
+      brandSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption && selectedOption.text) {
+          // Extract cashback percentage from the option text (Format: "Brand Name (X% cashback)")
+          const match = selectedOption.text.match(/\((\d+(?:\.\d+)?)%/);
+          if (match && match[1]) {
+            cashbackInput.value = match[1];
+          }
+        }
+      });
+      
+      // Fix input validation for price and percentage by allowing only numeric input
+      const priceInput = document.getElementById('price');
+      priceInput.addEventListener('input', function(e) {
+        // Remove any non-numeric characters except decimal point
+        this.value = this.value.replace(/[^0-9.]/g, '');
+        
+        // Ensure only one decimal point
+        const parts = this.value.split('.');
+        if (parts.length > 2) {
+          this.value = parts[0] + '.' + parts.slice(1).join('');
+        }
+      });
+      
+      const percentageInput = document.getElementById('cashback_percentage');
+      percentageInput.addEventListener('input', function(e) {
+        // Remove any non-numeric characters except decimal point
+        this.value = this.value.replace(/[^0-9.]/g, '');
+        
+        // Ensure only one decimal point
+        const parts = this.value.split('.');
+        if (parts.length > 2) {
+          this.value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        
+        // Limit value to 0-100
+        const value = parseFloat(this.value);
+        if (!isNaN(value) && value > 100) {
+          this.value = "100";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
