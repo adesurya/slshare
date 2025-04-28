@@ -17,14 +17,24 @@ class Brand {
 
   static async findById(id) {
     try {
-      // Simply get the brand by ID - products_count is already in the database
-      const [rows] = await db.execute(
-        'SELECT * FROM brands WHERE id = ?',
-        [id]
-      );
-      return rows.length ? rows[0] : null;
+      console.log(`Finding brand with ID: ${id}`);
+      
+      const conn = await db.getConnection();
+      
+      // Query untuk tabel brands, bukan products
+      const query = 'SELECT * FROM brands WHERE id = ?';
+      const [rows] = await conn.query(query, [id]);
+      
+      conn.release();
+      
+      if (rows.length === 0) {
+        console.log(`No brand found with ID: ${id}`);
+        return null;
+      }
+      
+      return rows[0];
     } catch (error) {
-      console.error('Error finding brand by id:', error);
+      console.error(`Error in Brand.findById: ${error.message}`);
       throw error;
     }
   }

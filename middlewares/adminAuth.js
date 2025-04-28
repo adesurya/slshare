@@ -1,119 +1,141 @@
 // middlewares/adminAuth.js
 const Admin = require('../models/Admin');
 
-// Authentication middleware for protected admin routes
-const isAdminAuthenticated = async (req, res, next) => {
-  try {
-    // Check if admin session exists
-    if (req.session && req.session.adminId) {
-      // Get admin from database
-      const admin = await Admin.findById(req.session.adminId);
-      
-      if (admin) {
-        // Admin found, add to request object
-        req.admin = admin;
-        res.locals.admin = {
-          id: admin.id,
-          username: admin.username,
-          full_name: admin.full_name,
-          email: admin.email,
-          role: admin.role
-        };
-        res.locals.isAdminAuthenticated = true;
-        return next();
-      }
-    }
-    
-    // No valid session, redirect to admin login
-    res.locals.isAdminAuthenticated = false;
-    res.redirect('/admin/login?redirect=' + encodeURIComponent(req.originalUrl));
-  } catch (error) {
-    console.error('Admin authentication error:', error);
-    res.status(500).render('admin/error', {
-      title: 'Authentication Error',
-      message: 'There was a problem with authentication.'
-    });
-  }
-};
-
-// Check if admin is already logged in
-const redirectIfAdminAuthenticated = (req, res, next) => {
-  if (req.session && req.session.adminId) {
-    return res.redirect('/admin/dashboard');
-  }
-  next();
-};
-
-// Set current admin data if authenticated but don't redirect
-const setCurrentAdmin = async (req, res, next) => {
-  try {
-    if (req.session && req.session.adminId) {
-      const admin = await Admin.findById(req.session.adminId);
-      
-      if (admin) {
-        req.admin = admin;
-        res.locals.admin = {
-          id: admin.id,
-          username: admin.username,
-          full_name: admin.full_name,
-          email: admin.email,
-          role: admin.role
-        };
-        res.locals.isAdminAuthenticated = true;
-      } else {
-        res.locals.isAdminAuthenticated = false;
-      }
-    } else {
-      res.locals.isAdminAuthenticated = false;
-    }
-    next();
-  } catch (error) {
-    console.error('Error setting current admin:', error);
-    res.locals.isAdminAuthenticated = false;
-    next();
-  }
-};
-
-// Middleware to check if admin has superadmin role
-const requireSuperAdmin = (req, res, next) => {
-  if (req.admin && req.admin.role === 'superadmin') {
+// Middleware untuk memeriksa autentikasi admin
+const isAdminAuthenticated = (req, res, next) => {
+  if (req.session.adminId) {
+    // Set admin info for use in templates
+    req.admin = {
+      id: req.session.adminId,
+      username: req.session.adminUsername,
+      role: req.session.adminRole || 'admin'
+    };
     return next();
   }
   
-  // Not a superadmin, show access denied
-  res.status(403).render('admin/error', {
-    title: 'Access Denied',
-    message: 'You do not have permission to access this page. Only superadmins can access this feature.'
-  });
+  // If not authenticated, redirect to login
+  res.redirect('/admin/auth/login');
+};
+
+// Middleware untuk memeriksa jika user belum login (guest)
+const redirectIfAdminAuthenticated = (req, res, next) => {
+  if (!req.session.adminId) {
+    return next();
+  }
+  
+  // If already authenticated, redirect to dashboard
+  res.redirect('/admin/dashboard');
 };
 
 // Log admin activity
 const logAdminActivity = (action) => {
-  return async (req, res, next) => {
-    try {
-      if (req.admin) {
-        // Prepare details
-        const details = {
-          url: req.originalUrl,
-          method: req.method,
-          ip: req.ip
-        };
-        
-        // Log activity
-        await Admin.logActivity(req.admin.id, action, details);
+  return (req, res, next) => {
+    // Only log if admin is authenticated
+    if (req.admin && req.admin.id) {
+      // Capture any details you want to log
+      const details = {
+        url: req.originalUrl,
+        method: req.method,
+        ip: req.ip
+      };
+      
+      // Add specific request details based on action
+      if (req.params.id) {
+        details.targetId = req.params.id;
       }
-      next();
-    } catch (error) {
-      console.error('Error logging admin activity:', error);
-      next();
+      
+      // Log to database (async, don't wait for completion)
+      Admin.logActivity(req.admin.id, action, details)
+        .catch(err => console.error('Error logging admin activity:', err));
     }
+    
+    next();
   };
+};
+
+// Set current admin and section based on URL
+const setCurrentAdmin = (req, res, next) => {
+  if (req.session.adminId) {
+    res.locals.isAdminAuthenticated = true;
+    res.locals.admin = {
+      id: req.session.adminId,
+      username: req.session.adminUsername,
+      role: req.session.adminRole || 'admin'
+    };
+    
+    // Set admin object for request
+    req.admin = res.locals.admin;
+  } else {
+    res.locals.isAdminAuthenticated = false;
+    res.locals.admin = null;
+  }
+  
+  // Tentukan section berdasarkan URL
+  if (req.originalUrl.includes('/admin/dashboard')) {
+    res.locals.section = 'dashboard';
+  } else if (req.originalUrl.includes('/admin/products')) {
+    res.locals.section = 'products';
+  } else if (req.originalUrl.includes('/admin/brands')) {
+    res.locals.section = 'brands';
+  } else if (req.originalUrl.includes('/admin/orders')) {
+    res.locals.section = 'orders';
+  } else if (req.originalUrl.includes('/admin/users')) {
+    res.locals.section = 'users';
+  } else if (req.originalUrl.includes('/admin/transactions')) {
+    res.locals.section = 'transactions';
+  } else if (req.originalUrl.includes('/admin/profile')) {
+    res.locals.section = 'profile';
+  } else {
+    res.locals.section = ''; // Default section kosong
+  }
+  
+  next();
+};
+
+// Set default admin template variables
+const setAdminTemplateDefaults = (req, res, next) => {
+  // Pastikan section sesuai dengan path URL
+  let urlPath = req.path;
+  
+  if (urlPath.startsWith('/admin/')) {
+    urlPath = urlPath.substring(7); // Hapus '/admin/' dari path
+    const mainSection = urlPath.split('/')[0]; // Ambil bagian pertama dari path
+    
+    // Set section berdasarkan bagian pertama dari path
+    switch (mainSection) {
+      case 'dashboard':
+        res.locals.section = 'dashboard';
+        break;
+      case 'products':
+        res.locals.section = 'products';
+        break;
+      case 'brands':
+        res.locals.section = 'brands';
+        break;
+      case 'orders':
+        res.locals.section = 'orders';
+        break;
+      case 'users':
+        res.locals.section = 'users';
+        break;
+      case 'transactions':
+        res.locals.section = 'transactions';
+        break;
+      case 'profile':
+        res.locals.section = 'profile';
+        break;
+      default:
+        res.locals.section = '';
+    }
+  }
+  
+  next();
 };
 
 module.exports = {
   isAdminAuthenticated,
   redirectIfAdminAuthenticated,
+  logAdminActivity,
   setCurrentAdmin,
-  requireSuperAdmin,
-  logAdminActivity
+  setAdminTemplateDefaults
 };

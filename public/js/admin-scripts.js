@@ -1,127 +1,540 @@
-// Admin Dashboard Scripts
+/**
+ * Admin Dashboard JavaScript
+ * This file contains common scripts used throughout the admin dashboard
+ */
 
-// Handle DataTables initialization for all tables with the 'data-table' class
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize DataTables if the library is loaded
-    if (typeof $.fn.DataTable !== 'undefined') {
-      $('.data-table').DataTable({
-        responsive: true,
-        pageLength: 10,
-        language: {
-          search: "_INPUT_",
-          searchPlaceholder: "Search...",
-          lengthMenu: "Show _MENU_ entries per page",
-          info: "Showing _START_ to _END_ of _TOTAL_ entries",
-          infoEmpty: "Showing 0 to 0 of 0 entries",
-          infoFiltered: "(filtered from _MAX_ total entries)"
-        }
-      });
-    }
+  // Sidebar Toggle for Desktop
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const adminWrapper = document.querySelector('.admin-wrapper');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
   
-    // Initialize tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-  
-    // Initialize popovers
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-    popoverTriggerList.map(function (popoverTriggerEl) {
-      return new bootstrap.Popover(popoverTriggerEl);
-    });
-  
-    // Handle file input change to show selected file name
-    const fileInputs = document.querySelectorAll('.custom-file-input');
-    fileInputs.forEach(input => {
-      input.addEventListener('change', function() {
-        let fileName = '';
-        if (this.files && this.files.length > 0) {
-          fileName = this.files[0].name;
-        }
-        const label = this.nextElementSibling;
-        if (label) {
-          label.textContent = fileName || 'Choose file';
-        }
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', function() {
+      if (window.innerWidth < 992) {
+        // Mobile: show/hide sidebar
+        adminWrapper.classList.toggle('sidebar-open');
+      } else {
+        // Desktop: collapse/expand sidebar
+        adminWrapper.classList.toggle('sidebar-collapsed');
         
-        // Show preview for image files
-        const preview = document.querySelector('.file-upload-preview');
-        if (preview && this.files && this.files[0]) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-          }
-          reader.readAsDataURL(this.files[0]);
-        }
-      });
-    });
-  
-    // Setup delete confirmation modals
-    const deleteButtons = document.querySelectorAll('[data-delete-item]');
-    deleteButtons.forEach(button => {
-      button.addEventListener('click', function(e) {
-        e.preventDefault();
-        const itemId = this.dataset.deleteItem;
-        const itemName = this.dataset.itemName || 'this item';
-        const targetUrl = this.href;
-        
-        // Set modal content
-        const modal = document.getElementById('deleteConfirmationModal');
-        if (modal) {
-          const modalBody = modal.querySelector('.modal-body');
-          if (modalBody) {
-            modalBody.innerHTML = `Are you sure you want to delete <strong>${itemName}</strong>? This action cannot be undone.`;
-          }
-          
-          const confirmButton = modal.querySelector('.btn-danger');
-          if (confirmButton) {
-            confirmButton.onclick = function() {
-              window.location.href = targetUrl;
-            };
-          }
-          
-          // Show modal
-          const modalInstance = new bootstrap.Modal(modal);
-          modalInstance.show();
+        // Store preference in localStorage
+        if (adminWrapper.classList.contains('sidebar-collapsed')) {
+          localStorage.setItem('sidebar-collapsed', 'true');
         } else {
-          // Fallback if modal is not available
-          if (confirm(`Are you sure you want to delete ${itemName}? This action cannot be undone.`)) {
-            window.location.href = targetUrl;
-          }
+          localStorage.setItem('sidebar-collapsed', 'false');
         }
-      });
+      }
     });
+  }
   
-    // Initialize any custom charts
-    initializeCharts();
+  // Check if sidebar should be collapsed (from localStorage)
+  if (localStorage.getItem('sidebar-collapsed') === 'true' && window.innerWidth >= 992) {
+    adminWrapper.classList.add('sidebar-collapsed');
+  }
+  
+  // Close sidebar when backdrop is clicked
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener('click', function() {
+      adminWrapper.classList.remove('sidebar-open');
+    });
+  }
+  
+  // Handle window resize
+  window.addEventListener('resize', function() {
+    if (window.innerWidth >= 992) {
+      // Remove sidebar-open class when resizing to desktop
+      adminWrapper.classList.remove('sidebar-open');
+    }
   });
   
-  // Function to initialize charts
-  function initializeCharts() {
-    // Check if Chart.js is loaded
-    if (typeof Chart === 'undefined') {
-      return;
+  // Initialize all tooltips
+  const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  if (tooltips.length > 0) {
+    Array.from(tooltips).forEach(tooltip => {
+      new bootstrap.Tooltip(tooltip);
+    });
+  }
+  
+  // Initialize all popovers
+  const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
+  if (popovers.length > 0) {
+    Array.from(popovers).forEach(popover => {
+      new bootstrap.Popover(popover);
+    });
+  }
+  
+  // Auto-hide alerts after 5 seconds
+  const autoHideAlerts = document.querySelectorAll('.alert:not(.alert-permanent)');
+  if (autoHideAlerts.length > 0) {
+    Array.from(autoHideAlerts).forEach(alert => {
+      setTimeout(() => {
+        const bsAlert = new bootstrap.Alert(alert);
+        bsAlert.close();
+      }, 5000);
+    });
+  }
+  
+  // Custom file upload
+  const fileInputs = document.querySelectorAll('input[type="file"]');
+  if (fileInputs.length > 0) {
+    Array.from(fileInputs).forEach(input => {
+      input.addEventListener('change', function(e) {
+        // Find the closest parent with the 'custom-file-upload' class
+        const customFileUpload = this.closest('.custom-file-upload');
+        if (customFileUpload) {
+          const fileNameElement = customFileUpload.querySelector('.file-name');
+          if (fileNameElement) {
+            if (this.files.length > 0) {
+              fileNameElement.textContent = this.files[0].name;
+              customFileUpload.classList.add('has-file');
+            } else {
+              fileNameElement.textContent = 'No file chosen';
+              customFileUpload.classList.remove('has-file');
+            }
+          }
+          
+          // Handle image preview if available
+          const previewElement = customFileUpload.querySelector('.preview-image');
+          if (previewElement && this.files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              previewElement.src = e.target.result;
+              previewElement.style.display = 'block';
+            };
+            reader.readAsDataURL(this.files[0]);
+          }
+        }
+      });
+    });
+  }
+  
+  // Toggle password visibility
+  const passwordToggles = document.querySelectorAll('.password-toggle');
+  if (passwordToggles.length > 0) {
+    Array.from(passwordToggles).forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        const passwordInput = this.closest('.input-group').querySelector('input');
+        const toggleIcon = this.querySelector('i');
+        
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          toggleIcon.classList.remove('fa-eye');
+          toggleIcon.classList.add('fa-eye-slash');
+        } else {
+          passwordInput.type = 'password';
+          toggleIcon.classList.remove('fa-eye-slash');
+          toggleIcon.classList.add('fa-eye');
+        }
+      });
+    });
+  }
+  
+  // Custom datepicker initialization (if datepicker plugin is included)
+  const datepickers = document.querySelectorAll('.datepicker');
+  if (typeof flatpickr !== 'undefined' && datepickers.length > 0) {
+    Array.from(datepickers).forEach(picker => {
+      flatpickr(picker, {
+        dateFormat: 'Y-m-d',
+        altInput: true,
+        altFormat: 'F j, Y',
+        allowInput: true
+      });
+    });
+  }
+  
+  // Custom date range picker initialization (if daterangepicker plugin is included)
+  const dateRangePickers = document.querySelectorAll('.daterangepicker');
+  if (typeof daterangepicker !== 'undefined' && dateRangePickers.length > 0) {
+    Array.from(dateRangePickers).forEach(picker => {
+      $(picker).daterangepicker({
+        opens: 'left',
+        autoUpdateInput: false,
+        locale: {
+          cancelLabel: 'Clear',
+          applyLabel: 'Apply',
+          fromLabel: 'From',
+          toLabel: 'To'
+        }
+      });
+      
+      $(picker).on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+      });
+      
+      $(picker).on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+      });
+    });
+  }
+  
+  // Confirm delete actions
+  const confirmDeleteButtons = document.querySelectorAll('[data-confirm-delete]');
+  if (confirmDeleteButtons.length > 0) {
+    Array.from(confirmDeleteButtons).forEach(button => {
+      button.addEventListener('click', function(e) {
+        const message = this.dataset.confirmMessage || 'Are you sure you want to delete this item? This action cannot be undone.';
+        if (!confirm(message)) {
+          e.preventDefault();
+        }
+      });
+    });
+  }
+  
+  // Handle bulk actions in tables
+  const bulkActionCheckAll = document.getElementById('bulkSelectAll');
+  if (bulkActionCheckAll) {
+    bulkActionCheckAll.addEventListener('change', function() {
+      const checkboxes = document.querySelectorAll('.bulk-select-item');
+      Array.from(checkboxes).forEach(checkbox => {
+        checkbox.checked = this.checked;
+      });
+      
+      // Toggle bulk action buttons
+      toggleBulkActionButtons();
+    });
+    
+    // Individual checkboxes
+    const individualCheckboxes = document.querySelectorAll('.bulk-select-item');
+    if (individualCheckboxes.length > 0) {
+      Array.from(individualCheckboxes).forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          // Update "select all" checkbox state
+          const allCheckboxes = document.querySelectorAll('.bulk-select-item');
+          const checkedCheckboxes = document.querySelectorAll('.bulk-select-item:checked');
+          
+          if (allCheckboxes.length === checkedCheckboxes.length) {
+            bulkActionCheckAll.checked = true;
+            bulkActionCheckAll.indeterminate = false;
+          } else if (checkedCheckboxes.length === 0) {
+            bulkActionCheckAll.checked = false;
+            bulkActionCheckAll.indeterminate = false;
+          } else {
+            bulkActionCheckAll.checked = false;
+            bulkActionCheckAll.indeterminate = true;
+          }
+          
+          // Toggle bulk action buttons
+          toggleBulkActionButtons();
+        });
+      });
     }
     
-    // Set Chart.js defaults
-    Chart.defaults.color = '#6c757d';
-    Chart.defaults.font.family = "'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif";
-    
-    // Monthly Transactions Chart
-    const transactionsChartEl = document.getElementById('monthlyTransactionsChart');
-    if (transactionsChartEl) {
-      // Try to get the chart data from a data attribute
-      let chartData;
-      try {
-        chartData = JSON.parse(transactionsChartEl.dataset.chart);
-      } catch (e) {
-        console.error('Error parsing chart data:', e);
-        chartData = {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          income: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          withdrawals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        };
+    // Toggle bulk action buttons based on selected items
+    function toggleBulkActionButtons() {
+      const bulkActionButtons = document.querySelector('.bulk-action-buttons');
+      const checkedCheckboxes = document.querySelectorAll('.bulk-select-item:checked');
+      
+      if (bulkActionButtons) {
+        if (checkedCheckboxes.length > 0) {
+          bulkActionButtons.classList.remove('d-none');
+        } else {
+          bulkActionButtons.classList.add('d-none');
+        }
       }
+    }
+    
+    // Handle bulk action form submission
+    const bulkActionForm = document.getElementById('bulkActionForm');
+    const bulkActionSelect = document.getElementById('bulkAction');
+    
+    if (bulkActionForm && bulkActionSelect) {
+      bulkActionForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const selectedAction = bulkActionSelect.value;
+        if (!selectedAction) {
+          alert('Please select an action');
+          return;
+        }
+        
+        const checkedItems = document.querySelectorAll('.bulk-select-item:checked');
+        if (checkedItems.length === 0) {
+          alert('Please select at least one item');
+          return;
+        }
+        
+        // If deleting, confirm with user
+        if (selectedAction === 'delete' && !confirm('Are you sure you want to delete all selected items? This action cannot be undone.')) {
+          return;
+        }
+        
+        // Submit the form
+        this.submit();
+      });
+    }
+  }
+  
+  // Refresh data buttons
+  const refreshButtons = document.querySelectorAll('[data-refresh]');
+  if (refreshButtons.length > 0) {
+    Array.from(refreshButtons).forEach(button => {
+      button.addEventListener('click', function() {
+        const targetId = this.dataset.refreshTarget;
+        const targetElement = document.getElementById(targetId);
+        
+        if (targetElement) {
+          // Add loading state
+          this.disabled = true;
+          const originalHtml = this.innerHTML;
+          this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+          
+          // Get refresh URL
+          const url = this.dataset.refreshUrl || window.location.href;
+          
+          // Ajax request to refresh data
+          fetch(url)
+            .then(response => response.text())
+            .then(html => {
+              // Create a temporary element to parse the response
+              const tempElement = document.createElement('div');
+              tempElement.innerHTML = html;
+              
+              // Find the corresponding element in the response
+              const newContent = tempElement.querySelector('#' + targetId);
+              
+              if (newContent) {
+                targetElement.innerHTML = newContent.innerHTML;
+              }
+              
+              // Restore button state
+              this.disabled = false;
+              this.innerHTML = originalHtml;
+            })
+            .catch(error => {
+              console.error('Error refreshing data:', error);
+              
+              // Restore button state
+              this.disabled = false;
+              this.innerHTML = originalHtml;
+              
+              // Show error
+              alert('Failed to refresh data. Please try again.');
+            });
+        }
+      });
+    });
+  }
+
+  // Initialize any Charts if Chart.js is available
+  if (typeof Chart !== 'undefined') {
+    initializeCharts();
+  }
+  
+  // Responsive Tables
+  const responsiveTables = document.querySelectorAll('.table-responsive');
+  if (responsiveTables.length > 0) {
+    Array.from(responsiveTables).forEach(table => {
+      const tableWrapper = document.createElement('div');
+      tableWrapper.className = 'table-responsive';
+      
+      // Replace the table with the wrapper containing the table
+      table.parentNode.insertBefore(tableWrapper, table);
+      tableWrapper.appendChild(table);
+    });
+  }
+});
+
+// Initialize Chart.js charts
+function initializeCharts() {
+  // Common chart options
+  Chart.defaults.font.family = "'Inter', sans-serif";
+  Chart.defaults.color = '#718096';
+  Chart.defaults.responsive = true;
+  Chart.defaults.maintainAspectRatio = false;
+  
+  // Sales Chart
+  const salesChartEl = document.getElementById('salesChart');
+  if (salesChartEl) {
+    try {
+      const chartData = JSON.parse(salesChartEl.dataset.chart);
+      
+      new Chart(salesChartEl, {
+        type: 'line',
+        data: {
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: 'Sales',
+              data: chartData.sales,
+              backgroundColor: 'rgba(78, 115, 223, 0.1)',
+              borderColor: 'rgba(78, 115, 223, 1)',
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true,
+              pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+              pointBorderColor: '#fff',
+              pointBorderWidth: 2,
+              pointRadius: 4,
+              pointHoverRadius: 6
+            }
+          ]
+        },
+        options: {
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              padding: 12,
+              backgroundColor: 'rgba(45, 55, 72, 0.9)',
+              titleFont: {
+                size: 14,
+                weight: 'bold'
+              },
+              bodyFont: {
+                size: 13
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            }
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Error initializing sales chart:', error);
+    }
+  }
+  
+  // Orders Chart
+  const ordersChartEl = document.getElementById('ordersChart');
+  if (ordersChartEl) {
+    try {
+      const chartData = JSON.parse(ordersChartEl.dataset.chart);
+      
+      new Chart(ordersChartEl, {
+        type: 'bar',
+        data: {
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: 'Orders',
+              data: chartData.orders,
+              backgroundColor: 'rgba(28, 200, 138, 0.6)',
+              borderColor: 'rgba(28, 200, 138, 1)',
+              borderWidth: 1,
+              barPercentage: 0.6,
+              categoryPercentage: 0.7,
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              padding: 12,
+              backgroundColor: 'rgba(45, 55, 72, 0.9)',
+              titleFont: {
+                size: 14,
+                weight: 'bold'
+              },
+              bodyFont: {
+                size: 13
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            }
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Error initializing orders chart:', error);
+    }
+  }
+  
+  // User Growth Chart
+  const userGrowthChartEl = document.getElementById('userGrowthChart');
+  if (userGrowthChartEl) {
+    try {
+      const chartData = JSON.parse(userGrowthChartEl.dataset.chart);
+      
+      new Chart(userGrowthChartEl, {
+        type: 'line',
+        data: {
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: 'New Users',
+              data: chartData.users,
+              backgroundColor: 'rgba(231, 74, 59, 0.1)',
+              borderColor: 'rgba(231, 74, 59, 1)',
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true,
+              pointBackgroundColor: 'rgba(231, 74, 59, 1)',
+              pointBorderColor: '#fff',
+              pointBorderWidth: 2,
+              pointRadius: 4,
+              pointHoverRadius: 6
+            }
+          ]
+        },
+        options: {
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              padding: 12,
+              backgroundColor: 'rgba(45, 55, 72, 0.9)'
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            }
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Error initializing user growth chart:', error);
+    }
+  }
+  
+  // Transactions Chart
+  const transactionsChartEl = document.getElementById('transactionsChart');
+  if (transactionsChartEl) {
+    try {
+      const chartData = JSON.parse(transactionsChartEl.dataset.chart);
       
       new Chart(transactionsChartEl, {
         type: 'bar',
@@ -131,143 +544,90 @@ document.addEventListener('DOMContentLoaded', function() {
             {
               label: 'Income',
               data: chartData.income,
-              backgroundColor: 'rgba(40, 167, 69, 0.4)',
-              borderColor: 'rgba(40, 167, 69, 1)',
-              borderWidth: 1
+              backgroundColor: 'rgba(28, 200, 138, 0.4)',
+              borderColor: 'rgba(28, 200, 138, 1)',
+              borderWidth: 1,
+              barPercentage: 0.6,
+              categoryPercentage: 0.7,
+              borderRadius: 4,
+              stack: 'Stack 0'
             },
             {
               label: 'Withdrawals',
               data: chartData.withdrawals,
-              backgroundColor: 'rgba(255, 193, 7, 0.4)',
-              borderColor: 'rgba(255, 193, 7, 1)',
-              borderWidth: 1
+              backgroundColor: 'rgba(246, 194, 62, 0.4)',
+              borderColor: 'rgba(246, 194, 62, 1)',
+              borderWidth: 1,
+              barPercentage: 0.6,
+              categoryPercentage: 0.7,
+              borderRadius: 4,
+              stack: 'Stack 1'
             }
           ]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true,
-              grid: {
-                color: 'rgba(0, 0, 0, 0.05)'
-              }
-            },
-            x: {
-              grid: {
-                display: false
-              }
-            }
-          },
           plugins: {
             legend: {
-              position: 'top',
+              display: true,
+              position: 'top'
             },
             tooltip: {
               mode: 'index',
               intersect: false
             }
-          }
-        }
-      });
-    }
-    
-    // Users Growth Chart
-    const usersChartEl = document.getElementById('usersGrowthChart');
-    if (usersChartEl) {
-      // Try to get the chart data from a data attribute
-      let chartData;
-      try {
-        chartData = JSON.parse(usersChartEl.dataset.chart);
-      } catch (e) {
-        console.error('Error parsing chart data:', e);
-        chartData = {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          users: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        };
-      }
-      
-      new Chart(usersChartEl, {
-        type: 'line',
-        data: {
-          labels: chartData.labels,
-          datasets: [
-            {
-              label: 'New Users',
-              data: chartData.users,
-              backgroundColor: 'rgba(255, 0, 51, 0.1)',
-              borderColor: 'rgba(255, 0, 51, 1)',
-              borderWidth: 2,
-              tension: 0.4,
-              fill: true
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
+          },
           scales: {
+            x: {
+              grid: {
+                display: false
+              }
+            },
             y: {
               beginAtZero: true,
               grid: {
                 color: 'rgba(0, 0, 0, 0.05)'
               }
-            },
-            x: {
-              grid: {
-                display: false
-              }
-            }
-          },
-          plugins: {
-            legend: {
-              display: false
-            },
-            tooltip: {
-              mode: 'index',
-              intersect: false
             }
           }
         }
       });
+    } catch (error) {
+      console.error('Error initializing transactions chart:', error);
     }
-    
-    // Sales Distribution Chart (Pie)
-    const salesDistChartEl = document.getElementById('salesDistributionChart');
-    if (salesDistChartEl) {
-      // Try to get the chart data from a data attribute
-      let chartData;
-      try {
-        chartData = JSON.parse(salesDistChartEl.dataset.chart);
-      } catch (e) {
-        console.error('Error parsing chart data:', e);
-        chartData = {
-          labels: ['Brand A', 'Brand B', 'Brand C', 'Brand D', 'Others'],
-          data: [25, 20, 15, 10, 30]
-        };
-      }
+  }
+  
+  // Pie/Doughnut Chart
+  const pieChartEl = document.getElementById('categoryPieChart');
+  if (pieChartEl) {
+    try {
+      const chartData = JSON.parse(pieChartEl.dataset.chart);
       
-      new Chart(salesDistChartEl, {
-        type: 'pie',
+      new Chart(pieChartEl, {
+        type: 'doughnut',
         data: {
           labels: chartData.labels,
           datasets: [
             {
               data: chartData.data,
               backgroundColor: [
-                'rgba(255, 0, 51, 0.8)',
-                'rgba(40, 167, 69, 0.8)',
-                'rgba(23, 162, 184, 0.8)',
-                'rgba(255, 193, 7, 0.8)',
-                'rgba(108, 117, 125, 0.8)'
+                'rgba(78, 115, 223, 0.8)',
+                'rgba(28, 200, 138, 0.8)',
+                'rgba(246, 194, 62, 0.8)',
+                'rgba(231, 74, 59, 0.8)',
+                'rgba(54, 185, 204, 0.8)',
+                'rgba(104, 109, 224, 0.8)',
+                'rgba(129, 236, 236, 0.8)',
+                'rgba(126, 214, 223, 0.8)'
               ],
               borderColor: [
-                'rgba(255, 0, 51, 1)',
-                'rgba(40, 167, 69, 1)',
-                'rgba(23, 162, 184, 1)',
-                'rgba(255, 193, 7, 1)',
-                'rgba(108, 117, 125, 1)'
+                'rgba(78, 115, 223, 1)',
+                'rgba(28, 200, 138, 1)',
+                'rgba(246, 194, 62, 1)',
+                'rgba(231, 74, 59, 1)',
+                'rgba(54, 185, 204, 1)',
+                'rgba(104, 109, 224, 1)',
+                'rgba(129, 236, 236, 1)',
+                'rgba(126, 214, 223, 1)'
               ],
               borderWidth: 1
             }
@@ -278,398 +638,216 @@ document.addEventListener('DOMContentLoaded', function() {
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              position: 'right'
+              position: 'right',
+              labels: {
+                padding: 20,
+                usePointStyle: true,
+                pointStyle: 'circle'
+              }
             },
             tooltip: {
               callbacks: {
                 label: function(context) {
                   const label = context.label || '';
-                  const value = context.raw || 0;
-                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                  const percentage = Math.round((value / total) * 100);
-                  return `${label}: ${percentage}% (${value})`;
+                  const value = context.formattedValue;
+                  const total = context.dataset.data.reduce((acc, data) => acc + data, 0);
+                  const percentage = Math.round((context.raw / total) * 100);
+                  return `${label}: ${value} (${percentage}%)`;
                 }
               }
             }
-          }
+          },
+          cutout: '70%'
         }
       });
+    } catch (error) {
+      console.error('Error initializing pie chart:', error);
     }
   }
+}
+
+// Logo Preview for Brand Forms
+document.addEventListener('DOMContentLoaded', function() {
+  const logoInput = document.getElementById('logo');
+  const logoPreview = document.getElementById('logoPreview');
   
-  // Function to load transaction data via AJAX for chart
-  function loadTransactionData() {
-    fetch('/admin/dashboard/api/transaction-stats')
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          // Update chart with fetched data
-          updateTransactionsChart(data.data);
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching transaction data:', error);
-      });
-  }
-  
-  // Function to update transactions chart with new data
-  function updateTransactionsChart(chartData) {
-    const chartEl = document.getElementById('monthlyTransactionsChart');
-    if (!chartEl) return;
-    
-    const chart = Chart.getChart(chartEl);
-    if (!chart) return;
-    
-    chart.data.labels = chartData.labels;
-    chart.data.datasets[0].data = chartData.income;
-    chart.data.datasets[1].data = chartData.withdrawals;
-    chart.update();
-  }
-  
-  // Handle file upload preview
-  function handleFileUploadPreview(inputId, previewId) {
-    const input = document.getElementById(inputId);
-    const preview = document.getElementById(previewId);
-    
-    if (!input || !preview) return;
-    
-    input.addEventListener('change', function() {
+  if (logoInput && logoPreview) {
+    logoInput.addEventListener('change', function() {
       if (this.files && this.files[0]) {
         const reader = new FileReader();
+        
         reader.onload = function(e) {
-          preview.src = e.target.result;
-          preview.style.display = 'block';
-        }
+          if (logoPreview.tagName === 'DIV' && logoPreview.querySelector('img')) {
+            logoPreview.querySelector('img').src = e.target.result;
+          } else if (logoPreview.tagName === 'IMG') {
+            logoPreview.src = e.target.result;
+          }
+        };
+        
         reader.readAsDataURL(this.files[0]);
       }
     });
   }
+});
+
+// Order Status Update Form
+document.addEventListener('DOMContentLoaded', function() {
+  const statusSelect = document.getElementById('status');
+  const shippingStatusSelect = document.getElementById('shipping_status');
   
-    // Function to confirm action with a custom modal
-  function confirmAction(message, callback) {
-    const modal = document.getElementById('confirmActionModal');
-    if (!modal) {
-      // Fallback to browser confirm
-      if (confirm(message)) {
-        callback();
-      }
-      return;
-    }
-    
-    const modalBody = modal.querySelector('.modal-body');
-    if (modalBody) {
-      modalBody.innerHTML = message;
-    }
-    
-    const confirmButton = modal.querySelector('.btn-primary');
-    if (confirmButton) {
-      const oldClickHandler = confirmButton.onclick;
-      confirmButton.onclick = function() {
-        callback();
-        const modalInstance = bootstrap.Modal.getInstance(modal);
-        if (modalInstance) {
-          modalInstance.hide();
-        }
-        // Restore old click handler if it exists
-        confirmButton.onclick = oldClickHandler;
-      };
-    }
-    
-    // Show the modal
-    const modalInstance = new bootstrap.Modal(modal);
-    modalInstance.show();
-  }
-  
-  // Function to format currency values
-  function formatCurrency(value, currency = 'Rp') {
-    return currency + new Intl.NumberFormat('id-ID').format(value);
-  }
-  
-  // Function to format dates
-  function formatDate(dateString, format = 'full') {
-    const date = new Date(dateString);
-    
-    if (format === 'full') {
-      return date.toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit'
-      });
-    } else if (format === 'short') {
-      return date.toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-      });
-    } else if (format === 'time') {
-      return date.toLocaleTimeString('id-ID', {
-        hour: '2-digit', 
-        minute: '2-digit'
-      });
-    }
-    
-    return date.toLocaleDateString('id-ID');
-  }
-  
-  // Function to initialize rich text editors if CKEditor is available
-  function initRichTextEditors() {
-    if (typeof ClassicEditor !== 'undefined') {
-      document.querySelectorAll('.rich-text-editor').forEach(editor => {
-        ClassicEditor
-          .create(editor)
-          .catch(error => {
-            console.error('CKEditor initialization error:', error);
-          });
-      });
-    }
-  }
-  
-  // Function to handle bulk selection in tables
-  function initBulkSelection() {
-    const selectAllCheckbox = document.getElementById('selectAll');
-    if (!selectAllCheckbox) return;
-    
-    const itemCheckboxes = document.querySelectorAll('.item-checkbox');
-    
-    // Toggle all checkboxes when "Select All" is clicked
-    selectAllCheckbox.addEventListener('change', function() {
-      const isChecked = this.checked;
-      
-      itemCheckboxes.forEach(checkbox => {
-        checkbox.checked = isChecked;
-      });
-      
-      // Show or hide bulk actions toolbar
-      toggleBulkActionsToolbar();
-    });
-    
-    // Check "Select All" if all items are selected, uncheck otherwise
-    itemCheckboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', function() {
-        const allChecked = [...itemCheckboxes].every(cb => cb.checked);
-        const anyChecked = [...itemCheckboxes].some(cb => cb.checked);
-        
-        selectAllCheckbox.checked = allChecked;
-        selectAllCheckbox.indeterminate = anyChecked && !allChecked;
-        
-        // Show or hide bulk actions toolbar
-        toggleBulkActionsToolbar();
-      });
-    });
-    
-    // Function to show/hide bulk actions toolbar
-    function toggleBulkActionsToolbar() {
-      const bulkActionsToolbar = document.getElementById('bulkActionsToolbar');
-      if (!bulkActionsToolbar) return;
-      
-      const anyChecked = [...itemCheckboxes].some(cb => cb.checked);
-      
-      if (anyChecked) {
-        bulkActionsToolbar.classList.remove('d-none');
+  if (statusSelect && shippingStatusSelect) {
+    statusSelect.addEventListener('change', function() {
+      // If order is cancelled, disable shipping status
+      if (this.value === 'cancelled') {
+        shippingStatusSelect.disabled = true;
+        shippingStatusSelect.value = 'pending';
       } else {
-        bulkActionsToolbar.classList.add('d-none');
+        shippingStatusSelect.disabled = false;
       }
       
-      // Update selected count
-      const selectedCount = [...itemCheckboxes].filter(cb => cb.checked).length;
-      const countElement = bulkActionsToolbar.querySelector('.selected-count');
-      if (countElement) {
-        countElement.textContent = selectedCount;
+      // If order is completed, set shipping status to delivered by default
+      if (this.value === 'completed') {
+        shippingStatusSelect.value = 'delivered';
       }
-    }
+    });
   }
+});
+
+// Form validation 
+document.addEventListener('DOMContentLoaded', function() {
+  const forms = document.querySelectorAll('.needs-validation');
   
-  // Function to initialize image previews
-  function initImagePreviews() {
-    document.querySelectorAll('.preview-trigger').forEach(trigger => {
-      trigger.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        const imageUrl = this.dataset.image || this.href;
-        const title = this.dataset.title || '';
-        
-        // Check if modal exists, create if not
-        let modal = document.getElementById('imagePreviewModal');
-        if (!modal) {
-          modal = document.createElement('div');
-          modal.id = 'imagePreviewModal';
-          modal.className = 'modal fade';
-          modal.setAttribute('tabindex', '-1');
-          modal.setAttribute('aria-hidden', 'true');
-          
-          modal.innerHTML = `
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title"></h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                  <img src="" class="img-fluid" alt="Preview">
-                </div>
-              </div>
-            </div>
-          `;
-          
-          document.body.appendChild(modal);
+  if (forms.length > 0) {
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
         }
         
-        // Set modal content
-        const modalTitle = modal.querySelector('.modal-title');
-        const modalImage = modal.querySelector('.modal-body img');
-        
-        if (modalTitle) modalTitle.textContent = title;
-        if (modalImage) modalImage.src = imageUrl;
-        
-        // Show modal
-        const modalInstance = new bootstrap.Modal(modal);
-        modalInstance.show();
-      });
+        form.classList.add('was-validated');
+      }, false);
     });
   }
-  
-  // Function to handle tab persistence using URL hash
-  function initTabPersistence() {
-    // Check if there's a hash in the URL
-    const hash = window.location.hash;
-    if (hash) {
-      // Find the tab that matches the hash
-      const tab = document.querySelector(`a[href="${hash}"]`);
-      if (tab) {
-        // Activate the tab
-        const tabInstance = new bootstrap.Tab(tab);
-        tabInstance.show();
-      }
-    }
-    
-    // Update hash when tabs are clicked
-    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
-      tab.addEventListener('shown.bs.tab', function(e) {
-        window.location.hash = e.target.getAttribute('href');
-      });
-    });
-  }
-  
-  // Function to initialize form validation
-  function initFormValidation() {
-    // Check if the validation plugin is available
-    if (typeof $.fn.validate === 'undefined') return;
-    
-    $('.needs-validation').validate({
-      errorElement: 'div',
-      errorClass: 'invalid-feedback',
-      highlight: function(element) {
-        $(element).addClass('is-invalid').removeClass('is-valid');
-      },
-      unhighlight: function(element) {
-        $(element).removeClass('is-invalid').addClass('is-valid');
-      },
-      errorPlacement: function(error, element) {
-        error.insertAfter(element);
+});
+
+// Dashboard DataTable Initialization (if DataTables is available)
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof $.fn.DataTable !== 'undefined') {
+    $('.datatable').DataTable({
+      responsive: true,
+      lengthMenu: [5, 10, 25, 50],
+      pageLength: 10,
+      language: {
+        search: "",
+        searchPlaceholder: "Search...",
+        lengthMenu: "_MENU_ records per page",
+        info: "Showing _START_ to _END_ of _TOTAL_ entries",
+        infoEmpty: "Showing 0 to 0 of 0 entries",
+        infoFiltered: "(filtered from _MAX_ total entries)",
+        paginate: {
+          first: '<i class="fas fa-angle-double-left"></i>',
+          previous: '<i class="fas fa-angle-left"></i>',
+          next: '<i class="fas fa-angle-right"></i>',
+          last: '<i class="fas fa-angle-double-right"></i>'
+        }
       }
     });
   }
+});
+
+// Export Table Data (if relevant libraries are loaded)
+document.addEventListener('DOMContentLoaded', function() {
+  const exportButtons = document.querySelectorAll('[data-export]');
   
-  // Function to initialize sortable tables
-  function initSortableTables() {
-    document.querySelectorAll('.sortable-table').forEach(table => {
-      const headers = table.querySelectorAll('th[data-sort]');
-      
-      headers.forEach(header => {
-        header.classList.add('sortable');
-        header.insertAdjacentHTML('beforeend', '<span class="sort-icon ms-1"></span>');
+  if (exportButtons.length > 0 && typeof $.fn.DataTable !== 'undefined') {
+    Array.from(exportButtons).forEach(button => {
+      button.addEventListener('click', function() {
+        const exportType = this.dataset.export;
+        const tableId = this.dataset.table;
+        const filename = this.dataset.filename || 'export';
+        const table = document.getElementById(tableId);
         
-        header.addEventListener('click', function() {
-          const sortBy = this.dataset.sort;
-          const isAsc = !this.classList.contains('sort-asc');
+        if (table) {
+          // Create sanitized title for the export
+          const title = (this.dataset.title || 'Export Data').replace(/[^a-z0-9]/gi, '_');
           
-          // Remove sort classes from all headers
-          headers.forEach(h => {
-            h.classList.remove('sort-asc', 'sort-desc');
-          });
-          
-          // Add sort class to clicked header
-          this.classList.add(isAsc ? 'sort-asc' : 'sort-desc');
-          
-          // Sort the table
-          sortTable(table, sortBy, isAsc);
-        });
+          if (exportType === 'excel' && typeof XLSX !== 'undefined') {
+            exportTableToExcel(table, filename);
+          } else if (exportType === 'csv') {
+            exportTableToCSV(table, filename);
+          } else if (exportType === 'pdf' && typeof jsPDF !== 'undefined') {
+            exportTableToPDF(table, filename, title);
+          } else if (exportType === 'print') {
+            printTable(table);
+          }
+        }
       });
     });
-    
-    function sortTable(table, sortBy, isAsc) {
-      const tbody = table.querySelector('tbody');
-      const rows = Array.from(tbody.querySelectorAll('tr'));
-      
-      // Sort rows
-      rows.sort((a, b) => {
-        const aValue = a.querySelector(`td[data-sort-value="${sortBy}"]`)?.dataset.sortValue || 
-                      a.querySelector(`td:nth-child(${getColumnIndex(table, sortBy) + 1})`)?.textContent.trim();
-        
-        const bValue = b.querySelector(`td[data-sort-value="${sortBy}"]`)?.dataset.sortValue || 
-                      b.querySelector(`td:nth-child(${getColumnIndex(table, sortBy) + 1})`)?.textContent.trim();
-        
-        // Try to parse as number if possible
-        const aNum = parseFloat(aValue);
-        const bNum = parseFloat(bValue);
-        
-        if (!isNaN(aNum) && !isNaN(bNum)) {
-          return isAsc ? aNum - bNum : bNum - aNum;
-        }
-        
-        // String comparison
-        return isAsc ? 
-          aValue.localeCompare(bValue, undefined, { numeric: true, sensitivity: 'base' }) : 
-          bValue.localeCompare(aValue, undefined, { numeric: true, sensitivity: 'base' });
-      });
-      
-      // Re-append rows in sorted order
-      rows.forEach(row => tbody.appendChild(row));
-    }
-    
-    function getColumnIndex(table, columnName) {
-      const headers = Array.from(table.querySelectorAll('th'));
-      return headers.findIndex(header => header.dataset.sort === columnName);
-    }
   }
   
-  // Initialize all custom scripts on document ready
-  document.addEventListener('DOMContentLoaded', function() {
-    // Initialize rich text editors
-    initRichTextEditors();
+  // Export to Excel
+  function exportTableToExcel(table, filename) {
+    const wb = XLSX.utils.table_to_book(table);
+    XLSX.writeFile(wb, `${filename}.xlsx`);
+  }
+  
+  // Export to CSV
+  function exportTableToCSV(table, filename) {
+    const rows = Array.from(table.querySelectorAll('tr'));
+    const csvData = rows.map(row => {
+      const cells = Array.from(row.querySelectorAll('th, td'));
+      return cells.map(cell => {
+        // Replace HTML with text content and escape any quotes
+        return `"${cell.textContent.replace(/"/g, '""')}"`;
+      }).join(',');
+    }).join('\n');
     
-    // Initialize bulk selection
-    initBulkSelection();
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute('download', `${filename}.csv`);
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+  
+  // Export to PDF
+  function exportTableToPDF(table, filename, title) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('l', 'pt', 'a4');
     
-    // Initialize image previews
-    initImagePreviews();
+    doc.text(title, 40, 40);
     
-    // Initialize tab persistence
-    initTabPersistence();
+    const columns = Array.from(table.querySelectorAll('th')).map(th => th.textContent);
+    const data = Array.from(table.querySelectorAll('tbody tr')).map(row => {
+      return Array.from(row.querySelectorAll('td')).map(td => td.textContent);
+    });
     
-    // Initialize form validation
-    initFormValidation();
+    doc.autoTable({
+      head: [columns],
+      body: data,
+      startY: 60,
+      margin: { top: 20 },
+      styles: { overflow: 'linebreak' },
+      headStyles: { fillColor: [78, 115, 223] }
+    });
     
-    // Initialize sortable tables
-    initSortableTables();
-    
-    // Set up date range pickers if available
-    if (typeof $.fn.daterangepicker !== 'undefined') {
-      $('.daterange-picker').daterangepicker({
-        opens: 'left',
-        locale: {
-          format: 'YYYY-MM-DD'
-        }
-      });
-    }
-    
-    // Initialize select2 dropdowns if available
-    if (typeof $.fn.select2 !== 'undefined') {
-      $('.select2').select2({
-        theme: 'bootstrap4',
-        width: '100%'
-      });
-    }
-  });
+    doc.save(`${filename}.pdf`);
+  }
+  
+  // Print Table
+  function printTable(table) {
+    const win = window.open('', '', 'height=700,width=700');
+    win.document.write('<html><head><title>Print Table</title>');
+    win.document.write('<style>table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid #ddd; padding: 8px; text-align: left; } th { background-color: #f2f2f2; }</style>');
+    win.document.write('</head><body>');
+    win.document.write('<h1>Print View</h1>');
+    win.document.write(table.outerHTML);
+    win.document.write('</body></html>');
+    win.document.close();
+    win.print();
+  }
+});

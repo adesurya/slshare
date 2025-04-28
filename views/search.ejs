@@ -98,19 +98,19 @@
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
-    <a href="/" class="nav-item active">
+    <a href="/" class="nav-item <%= currentPage === 'home' ? 'active' : '' %>">
       <i class="fas fa-home"></i>
       <span>Beranda</span>
     </a>
-    <a href="/brands" class="nav-item">
+    <a href="/brands" class="nav-item <%= currentPage === 'brands' ? 'active' : '' %>">
       <i class="fas fa-tag"></i>
       <span>Brand</span>
     </a>
-    <a href="/user/dashboard" class="nav-item">
+    <a href="/user/dashboard" class="nav-item <%= currentPage === 'earnings' ? 'active' : '' %>">
       <i class="fas fa-wallet"></i>
       <span>Pendapatan</span>
     </a>
-    <a href="/user/profile" class="nav-item">
+    <a href="/user/profile" class="nav-item <%= currentPage === 'profile' ? 'active' : '' %>">
       <i class="fas fa-user"></i>
       <span>Saya</span>
     </a>

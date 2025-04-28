@@ -39,7 +39,9 @@ class Admin {
       return rows.length ? rows[0] : null;
     } catch (error) {
       console.error('Error finding admin by id:', error);
-      throw error;
+      // Instead of throwing error, return null for missing admin
+      console.error('Admin not found, id:', id);
+      return null;
     }
   }
 
@@ -70,7 +72,12 @@ class Admin {
   }
 
   static async verifyPassword(plainPassword, hashedPassword) {
-    return await bcrypt.compare(plainPassword, hashedPassword);
+    try {
+      return await bcrypt.compare(plainPassword, hashedPassword);
+    } catch (error) {
+      console.error('Error verifying password:', error);
+      return false;
+    }
   }
 
   static async updateProfile(adminId, adminData) {
@@ -155,7 +162,7 @@ class Admin {
       return rows;
     } catch (error) {
       console.error('Error finding all admins:', error);
-      throw error;
+      return []; // Return empty array instead of throwing
     }
   }
 
@@ -200,7 +207,7 @@ class Admin {
       return rows.length > 0 && rows[0].role === 'superadmin';
     } catch (error) {
       console.error('Error checking superadmin status:', error);
-      throw error;
+      return false; // Default to not a superadmin
     }
   }
 
@@ -215,7 +222,7 @@ class Admin {
       return rows;
     } catch (error) {
       console.error('Error getting admin activity logs:', error);
-      throw error;
+      return []; // Return empty array instead of throwing
     }
   }
 
@@ -230,7 +237,8 @@ class Admin {
       return result.insertId;
     } catch (error) {
       console.error('Error logging admin activity:', error);
-      throw error;
+      // Just log error but don't throw - this is a non-critical operation
+      return null;
     }
   }
 }

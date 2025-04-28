@@ -137,6 +137,34 @@
     </div>
   </div>
 
+  <script>
+    // Fix for bottom navigation bar on desktop
+    document.addEventListener('DOMContentLoaded', function() {
+      // Function to adjust bottom nav based on container width
+      function adjustBottomNav() {
+        const appContainer = document.querySelector('.app-container');
+        const bottomNav = document.querySelector('.bottom-nav');
+        
+        if (window.innerWidth >= 768) {
+          // Desktop view - align with container
+          bottomNav.style.maxWidth = '480px';
+          bottomNav.style.left = '50%';
+          bottomNav.style.transform = 'translateX(-50%)';
+        } else {
+          // Mobile view - reset styles
+          bottomNav.style.maxWidth = '';
+          bottomNav.style.left = '0';
+          bottomNav.style.transform = '';
+        }
+      }
+      
+      // Run on page load
+      adjustBottomNav();
+      
+      // Also run on window resize
+      window.addEventListener('resize', adjustBottomNav);
+    });
+  </script>
   <!-- Scripts -->
   <script src="/js/main.js"></script>
   <% if (locals.showAppPrompt) { %>

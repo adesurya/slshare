@@ -67,25 +67,53 @@
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-      <a href="/" class="nav-item <%= currentPage === 'home' ? 'active' : '' %>" data-page="home">
+      <a href="/" class="nav-item <%= currentPage === 'home' ? 'active' : '' %>">
         <i class="fas fa-home"></i>
         <span>Beranda</span>
       </a>
-      <a href="/brands" class="nav-item <%= currentPage === 'brands' ? 'active' : '' %>" data-page="brands">
+      <a href="/brands" class="nav-item <%= currentPage === 'brands' ? 'active' : '' %>">
         <i class="fas fa-tag"></i>
         <span>Brand</span>
       </a>
-      <a href="/user/dashboard" class="nav-item <%= currentPage === 'earnings' ? 'active' : '' %>" data-page="earnings">
+      <a href="/user/dashboard" class="nav-item <%= currentPage === 'earnings' ? 'active' : '' %>">
         <i class="fas fa-wallet"></i>
         <span>Pendapatan</span>
       </a>
-      <a href="/user/profile" class="nav-item <%= currentPage === 'profile' ? 'active' : '' %>" data-page="profile">
+      <a href="/user/profile" class="nav-item <%= currentPage === 'profile' ? 'active' : '' %>">
         <i class="fas fa-user"></i>
         <span>Saya</span>
       </a>
-    </nav>
+    </nav>    
   </div>
 
+  <script>
+    // Fix for bottom navigation bar on desktop
+    document.addEventListener('DOMContentLoaded', function() {
+      // Function to adjust bottom nav based on container width
+      function adjustBottomNav() {
+        const appContainer = document.querySelector('.app-container');
+        const bottomNav = document.querySelector('.bottom-nav');
+        
+        if (window.innerWidth >= 768) {
+          // Desktop view - align with container
+          bottomNav.style.maxWidth = '480px';
+          bottomNav.style.left = '50%';
+          bottomNav.style.transform = 'translateX(-50%)';
+        } else {
+          // Mobile view - reset styles
+          bottomNav.style.maxWidth = '';
+          bottomNav.style.left = '0';
+          bottomNav.style.transform = '';
+        }
+      }
+      
+      // Run on page load
+      adjustBottomNav();
+      
+      // Also run on window resize
+      window.addEventListener('resize', adjustBottomNav);
+    });
+  </script>
   <!-- Scripts -->
   <script src="/js/main.js"></script>
   <script src="/js/toast-notifications.js"></script>

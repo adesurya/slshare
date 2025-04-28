@@ -6,20 +6,37 @@ console.log('Loading brands routes module...');
 
 // Get all brands
 router.get('/', async (req, res) => {
-  console.log('GET /brands request received');
   try {
+    console.log('Fetching all brands...');
+    // Fetch brands from database
     const brands = await Brand.findAll();
+    console.log(`Retrieved ${brands.length} brands`);
+    
+    // For each brand, get a few products using findByBrand instead of findByBrandId
+    for (let brand of brands) {
+      try {
+        // Menggunakan findByBrand dengan nama brand, bukan ID
+        brand.products = await Product.findByBrand(brand.name, 5, 0);
+        console.log(`Found ${brand.products.length} products for brand ${brand.name}`);
+      } catch (err) {
+        console.error(`Error loading products for brand ${brand.name}:`, err);
+        // Fallback to empty products array if there's an error
+        brand.products = [];
+      }
+    }
     
     res.render('brands/index', {
-      title: 'Brand Pilihan - MOVA',
+      title: 'Brands - MOVA',
       brands,
-      currentPage: 'brands'
+      currentPage: 'brands', // Penting: set currentPage ke 'brands'
+      showSearchBar: true
     });
   } catch (error) {
     console.error('Brands page error:', error);
     res.status(500).render('error', {
       title: 'Error',
-      message: 'Failed to load brands page'
+      message: 'Failed to load brands page',
+      currentPage: ''
     });
   }
 });
@@ -72,35 +89,45 @@ router.get('/:id/products', async (req, res) => {
 
 // Get brand details and products
 router.get('/:id', async (req, res) => {
-  console.log(`GET /brands/${req.params.id} request received`);
   try {
-    const brand = await Brand.findById(req.params.id);
+    const brandId = req.params.id;
+    console.log(`Accessing brand with ID: ${brandId}`);
+    
+    // Fetch brand
+    const brand = await Brand.findById(brandId);
     
     if (!brand) {
       return res.status(404).render('error', {
         title: 'Brand Not Found',
-        message: 'The brand you requested could not be found'
+        message: 'The brand you requested could not be found.',
+        currentPage: 'brands' // Tetap set currentPage dengan benar saat error
       });
     }
     
-    const products = await Product.findByBrand(brand.name);
+    console.log(`Found brand: ${brand.name}, fetching products...`);
+    
+    // Fetch products for this brand using findByBrand dengan nama brand
+    const products = await Product.findByBrand(brand.name, 10, 0);
+    console.log(`Retrieved ${products.length} products for brand ${brand.name}`);
     
     // Calculate cashback for each product
     for (let product of products) {
       product.cashback = await Product.calculateCashback(product.id);
     }
     
-    res.render('brands/detail', {
+    res.render('brands/show', {
       title: `${brand.name} - MOVA`,
       brand,
       products,
-      currentPage: 'brands'
+      currentPage: 'brands', // Penting: set currentPage ke 'brands'
+      showSearchBar: true
     });
   } catch (error) {
-    console.error('Brand detail page error:', error);
+    console.error('Brand details error:', error);
     res.status(500).render('error', {
       title: 'Error',
-      message: 'Failed to load brand details'
+      message: 'Failed to load brand details',
+      currentPage: 'brands' // Bahkan saat error, tetap set currentPage dengan benar
     });
   }
 });

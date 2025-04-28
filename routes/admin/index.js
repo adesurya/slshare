@@ -1,29 +1,26 @@
 // routes/admin/index.js
 const express = require('express');
 const router = express.Router();
-const { body } = require('express-validator'); // Make sure this is imported
-const db = require('../../config/database'); // Make sure this is imported
+const { body, validationResult } = require('express-validator');
+const db = require('../../config/database');
 
-// Import routes
-const authRoutes = require('./auth');
-// Check if these files exist and export router objects
+// Import routes - make sure these are routers
+const authRouter = require('./auth').router; // Changed to access router property
 const dashboardRoutes = require('./dashboard');
 const usersRoutes = require('./users');
 const brandsRoutes = require('./brands');
 const productsRoutes = require('./products');
 const transactionsRoutes = require('./transactions');
+const ordersRoutes = require('./orders'); // Make sure this is imported
 
-// Import middleware
-const { isAdminAuthenticated, setCurrentAdmin } = require('../../middlewares/adminAuth');
+// Import middleware - fix path if needed
+const { isAdminAuthenticated, logAdminActivity } = require('./auth');
 const Admin = require('../../models/Admin');
 
-// Apply setCurrentAdmin middleware to all admin routes
-router.use(setCurrentAdmin);
-
 // Admin authentication routes
-router.use('/', authRoutes);
+router.use('/auth', authRouter);
 
-// Admin dashboard routes - make sure dashboardRoutes is a router, not an object
+// Admin dashboard routes
 router.use('/dashboard', isAdminAuthenticated, dashboardRoutes);
 
 // Users management routes
@@ -35,12 +32,24 @@ router.use('/brands', isAdminAuthenticated, brandsRoutes);
 // Products management routes
 router.use('/products', isAdminAuthenticated, productsRoutes);
 
+// Orders management routes
+router.use('/orders', isAdminAuthenticated, ordersRoutes); // Make sure this is registered
+
 // Transactions management routes
 router.use('/transactions', isAdminAuthenticated, transactionsRoutes);
 
 // Admin home route - redirect to dashboard
 router.get('/', isAdminAuthenticated, (req, res) => {
   res.redirect('/admin/dashboard');
+});
+
+// Admin root path - redirects to login or dashboard
+router.get('/', (req, res) => {
+  if (req.session.adminId) {
+    res.redirect('/admin/dashboard');
+  } else {
+    res.redirect('/admin/auth/login');
+  }
 });
 
 // Create initial superadmin account (if no admin accounts exist)
@@ -79,7 +88,7 @@ router.post('/setup', [
     .isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
   body('confirm_password')
     .custom((value, { req }) => {
-      if (value !== req.body.password) {
+      if (value !== req.body.new_password) {
         throw new Error('Passwords do not match');
       }
       return true;
@@ -138,7 +147,13 @@ router.use((req, res) => {
   res.status(404).render('admin/error', {
     title: 'Page Not Found',
     message: 'The admin page you requested could not be found.',
-    layout: res.locals.isAdminAuthenticated ? 'admin/layouts/main' : 'admin/layouts/auth'
+    layout: req.session.adminId ? 'admin/layouts/main' : 'admin/layouts/auth',
+    admin: req.session.adminId ? {
+      id: req.session.adminId,
+      username: req.session.adminUsername,
+      role: req.session.adminRole
+    } : null,
+    section: 'dashboard' // Default section
   });
 });
 

@@ -30,7 +30,7 @@
           <i class="fas fa-arrow-left"></i>
         </a>
         <h1>Detail Produk</h1>
-        <div class="share-button">
+        <div id="shareProduct" class="share-button">
           <i class="fas fa-share-alt"></i>
         </div>
       </div>
@@ -61,12 +61,26 @@
         </div>
         
         <div class="product-actions">
-          <button class="wishlist-button">
-            <i class="far fa-heart"></i> Wishlist
-          </button>
-          <a href="#" class="buy-button">
-            <i class="fas fa-shopping-cart"></i> Beli Sekarang
-          </a>
+          <% if (locals.isAuthenticated) { %>
+            <button class="wishlist-button <%= locals.isInWishlist ? 'in-wishlist' : '' %>" data-product-id="<%= product.id %>">
+              <i class="<%= locals.isInWishlist ? 'fas' : 'far' %> fa-heart"></i> 
+              <span><%= locals.isInWishlist ? 'In Wishlist' : 'Wishlist' %></span>
+            </button>
+          <% } else { %>
+            <button class="wishlist-button login-required">
+              <i class="far fa-heart"></i> Wishlist
+            </button>
+          <% } %>
+          
+          <% if (locals.isAuthenticated) { %>
+            <a href="#" class="buy-button" data-product-id="<%= product.id %>">
+              <i class="fas fa-shopping-cart"></i> Beli Sekarang
+            </a>
+          <% } else { %>
+            <a href="#" class="buy-button login-required">
+              <i class="fas fa-shopping-cart"></i> Beli Sekarang
+            </a>
+          <% } %>
         </div>
       </div>
       
@@ -112,7 +126,7 @@
     </div>
     
     <!-- Login Modal for Guest Users -->
-    <% if (locals.requiresAuth) { %>
+    <% if (!locals.isAuthenticated) { %>
     <div id="login-modal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -268,6 +282,15 @@
           }
         });
       }
+      
+      // Login required buttons
+      const loginRequiredButtons = document.querySelectorAll('.login-required');
+      loginRequiredButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          document.getElementById('login-modal').style.display = 'flex';
+        });
+      });
       
       // Buy button functionality
       const buyButton = document.querySelector('.buy-button:not(.login-required)');
@@ -505,6 +528,7 @@
       border-radius: 4px;
       color: white;
       text-decoration: none;
+      margin: 0 5px;
     }
     
     .share-button-social i {
@@ -532,11 +556,247 @@
       color: #ff0033;
     }
     
+    /* Product detail styles */
+    .product-detail-container {
+      padding: 15px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .page-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .back-button {
+      font-size: 20px;
+      color: #333;
+      margin-right: 15px;
+    }
+    
+    .share-button {
+      margin-left: auto;
+      font-size: 20px;
+      color: #333;
+      cursor: pointer;
+    }
+    
+    .product-gallery {
+      margin-bottom: 20px;
+    }
+    
+    .main-image {
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 300px;
+      background-color: #f5f5f5;
+    }
+    
+    .main-image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .product-info {
+      margin-bottom: 25px;
+    }
+    
+    .product-name {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0 0 10px;
+    }
+    
+    .product-brand {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .brand-logo {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+      margin-right: 10px;
+      border-radius: 4px;
+    }
+    
+    .product-price-info {
+      margin-bottom: 10px;
+    }
+    
+    .product-price {
+      font-size: 22px;
+      font-weight: bold;
+      color: #ff0033;
+    }
+    
+    .product-cashback {
+      display: flex;
+      align-items: center;
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+    
+    .cashback-label {
+      color: #666;
+      margin-right: auto;
+    }
+    
+    .cashback-amount {
+      font-weight: bold;
+      color: #32a852;
+    }
+    
+    .product-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .wishlist-button, .buy-button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+    
+    .wishlist-button {
+      background-color: #f5f5f5;
+      color: #333;
+      border: 1px solid #ddd;
+    }
+    
+    .wishlist-button i {
+      margin-right: 5px;
+    }
+    
+    .buy-button {
+      background-color: #ff0033;
+      color: white;
+      border: none;
+    }
+    
+    .buy-button i {
+      margin-right: 5px;
+    }
+    
+    .product-description {
+      margin-bottom: 25px;
+    }
+    
+    .product-description h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .description-content {
+      color: #666;
+      line-height: 1.5;
+    }
+    
+    .related-products h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    
+    .products-slider {
+      display: flex;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      gap: 15px;
+      padding-bottom: 10px;
+    }
+    
+    .products-slider::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .product-card {
+      flex: 0 0 170px;
+      width: 170px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-card a {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .product-card .product-image {
+      height: 150px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f5f5f5;
+      position: relative;
+    }
+    
+    .product-card .product-image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .cashback-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background-color: #32a852;
+      color: white;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .product-card .product-info {
+      padding: 10px;
+    }
+    
+    .product-card .product-name {
+      font-size: 14px;
+      font-weight: normal;
+      margin: 0 0 5px;
+      height: 40px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    
+    .product-card .product-price {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    
+    .product-card .product-cashback {
+      padding: 5px;
+      margin-bottom: 0;
+      font-size: 12px;
+    }
+    
     @keyframes slideUp {
       from { transform: translateY(50px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
   </style>
-    <script src="/js/page-specific-fix.js"></script>
+  <script src="/js/page-specific-fix.js"></script>
 </body>
 </html>

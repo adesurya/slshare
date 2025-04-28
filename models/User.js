@@ -581,36 +581,59 @@ static async getUserStats(userId) {
       'SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE user_id = ? AND status != "cancelled"',
       [userId]
     );
-    const totalSpent = spentResult[0].total;
+    const totalSpent = spentResult[0].total || 0; // Ensure we have a number, not NULL
     
     // Get total cashback
     const [cashbackResult] = await db.query(
       'SELECT COALESCE(SUM(cashback_amount), 0) as total FROM orders WHERE user_id = ? AND status = "completed"',
       [userId]
     );
-    const totalCashback = cashbackResult[0].total;
+    const totalCashback = cashbackResult[0].total || 0; // Ensure we have a number, not NULL
     
-    // Get last order date
+    // Get last order with details
     const [lastOrderResult] = await db.query(
-      'SELECT created_at FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 1',
+      `SELECT o.*, COUNT(oi.id) as items_count 
+       FROM orders o 
+       LEFT JOIN order_items oi ON o.id = oi.order_id 
+       WHERE o.user_id = ? 
+       GROUP BY o.id
+       ORDER BY o.created_at DESC 
+       LIMIT 1`,
       [userId]
     );
-    const lastOrder = lastOrderResult.length > 0 ? lastOrderResult[0].created_at : null;
+    
+    const lastOrder = lastOrderResult.length > 0 ? lastOrderResult[0] : null;
+    
+    // Get wallet balance if available
+    let walletBalance = 0;
+    try {
+      const [walletResult] = await db.query(
+        'SELECT wallet_balance FROM users WHERE id = ?',
+        [userId]
+      );
+      if (walletResult.length > 0) {
+        walletBalance = walletResult[0].wallet_balance || 0;
+      }
+    } catch (walletError) {
+      console.error('Error getting wallet balance:', walletError);
+    }
     
     return {
-      total_orders: totalOrders,
-      total_spent: totalSpent,
-      total_cashback: totalCashback,
-      last_order: lastOrder
+      totalOrders,
+      totalSpent,
+      cashbackEarned: totalCashback,
+      walletBalance,
+      lastOrder
     };
   } catch (error) {
     console.error('Error in User.getUserStats:', error);
     // Return default values if error
     return {
-      total_orders: 0,
-      total_spent: 0,
-      total_cashback: 0,
-      last_order: null
+      totalOrders: 0,
+      totalSpent: 0,
+      cashbackEarned: 0,
+      walletBalance: 0,
+      lastOrder: null
     };
   }
 }

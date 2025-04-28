@@ -20,13 +20,25 @@ class Product {
 
   static async findById(id) {
     try {
-      const [rows] = await db.execute(
-        'SELECT * FROM products WHERE id = ?',
-        [id]
-      );
-      return rows.length ? rows[0] : null;
+      // Log untuk debugging
+      console.log(`Finding product with ID: ${id}`);
+      
+      const conn = await db.getConnection();
+      
+      // Hapus kondisi is_active karena kolom ini tidak ada di tabel
+      const query = 'SELECT * FROM products WHERE id = ?';
+      const [rows] = await conn.query(query, [id]);
+      
+      conn.release();
+      
+      if (rows.length === 0) {
+        console.log(`No product found with ID: ${id}`);
+        return null;
+      }
+      
+      return rows[0];
     } catch (error) {
-      console.error('Error finding product by id:', error);
+      console.error(`Error in Product.findById: ${error.message}`);
       throw error;
     }
   }

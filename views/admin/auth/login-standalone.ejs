@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || 'Admin Login - MOVA' %></title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4e73df;
+      --primary-dark: #3a5ccc;
+      --secondary: #1cc88a;
+      --secondary-dark: #17a673;
+      --light-bg: #f8f9fc;
+      --dark-text: #5a5c69;
+      --border-color: #e3e6f0;
+      --box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+      --transition: all 0.2s ease-in-out;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--light-bg);
+      background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .login-card {
+      max-width: 430px;
+      width: 100%;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    
+    .login-header {
+      background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+    
+    .login-header .brand {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .login-header .brand span {
+      color: var(--secondary);
+    }
+    
+    .login-header p {
+      margin-bottom: 0;
+      opacity: 0.8;
+    }
+    
+    .login-body {
+      padding: 2rem;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      border-color: var(--primary-dark);
+    }
+    
+    .form-control:focus {
+      border-color: #bac8f3;
+      box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+    }
+    
+    .alert {
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .input-group-text {
+      background-color: #f8f9fc;
+      border-right: none;
+    }
+    
+    .form-control {
+      border-left: none;
+    }
+    
+    .input-group:focus-within .input-group-text {
+      border-color: #bac8f3;
+    }
+    
+    .forgot-password {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .forgot-password:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+    
+    .footer-text {
+      font-size: 0.85rem;
+      color: #718096;
+    }
+    
+    .password-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #718096;
+      z-index: 10;
+    }
+    
+    .password-toggle:hover {
+      color: var(--primary);
+    }
+    
+    /* Auto login button styling */
+    .auto-login-btn {
+      background-color: #f8f9fa;
+      color: #6c757d;
+      border: 1px solid #dee2e6;
+      transition: var(--transition);
+    }
+    
+    .auto-login-btn:hover {
+      background-color: #e9ecef;
+      color: #495057;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="login-card mx-auto">
+      <div class="login-header">
+        <div class="brand">MOVA<span>Admin</span></div>
+        <p>Admin Dashboard Login</p>
+      </div>
+      
+      <div class="login-body">
+        <% if (locals.errorMessage) { %>
+          <div class="alert alert-danger" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i> <%= errorMessage %>
+          </div>
+        <% } %>
+        
+        <% if (locals.successMessage) { %>
+          <div class="alert alert-success" role="alert">
+            <i class="fas fa-check-circle me-2"></i> <%= successMessage %>
+          </div>
+        <% } %>
+        
+        <form action="/admin/auth/login" method="POST">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-user"></i></span>
+              <input type="text" class="form-control" id="username" name="username" 
+                     placeholder="Enter your username"
+                     value="<%= locals.formData ? formData.username : '' %>" required>
+            </div>
+          </div>
+          
+          <div class="mb-4 position-relative">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-lock"></i></span>
+              <input type="password" class="form-control" id="password" name="password" 
+                     placeholder="Enter your password" required>
+              <span class="password-toggle"><i class="fas fa-eye"></i></span>
+            </div>
+          </div>
+          
+          <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-primary py-2">
+              <i class="fas fa-sign-in-alt me-2"></i> Login
+            </button>
+          </div>
+        </form>
+        
+        <div class="text-center">
+          <a href="/admin/auth/forgot-password" class="forgot-password">Forgot Password?</a>
+        </div>
+        
+        <hr class="my-4">
+        
+        <div class="text-center footer-text">
+          &copy; <%= new Date().getFullYear() %> MOVA Admin. All rights reserved.
+        </div>
+        
+        <% if (process.env.NODE_ENV === 'development') { %>
+          <div class="text-center mt-3">
+            <a href="/admin/auth/auto-login" class="btn btn-sm auto-login-btn">
+              <i class="fas fa-rocket me-1"></i> Auto Login (Dev Only)
+            </a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Password Toggle Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const passwordInput = document.getElementById('password');
+      const passwordToggle = document.querySelector('.password-toggle');
+      
+      if (passwordToggle && passwordInput) {
+        passwordToggle.addEventListener('click', function() {
+          const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+          passwordInput.setAttribute('type', type);
+          
+          // Toggle icon
+          const icon = this.querySelector('i');
+          icon.classList.toggle('fa-eye');
+          icon.classList.toggle('fa-eye-slash');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

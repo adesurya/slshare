@@ -1,76 +1,95 @@
 <!-- Brand Details Page -->
-<div class="row mb-4">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="card-title">Brand Details: <%= brand.name %></h5>
-          <div class="card-actions">
-            <a href="/admin/brands" class="btn btn-sm btn-outline-secondary">
-              <i class="fas fa-arrow-left"></i> Back to Brands
-            </a>
-            <a href="/admin/brands/<%= brand.id %>/edit" class="btn btn-sm btn-primary">
-              <i class="fas fa-edit"></i> Edit Brand
-            </a>
-            <a href="/admin/brands/<%= brand.id %>/delete" class="btn btn-sm btn-danger">
-              <i class="fas fa-trash"></i> Delete Brand
-            </a>
+<div class="page-header">
+  <h1 class="page-title">Brand Details: <%= brand.name %></h1>
+  <div class="d-flex gap-2">
+    <a href="/admin/brands" class="btn btn-sm btn-outline-secondary">
+      <i class="fas fa-arrow-left me-1"></i> Back to Brands
+    </a>
+    <a href="/admin/brands/<%= brand.id %>/edit" class="btn btn-sm btn-primary">
+      <i class="fas fa-edit me-1"></i> Edit Brand
+    </a>
+    <a href="/admin/brands/<%= brand.id %>/delete" class="btn btn-sm btn-danger" data-confirm-delete="true" data-confirm-message="Are you sure you want to delete <%= brand.name %>? This action cannot be undone.">
+      <i class="fas fa-trash me-1"></i> Delete Brand
+    </a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <!-- Brand Information Card -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title">Brand Information</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8">
+            <table class="table table-hover">
+              <tbody>
+                <tr>
+                  <th style="width: 180px;">Brand Name</th>
+                  <td><%= brand.name %></td>
+                </tr>
+                <tr>
+                  <th>Cashback Percentage</th>
+                  <td><span class="badge bg-success"><%= brand.cashback_percentage %>%</span></td>
+                </tr>
+                <tr>
+                  <th>Products Count</th>
+                  <td><span class="badge bg-primary"><%= brand.products_count || 0 %></span></td>
+                </tr>
+                <tr>
+                  <th>Priority Level</th>
+                  <td>
+                    <form action="/admin/brands/<%= brand.id %>/update-priority" method="POST" class="d-flex align-items-center">
+                      <input type="number" class="form-control form-control-sm" name="priority" value="<%= brand.priority || 0 %>" min="0" max="100" style="width: 80px;">
+                      <button type="submit" class="btn btn-sm btn-outline-primary ms-2">Update</button>
+                    </form>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Description</th>
+                  <td><%= brand.description %></td>
+                </tr>
+                <tr>
+                  <th>Created At</th>
+                  <td><%= new Date(brand.created_at).toLocaleString() %></td>
+                </tr>
+                <tr>
+                  <th>Updated At</th>
+                  <td><%= brand.updated_at ? new Date(brand.updated_at).toLocaleString() : 'Never' %></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-8">
-              <!-- Brand Information -->
-              <div class="mb-4">
-                <h6 class="fw-bold mb-3">Brand Information</h6>
-                <table class="table table-hover">
-                  <tbody>
-                    <tr>
-                      <th style="width: 180px;">Brand Name</th>
-                      <td><%= brand.name %></td>
-                    </tr>
-                    <tr>
-                      <th>Cashback Percentage</th>
-                      <td><%= brand.cashback_percentage %>%</td>
-                    </tr>
-                    <tr>
-                      <th>Products Count</th>
-                      <td><%= brand.products_count || 0 %></td>
-                    </tr>
-                    <tr>
-                      <th>Priority Level</th>
-                      <td>
-                        <form action="/admin/brands/<%= brand.id %>/update-priority" method="POST" class="d-flex align-items-center">
-                          <input type="number" class="form-control form-control-sm" name="priority" value="<%= brand.priority || 0 %>" min="0" max="100" style="width: 80px;">
-                          <button type="submit" class="btn btn-sm btn-outline-primary ms-2">Update</button>
-                        </form>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>Description</th>
-                      <td><%= brand.description %></td>
-                    </tr>
-                    <tr>
-                      <th>Created At</th>
-                      <td><%= new Date(brand.created_at).toLocaleString() %></td>
-                    </tr>
-                    <tr>
-                      <th>Updated At</th>
-                      <td><%= brand.updated_at ? new Date(brand.updated_at).toLocaleString() : 'Never' %></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <!-- Brand Logo -->
-              <div class="text-center">
-                <h6 class="fw-bold mb-3">Brand Logo</h6>
-                <div class="mb-3">
-                  <img src="<%= brand.logo_url %>" alt="<%= brand.name %>" class="img-fluid rounded" style="max-height: 200px; max-width: 100%;">
+          <div class="col-md-4">
+            <div class="text-center">
+              <div class="mb-3">
+                <div class="p-3 rounded-3 bg-light d-flex justify-content-center align-items-center mb-3" style="height: 200px;">
+                  <img src="<%= brand.logo_url %>" alt="<%= brand.name %>" class="img-fluid rounded" style="max-height: 180px; max-width: 100%;">
                 </div>
                 <a href="/admin/brands/<%= brand.id %>/edit" class="btn btn-sm btn-outline-primary">
-                  <i class="fas fa-upload"></i> Update Logo
+                  <i class="fas fa-upload me-1"></i> Update Logo
                 </a>
+              </div>
+              <div class="card mt-4">
+                <div class="card-body bg-light p-3">
+                  <h6 class="mb-2">Statistics</h6>
+                  <div class="d-flex justify-content-between mb-1">
+                    <span>Products:</span>
+                    <span class="fw-medium"><%= brand.products_count || 0 %></span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-1">
+                    <span>Created:</span>
+                    <span class="fw-medium"><%= new Date(brand.created_at).toLocaleDateString() %></span>
+                  </div>
+                  <% if (brand.updated_at) { %>
+                    <div class="d-flex justify-content-between">
+                      <span>Last Updated:</span>
+                      <span class="fw-medium"><%= new Date(brand.updated_at).toLocaleDateString() %></span>
+                    </div>
+                  <% } %>
+                </div>
               </div>
             </div>
           </div>
@@ -79,78 +98,184 @@
     </div>
   </div>
   
-  <!-- Brand Products -->
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title">Products for <%= brand.name %></h5>
-          <div class="card-actions">
-            <a href="/admin/products/brand/<%= brand.name %>" class="btn btn-sm btn-outline-secondary">
-              <i class="fas fa-list"></i> View All
-            </a>
-            <a href="/admin/products/new?brand=<%= brand.name %>" class="btn btn-sm btn-primary">
-              <i class="fas fa-plus"></i> Add Product
-            </a>
+  <div class="col-md-4">
+    <!-- Quick Stats Card -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title">Quick Stats</h5>
+      </div>
+      <div class="card-body px-0 pb-0">
+        <div class="row g-0">
+          <div class="col-6 border-end border-bottom p-3">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center">
+              <div class="h2 mb-0"><%= brand.products_count || 0 %></div>
+              <div class="text-muted small">Products</div>
+            </div>
+          </div>
+          <div class="col-6 border-bottom p-3">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center">
+              <div class="h2 mb-0"><%= brand.cashback_percentage %>%</div>
+              <div class="text-muted small">Cashback</div>
+            </div>
+          </div>
+          <div class="col-6 border-end p-3">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center">
+              <div class="h2 mb-0"><%= brand.priority || 0 %></div>
+              <div class="text-muted small">Priority</div>
+            </div>
+          </div>
+          <div class="col-6 p-3">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center">
+              <div class="h2 mb-0">
+                <%= (locals.totalSales || 0).toLocaleString() %>
+              </div>
+              <div class="text-muted small">Total Sales</div>
+            </div>
           </div>
         </div>
-        <div class="card-body">
-          <% if (products && products.length > 0) { %>
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Cashback</th>
-                    <th>Category</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% products.forEach(function(product) { %>
-                    <tr>
-                      <td>
-                        <img src="<%= product.image_url %>" alt="<%= product.name %>" width="40" height="40" class="product-thumbnail">
-                      </td>
-                      <td><a href="/admin/products/<%= product.id %>"><%= product.name %></a></td>
-                      <td>Rp<%= Number(product.price).toLocaleString('id-ID') %></td>
-                      <td><%= product.cashback_percentage %>%</td>
-                      <td><%= product.category %></td>
-                      <td class="table-actions">
-                        <a href="/admin/products/<%= product.id %>" class="btn btn-sm btn-info" title="View">
-                          <i class="fas fa-eye"></i>
-                        </a>
-                        <a href="/admin/products/<%= product.id %>/edit" class="btn btn-sm btn-primary" title="Edit">
-                          <i class="fas fa-edit"></i>
-                        </a>
-                        <a href="/admin/products/<%= product.id %>/delete" class="btn btn-sm btn-danger" title="Delete">
-                          <i class="fas fa-trash"></i>
-                        </a>
-                      </td>
-                    </tr>
-                  <% }); %>
-                </tbody>
-              </table>
-            </div>
-            <% if (products.length >= 5) { %>
-              <div class="text-center mt-3">
-                <a href="/admin/products/brand/<%= brand.name %>" class="btn btn-outline-primary">
-                  See All Products
-                </a>
-              </div>
-            <% } %>
-          <% } else { %>
-            <div class="alert alert-info">
-              <p class="mb-0">
-                <i class="fas fa-info-circle me-2"></i>
-                No products found for this brand.
-                <a href="/admin/products/new?brand=<%= brand.name %>" class="alert-link">Add a product</a> to get started.
-              </p>
-            </div>
-          <% } %>
+      </div>
+    </div>
+    
+    <!-- Quick Actions Card -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title">Quick Actions</h5>
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <a href="/admin/products/new?brand=<%= brand.id %>" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> Add New Product
+          </a>
+          <a href="/admin/products/brand/<%= brand.name %>" class="btn btn-info text-white">
+            <i class="fas fa-list me-2"></i> View All Products
+          </a>
+          <a href="/admin/brands/<%= brand.id %>/edit" class="btn btn-outline-primary">
+            <i class="fas fa-edit me-2"></i> Edit Brand
+          </a>
+          <button type="button" class="btn btn-outline-secondary" id="refreshProductsCount">
+            <i class="fas fa-sync-alt me-2"></i> Refresh Product Count
+          </button>
         </div>
       </div>
     </div>
   </div>
+</div>
+
+<!-- Brand Products -->
+<div class="card mt-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="card-title">Products for <%= brand.name %></h5>
+    <div class="card-actions">
+      <a href="/admin/products/brand/<%= brand.name %>" class="btn btn-sm btn-outline-secondary me-2">
+        <i class="fas fa-list me-1"></i> View All
+      </a>
+      <a href="/admin/products/new?brand=<%= brand.name %>" class="btn btn-sm btn-primary">
+        <i class="fas fa-plus me-1"></i> Add Product
+      </a>
+    </div>
+  </div>
+  <div class="card-body">
+    <% if (products && products.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Cashback</th>
+              <th>Category</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% products.forEach(function(product) { %>
+              <tr>
+                <td>
+                  <img src="<%= product.image_url %>" alt="<%= product.name %>" width="40" height="40" class="product-thumbnail">
+                </td>
+                <td>
+                  <a href="/admin/products/<%= product.id %>" class="fw-medium text-decoration-none"><%= product.name %></a>
+                  <div class="small text-muted"><%= (product.description || '').substring(0, 60) %><%= (product.description || '').length > 60 ? '...' : '' %></div>
+                </td>
+                <td><span class="fw-medium">Rp<%= Number(product.price).toLocaleString('id-ID') %></span></td>
+                <td><span class="badge bg-success"><%= product.cashback_percentage %>%</span></td>
+                <td><span class="badge bg-secondary"><%= product.category %></span></td>
+                <td class="table-actions">
+                  <div class="btn-group btn-group-sm">
+                    <a href="/admin/products/<%= product.id %>" class="btn btn-info" title="View">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="/admin/products/<%= product.id %>/edit" class="btn btn-primary" title="Edit">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="/admin/products/<%= product.id %>/delete" class="btn btn-danger" title="Delete" data-confirm-delete="true">
+                      <i class="fas fa-trash"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      <% if (products.length >= 5 && (brand.products_count || 0) > 5) { %>
+        <div class="text-center mt-4">
+          <a href="/admin/products/brand/<%= brand.name %>" class="btn btn-outline-primary">
+            <i class="fas fa-external-link-alt me-1"></i> See All <%= brand.products_count %> Products
+          </a>
+        </div>
+      <% } %>
+    <% } else { %>
+      <div class="alert alert-info">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-info-circle me-3 fs-4"></i>
+          <div>
+            <p class="mb-0">
+              No products found for this brand.
+              <a href="/admin/products/new?brand=<%= brand.name %>" class="alert-link">Add a product</a> to get started.
+            </p>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Refresh products count button
+    const refreshButton = document.getElementById('refreshProductsCount');
+    if (refreshButton) {
+      refreshButton.addEventListener('click', function() {
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Refreshing...';
+        
+        fetch('/admin/brands/<%= brand.id %>/refresh-count', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Show success message
+            alert('Product count has been refreshed successfully!');
+            window.location.reload();
+          } else {
+            alert('Failed to refresh product count: ' + (data.message || 'Unknown error'));
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-sync-alt me-2"></i> Refresh Product Count';
+          }
+        })
+        .catch(error => {
+          console.error('Error refreshing count:', error);
+          alert('An error occurred while refreshing the product count. Please try again.');
+          this.disabled = false;
+          this.innerHTML = '<i class="fas fa-sync-alt me-2"></i> Refresh Product Count';
+        });
+      });
+    }
+  });
+</script>

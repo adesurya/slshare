@@ -1,12 +1,74 @@
+//routes/products.js
+
 const express = require('express');
 const router = express.Router();
-const { Product } = require('../models/Product-brand-models');
+const { Product, Brand } = require('../models/Product-brand-models');
 const User = require('../models/User');
 const { isAuthenticated } = require('../middlewares/auth');
+
+// PENTING: Pindahkan rute dengan parameter menjadi lebih bawah
+// dari rute yang lebih spesifik
+
+// Rute spesifik seperti /load-more dan /category harus didefinisikan SEBELUM rute dengan parameter /:id
+// Get load more products
+router.get('/load-more/:page', async (req, res) => {
+  try {
+    console.log("Load more products untuk halaman:", req.params.page);
+    const page = parseInt(req.params.page) || 1;
+    const limit = 12;
+    const offset = page * limit;
+    
+    const products = await Product.findAll(limit, offset);
+    
+    // Calculate cashback for each product
+    for (let product of products) {
+      product.cashback = await Product.calculateCashback(product.id);
+    }
+    
+    res.json({ 
+      success: true, 
+      data: products,
+      hasMore: products.length === limit
+    });
+  } catch (error) {
+    console.error('Load more products error:', error);
+    res.status(500).json({ success: false, message: 'Failed to load more products' });
+  }
+});
+
+// Filter products by category - accessible to all users
+router.get('/category/:category', async (req, res) => {
+  try {
+    console.log("Filtering by category:", req.params.category);
+    const { category } = req.params;
+    const products = await Product.findByCategory(category);
+    
+    // Calculate cashback for each product
+    for (let product of products) {
+      product.cashback = await Product.calculateCashback(product.id);
+    }
+    
+    res.render('products/category', {
+      title: `${category} Products - MOVA`,
+      category,
+      products,
+      currentPage: 'home',
+      showSearchBar: true
+    });
+  } catch (error) {
+    console.error('Category filter error:', error);
+    res.status(500).render('error', {
+      title: 'Error',
+      message: 'Failed to load category products',
+      currentPage: ''
+    });
+  }
+});
 
 // Get products page - accessible to all users
 router.get('/', async (req, res) => {
   try {
+    console.log("Loading all products");
     const products = await Product.findAll(12, 0);
     
     // Calculate cashback for each product
@@ -31,50 +93,62 @@ router.get('/', async (req, res) => {
 });
 
 // Get product details - accessible to all users
+// PENTING: Ini harus berada di BAWAH rute spesifik lainnya
 router.get('/:id', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const productId = req.params.id;
     
+    // Log untuk debugging
+    console.log(`Accessing product detail for ID: ${productId}`);
+    
+    // Coba dapatkan produk dari database
+    const product = await Product.findById(productId);
+    
+    // Jika produk tidak ditemukan, tampilkan halaman khusus
     if (!product) {
+      console.log(`Product with ID ${productId} not found`);
       return res.status(404).render('error', {
-        title: 'Product Not Found',
-        message: 'The product you requested could not be found',
-        currentPage: ''
+        title: 'Produk Tidak Ditemukan',
+        message: 'Produk yang Anda cari tidak ditemukan',
+        currentPage: 'home',
+        showSearchBar: true
       });
     }
     
-    // Calculate cashback
+    // Hitung cashback untuk produk
     product.cashback = await Product.calculateCashback(product.id);
     
-    // Get related products
+    // Dapatkan produk terkait
     const relatedProducts = await Product.getRelatedProducts(product.id, 4);
     
-    // Calculate cashback for related products
+    // Hitung cashback untuk produk terkait
     for (let relatedProduct of relatedProducts) {
       relatedProduct.cashback = await Product.calculateCashback(relatedProduct.id);
     }
     
-    // Check if product is in user's wishlist
+    // Cek apakah pengguna telah menambahkan produk ke wishlist
     let isInWishlist = false;
     if (res.locals.isAuthenticated && req.user) {
       isInWishlist = await User.isInWishlist(req.user.id, product.id);
     }
     
-    res.render('products/detail', {
+    // Render halaman detail produk
+    res.render('products/show', {
       title: `${product.name} - MOVA`,
       product,
       relatedProducts,
       isInWishlist,
-      currentPage: 'home',
-      showSearchBar: false,
-      requiresAuth: !res.locals.isAuthenticated
+      currentPage: 'home', // Set ke 'home' karena produk diakses dari beranda
+      showSearchBar: true
     });
+    
   } catch (error) {
-    console.error('Product detail page error:', error);
+    console.error('Product detail error:', error);
     res.status(500).render('error', {
       title: 'Error',
-      message: 'Failed to load product details',
-      currentPage: ''
+      message: 'Gagal memuat detail produk',
+      currentPage: 'home',
+      showSearchBar: true
     });
   }
 });
@@ -175,59 +249,6 @@ router.post('/:id/purchase', isAuthenticated, async (req, res) => {
   } catch (error) {
     console.error('Purchase error:', error);
     res.status(500).json({ success: false, message: 'Failed to process purchase' });
-  }
-});
-
-// Load more products - accessible to all users
-router.get('/load-more/:page', async (req, res) => {
-  try {
-    const page = parseInt(req.params.page) || 1;
-    const limit = 12;
-    const offset = page * limit;
-    
-    const products = await Product.findAll(limit, offset);
-    
-    // Calculate cashback for each product
-    for (let product of products) {
-      product.cashback = await Product.calculateCashback(product.id);
-    }
-    
-    res.json({ 
-      success: true, 
-      data: products,
-      hasMore: products.length === limit
-    });
-  } catch (error) {
-    console.error('Load more products error:', error);
-    res.status(500).json({ success: false, message: 'Failed to load more products' });
-  }
-});
-
-// Filter products by category - accessible to all users
-router.get('/category/:category', async (req, res) => {
-  try {
-    const { category } = req.params;
-    const products = await Product.findByCategory(category);
-    
-    // Calculate cashback for each product
-    for (let product of products) {
-      product.cashback = await Product.calculateCashback(product.id);
-    }
-    
-    res.render('products/category', {
-      title: `${category} Products - MOVA`,
-      category,
-      products,
-      currentPage: 'home',
-      showSearchBar: true
-    });
-  } catch (error) {
-    console.error('Category filter error:', error);
-    res.status(500).render('error', {
-      title: 'Error',
-      message: 'Failed to load category products',
-      currentPage: ''
-    });
   }
 });
 

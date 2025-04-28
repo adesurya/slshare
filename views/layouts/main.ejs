@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || 'MOVA - Home' %></title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom CSS -->
+  <style>
+    /* Global styles */
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+    
+    /* Header */
+    .navbar {
+      background-color: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    }
+    
+    .navbar-brand {
+      font-weight: 700;
+      color: #4e73df;
+    }
+    
+    .navbar-brand span {
+      color: #1cc88a;
+    }
+    
+    /* Main content */
+    main {
+      flex: 1;
+      padding: 2rem 0;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: #343a40;
+      color: white;
+      padding: 2rem 0;
+    }
+    
+    /* Cards */
+    .card {
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    
+    /* Buttons */
+    .btn-primary {
+      background-color: #4e73df;
+      border-color: #4e73df;
+    }
+    
+    .btn-primary:hover {
+      background-color: #3a5dca;
+      border-color: #3a5dca;
+    }
+    
+    .btn-success {
+      background-color: #1cc88a;
+      border-color: #1cc88a;
+    }
+    
+    .btn-success:hover {
+      background-color: #16a173;
+      border-color: #16a173;
+    }
+  </style>
+  <%- typeof styles != 'undefined' ? styles : '' %>
+</head>
+<body>
+
+<!-- Header/Navbar -->
+<header>
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+      <a class="navbar-brand" href="/">MOVA<span>Shop</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'home' ? 'active' : '' %>" aria-current="page" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'brands' ? 'active' : '' %>" href="/brands">Brands</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'products' ? 'active' : '' %>" href="/products">Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'about' ? 'active' : '' %>" href="/about">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'contact' ? 'active' : '' %>" href="/contact">Contact</a>
+          </li>
+        </ul>
+        <div class="d-flex">
+          <% if (locals.user) { %>
+            <div class="dropdown">
+              <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user me-1"></i> <%= user.username %>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="/user/profile">My Profile</a></li>
+                <li><a class="dropdown-item" href="/user/orders">My Orders</a></li>
+                <li><a class="dropdown-item" href="/user/cashback">My Cashback</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+              </ul>
+            </div>
+          <% } else { %>
+            <a href="/auth/login" class="btn btn-outline-primary me-2">Login</a>
+            <a href="/auth/register" class="btn btn-primary">Register</a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Main Content -->
+<main>
+  <div class="container">
+    <!-- Success/Error Message -->
+    <% if (locals.successMessage) { %>
+      <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        <i class="fas fa-check-circle me-2"></i> <%= successMessage %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+    <% if (locals.errorMessage) { %>
+      <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i> <%= errorMessage %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+    
+    <!-- Page Content -->
+    <%- body %>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 mb-4 mb-md-0">
+        <h5 class="mb-3">MOVA Shop</h5>
+        <p>Your one-stop shop for cashback and incredible deals on top brands and products.</p>
+        <div class="d-flex mt-3">
+          <a href="#" class="me-3 text-white"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="me-3 text-white"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="me-3 text-white"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      <div class="col-md-2 mb-4 mb-md-0">
+        <h5 class="mb-3">Shop</h5>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="/brands" class="text-white text-decoration-none">Brands</a></li>
+          <li class="mb-2"><a href="/products" class="text-white text-decoration-none">Products</a></li>
+          <li class="mb-2"><a href="/deals" class="text-white text-decoration-none">Deals</a></li>
+          <li><a href="/cashback" class="text-white text-decoration-none">Cashback</a></li>
+        </ul>
+      </div>
+      <div class="col-md-2 mb-4 mb-md-0">
+        <h5 class="mb-3">Help</h5>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="/faq" class="text-white text-decoration-none">FAQ</a></li>
+          <li class="mb-2"><a href="/shipping" class="text-white text-decoration-none">Shipping</a></li>
+          <li class="mb-2"><a href="/returns" class="text-white text-decoration-none">Returns</a></li>
+          <li><a href="/contact" class="text-white text-decoration-none">Contact</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h5 class="mb-3">Newsletter</h5>
+        <p>Subscribe to our newsletter for exclusive offers.</p>
+        <form class="mt-3">
+          <div class="input-group mb-3">
+            <input type="email" class="form-control" placeholder="Your email" aria-label="Your email">
+            <button class="btn btn-success" type="button">Subscribe</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <hr class="my-4 bg-light">
+    <div class="row">
+      <div class="col-md-6 mb-3 mb-md-0">
+        <p class="mb-0">&copy; <%= new Date().getFullYear() %> MOVA Shop. All rights reserved.</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <a href="/privacy" class="text-white text-decoration-none me-3">Privacy Policy</a>
+        <a href="/terms" class="text-white text-decoration-none">Terms & Conditions</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<%- typeof scripts != 'undefined' ? scripts : '' %>
+</body>
+</html>

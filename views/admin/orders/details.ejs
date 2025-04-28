@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Details - MOVA Admin</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3f37c9;
+      --success-color: #4cc9f0;
+      --info-color: #4895ef;
+      --warning-color: #f72585;
+      --danger-color: #e63946;
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+    }
+    
+    .page-header {
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border-radius: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin: 0;
+      color: #333;
+    }
+    
+    .back-button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #555;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.2s;
+      border: 1px solid #ddd;
+      font-weight: 500;
+    }
+    
+    .back-button:hover {
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    .action-buttons .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .action-buttons .btn-primary:hover {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+    
+    .action-buttons .dropdown-menu {
+      border: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 0.5rem;
+    }
+    
+    .action-buttons .dropdown-item {
+      padding: 0.6rem 1.25rem;
+    }
+    
+    .dropdown-item:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .order-card {
+      background-color: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    
+    .order-main-info {
+      padding: 1.5rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .order-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #222;
+    }
+    
+    .order-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    
+    .order-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.4rem 0.8rem;
+      border-radius: 2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    
+    .order-badge i {
+      margin-right: 0.4rem;
+      font-size: 0.85rem;
+    }
+    
+    .status-badge {
+      padding: 0.5em 0.8em;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    
+    .status-pending {
+      background-color: #f8f9fa;
+      color: #6c757d;
+    }
+    
+    .status-processing {
+      background-color: #cff4fc;
+      color: #055160;
+    }
+    
+    .status-completed {
+      background-color: #d1e7dd;
+      color: #0f5132;
+    }
+    
+    .status-cancelled {
+      background-color: #f8d7da;
+      color: #842029;
+    }
+    
+    .shipping-badge {
+      padding: 0.4em 0.7em;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    
+    .shipping-pending {
+      background-color: #e2e3e5;
+      color: #41464b;
+    }
+    
+    .shipping-shipped {
+      background-color: #fff3cd;
+      color: #664d03;
+    }
+    
+    .shipping-delivered {
+      background-color: #d1e7dd;
+      color: #0f5132;
+    }
+    
+    .order-price-container {
+      margin-top: 1.5rem;
+    }
+    
+    .order-price-label {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0.2rem;
+    }
+    
+    .order-price {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #222;
+    }
+    
+    .cashback-container {
+      background-color: #e0f7f6;
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      border-left: 5px solid #38b2ac;
+    }
+    
+    .cashback-title {
+      display: flex;
+      align-items: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #2c7a7b;
+    }
+    
+    .cashback-title i {
+      margin-right: 0.5rem;
+      background-color: #38b2ac;
+      color: white;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    
+    .cashback-amount {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #2c7a7b;
+      margin-bottom: 0.5rem;
+    }
+    
+    .order-details-section {
+      padding: 1.5rem;
+    }
+    
+    .details-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #444;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .detail-row {
+      display: flex;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px dashed #f0f0f0;
+      padding-bottom: 0.75rem;
+    }
+    
+    .detail-row:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    
+    .detail-label {
+      width: 40%;
+      font-weight: 500;
+      color: #666;
+    }
+    
+    .detail-value {
+      width: 60%;
+      color: #333;
+    }
+    
+    .address-box {
+      background-color: #f8f9fa;
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      margin-top: 1rem;
+      border: 1px solid #f0f0f0;
+    }
+    
+    .customer-section {
+      background-color: #f8f9fa;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    .customer-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #444;
+    }
+    
+    .customer-detail-row {
+      display: flex;
+      margin-bottom: 0.5rem;
+    }
+    
+    .customer-detail-label {
+      width: 40%;
+      font-weight: 500;
+      color: #666;
+    }
+    
+    .customer-detail-value {
+      width: 60%;
+      color: #333;
+    }
+    
+    /* Alert styling */
+    .alert {
+      border: none;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    
+    /* Order items table */
+    .order-items-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 1rem;
+    }
+    
+    .order-items-table th {
+      background-color: #f8f9fa;
+      color: #495057;
+      font-weight: 600;
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 2px solid #e9ecef;
+    }
+    
+    .order-items-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e9ecef;
+      vertical-align: middle;
+    }
+    
+    .order-items-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .product-image {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+    
+    .status-history-table {
+      width: 100%;
+      margin-top: 1rem;
+    }
+    
+    .status-history-table th {
+      background-color: #f8f9fa;
+      color: #495057;
+      font-weight: 600;
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 2px solid #e9ecef;
+    }
+    
+    .status-history-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .status-history-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .notes-section {
+      background-color: #f8f9fa;
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      margin-top: 1rem;
+      border: 1px solid #f0f0f0;
+    }
+    
+    /* Status update form */
+    .status-form {
+      background-color: #f8f9fa;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      border: 1px solid #f0f0f0;
+    }
+    
+    .form-label {
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 991.98px) {
+      .order-title {
+        font-size: 1.5rem;
+      }
+      
+      .cashback-amount, .order-price {
+        font-size: 1.5rem;
+      }
+    }
+    
+    @media (max-width: 767.98px) {
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .action-buttons {
+        align-self: flex-end;
+      }
+      
+      .detail-label, .detail-value,
+      .customer-detail-label, .customer-detail-value {
+        width: 50%;
+      }
+    }
+    
+    @media (max-width: 575.98px) {
+      .order-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .detail-row, .customer-detail-row {
+        flex-direction: column;
+      }
+      
+      .detail-label, .detail-value,
+      .customer-detail-label, .customer-detail-value {
+        width: 100%;
+      }
+      
+      .detail-label, .customer-detail-label {
+        margin-bottom: 0.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <!-- Alerts -->
+    <% if (locals.successMessage) { %>
+      <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i class="fas fa-check-circle me-2"></i> <%= successMessage %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+    <% if (locals.errorMessage) { %>
+      <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i> <%= errorMessage %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+    
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>Order Details: <%= order.order_number %></h1>
+      <div class="d-flex align-items-center gap-2">
+        <a href="/admin/orders" class="back-button">
+          <i class="fas fa-arrow-left"></i> Back to Orders
+        </a>
+        
+        <div class="action-buttons">
+          <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-cog me-1"></i> Actions
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown">
+              <li><h6 class="dropdown-header">Order Status</h6></li>
+              <li>
+                <form action="/admin/orders/<%= order.id %>/status" method="POST" class="px-2">
+                  <input type="hidden" name="status" value="pending">
+                  <button type="submit" class="btn btn-sm btn-outline-secondary w-100 mb-1">Set Pending</button>
+                </form>
+              </li>
+              <li>
+                <form action="/admin/orders/<%= order.id %>/status" method="POST" class="px-2">
+                  <input type="hidden" name="status" value="processing">
+                  <button type="submit" class="btn btn-sm btn-outline-info w-100 mb-1">Set Processing</button>
+                </form>
+              </li>
+              <li>
+                <form action="/admin/orders/<%= order.id %>/status" method="POST" class="px-2">
+                  <input type="hidden" name="status" value="completed">
+                  <button type="submit" class="btn btn-sm btn-outline-success w-100 mb-1">Set Completed</button>
+                </form>
+              </li>
+              <li>
+                <form action="/admin/orders/<%= order.id %>/status" method="POST" class="px-2">
+                  <input type="hidden" name="status" value="cancelled">
+                  <button type="submit" class="btn btn-sm btn-outline-danger w-100">Set Cancelled</button>
+                </form>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li><h6 class="dropdown-header">Shipping Status</h6></li>
+              <li>
+                <form action="/admin/orders/<%= order.id %>/shipping" method="POST" class="px-2">
+                  <input type="hidden" name="shipping_status" value="pending">
+                  <button type="submit" class="btn btn-sm btn-outline-secondary w-100 mb-1">Not Shipped</button>
+                </form>
+              </li>
+              <li>
+                <form action="/admin/orders/<%= order.id %>/shipping" method="POST" class="px-2">
+                  <input type="hidden" name="shipping_status" value="shipped">
+                  <button type="submit" class="btn btn-sm btn-outline-warning w-100 mb-1">Mark Shipped</button>
+                </form>
+              </li>
+              <li>
+                <form action="/admin/orders/<%= order.id %>/shipping" method="POST" class="px-2">
+                  <input type="hidden" name="shipping_status" value="delivered">
+                  <button type="submit" class="btn btn-sm btn-outline-success w-100">Mark Delivered</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <!-- Order main card -->
+      <div class="col-lg-8">
+        <div class="order-card">
+          <!-- Order main info -->
+          <div class="order-main-info">
+            <h2 class="order-title">Order #<%= order.order_number %></h2>
+            
+            <div class="order-meta">
+              <span class="status-badge status-<%= order.status %>">
+                <i class="fas fa-<%= 
+                  order.status === 'pending' ? 'clock' : 
+                  order.status === 'processing' ? 'spinner' : 
+                  order.status === 'completed' ? 'check-circle' : 
+                  'times-circle' 
+                %>"></i>
+                <%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %>
+              </span>
+              
+              <span class="shipping-badge shipping-<%= order.shipping_status || 'pending' %>">
+                <i class="fas fa-<%= 
+                  !order.shipping_status || order.shipping_status === 'pending' ? 'box' : 
+                  order.shipping_status === 'shipped' ? 'shipping-fast' : 
+                  'check-circle' 
+                %>"></i>
+                <%= order.shipping_status ? 
+                     (order.shipping_status.charAt(0).toUpperCase() + order.shipping_status.slice(1)) : 
+                     'Not Shipped' %>
+              </span>
+              
+              <div class="order-badge" style="background-color: #eeeeff; color: #4361ee;">
+                <i class="fas fa-calendar"></i> 
+                <%= new Date(order.created_at).toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'short', 
+                  day: 'numeric', 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                }) %>
+              </div>
+              
+              <div class="order-badge" style="background-color: #eef7ff; color: #0369a1;">
+                <i class="fas fa-credit-card"></i> 
+                <%= order.payment_method %>
+              </div>
+            </div>
+            
+            <div class="order-price-container">
+              <div class="order-price-label">Total Amount</div>
+              <div class="order-price">Rp<%= new Intl.NumberFormat('id-ID').format(order.total_amount) %></div>
+            </div>
+            
+            <div class="cashback-container">
+              <div class="cashback-title">
+                <i class="fas fa-percentage"></i> Cashback Information
+              </div>
+              <div class="cashback-amount">Rp<%= new Intl.NumberFormat('id-ID').format(order.cashback_amount) %></div>
+              <p class="mb-0">Cashback will be added to user's balance when order is completed.</p>
+            </div>
+          </div>
+          
+          <!-- Order items -->
+          <div class="order-details-section">
+            <h3 class="details-title">Order Items</h3>
+            
+            <% if (!order.items || order.items.length === 0) { %>
+              <p class="text-muted">No items found for this order.</p>
+            <% } else { %>
+              <table class="order-items-table">
+                <thead>
+                  <tr>
+                    <th style="width: 70px;">Image</th>
+                    <th>Product</th>
+                    <th>Unit Price</th>
+                    <th>Quantity</th>
+                    <th>Cashback</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% order.items.forEach(function(item) { %>
+                    <tr>
+                      <td>
+                        <img src="<%= item.image_url %>" alt="<%= item.product_name %>" class="product-image">
+                      </td>
+                      <td>
+                        <a href="/admin/products/<%= item.product_id %>" class="fw-medium text-decoration-none">
+                          <%= item.product_name %>
+                        </a>
+                      </td>
+                      <td>Rp<%= new Intl.NumberFormat('id-ID').format(item.unit_price) %></td>
+                      <td><%= item.quantity %></td>
+                      <td>Rp<%= new Intl.NumberFormat('id-ID').format(item.cashback_amount) %></td>
+                      <td class="fw-medium">Rp<%= new Intl.NumberFormat('id-ID').format(item.unit_price * item.quantity) %></td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="5" class="text-end fw-bold">Total:</td>
+                    <td class="fw-bold">Rp<%= new Intl.NumberFormat('id-ID').format(order.total_amount) %></td>
+                  </tr>
+                  <tr>
+                    <td colspan="5" class="text-end fw-bold">Total Cashback:</td>
+                    <td class="fw-bold">Rp<%= new Intl.NumberFormat('id-ID').format(order.cashback_amount) %></td>
+                  </tr>
+                </tfoot>
+              </table>
+              
+              <div class="mt-3 text-end">
+                <a href="/admin/orders/<%= order.id %>/items" class="btn btn-sm btn-outline-primary">
+                  <i class="fas fa-edit me-1"></i> Edit Order Items
+                </a>
+              </div>
+            <% } %>
+            
+            <!-- Shipping Address -->
+            <h3 class="details-title mt-4">Shipping Address</h3>
+            <div class="address-box">
+              <% if (order.shipping_address) { %>
+                <%= order.shipping_address %>
+              <% } else { %>
+                <p class="text-muted mb-0">No shipping address provided.</p>
+              <% } %>
+            </div>
+            
+            <!-- Order Notes -->
+            <% if (order.notes) { %>
+              <h3 class="details-title mt-4">Order Notes</h3>
+              <div class="notes-section">
+                <%= order.notes %>
+              </div>
+            <% } %>
+          </div>
+          
+          <!-- Status History -->
+          <div class="order-details-section">
+            <h3 class="details-title">Status History</h3>
+            
+            <% if (!order.statusHistory || order.statusHistory.length === 0) { %>
+              <p class="text-muted">No status history found for this order.</p>
+            <% } else { %>
+              <table class="status-history-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Notes</th>
+                    <th>Updated By</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% order.statusHistory.forEach(function(status) { %>
+                    <tr>
+                      <td><%= new Date(status.created_at).toLocaleString() %></td>
+                      <td>
+                        <% if (status.old_status) { %>
+                          <span class="status-badge status-<%= status.old_status %>">
+                            <%= status.old_status.charAt(0).toUpperCase() + status.old_status.slice(1) %>
+                          </span>
+                        <% } else { %>
+                          <span class="text-muted">-</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <span class="status-badge status-<%= status.new_status %>">
+                          <%= status.new_status.charAt(0).toUpperCase() + status.new_status.slice(1) %>
+                        </span>
+                      </td>
+                      <td><%= status.notes || '-' %></td>
+                      <td><%= status.created_by ? 'Admin #' + status.created_by : 'System' %></td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            <% } %>
+          </div>
+          
+          <!-- Status Update Form -->
+          <div class="order-details-section">
+            <div class="status-form">
+              <h4 class="mb-3">Update Order Status</h4>
+              
+              <form action="/admin/orders/<%= order.id %>/status" method="POST">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status" required>
+                      <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                      <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>Processing</option>
+                      <option value="completed" <%= order.status === 'completed' ? 'selected' : '' %>>Completed</option>
+                      <option value="cancelled" <%= order.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                    </select>
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <label for="shipping_status" class="form-label">Shipping Status</label>
+                    <select class="form-select" id="shipping_status" name="shipping_status">
+                      <option value="pending" <%= !order.shipping_status || order.shipping_status === 'pending' ? 'selected' : '' %>>Not Shipped</option>
+                      <option value="shipped" <%= order.shipping_status === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                      <option value="delivered" <%= order.shipping_status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                    </select>
+                  </div>
+                  
+                  <div class="col-12">
+                    <label for="notes" class="form-label">Notes</label>
+                    <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Add notes about this status change..."></textarea>
+                  </div>
+                  
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="fas fa-save me-1"></i> Update Status
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Customer information card -->
+      <div class="col-lg-4">
+        <div class="order-card">
+          <div class="order-details-section">
+            <h3 class="details-title">Customer Information</h3>
+            
+            <div class="d-flex align-items-center mb-3">
+              <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                <i class="fas fa-user fa-2x text-secondary"></i>
+              </div>
+              <div>
+                <h5 class="mb-1"><%= order.username || 'User #' + order.user_id %></h5>
+                <a href="/admin/users/<%= order.user_id %>" class="text-decoration-none">
+                  <i class="fas fa-external-link-alt me-1"></i> View Customer Profile
+                </a>
+              </div>
+            </div>
+            
+            <div class="customer-detail-row">
+              <div class="customer-detail-label">Customer ID</div>
+              <div class="customer-detail-value">#<%= order.user_id %></div>
+            </div>
+            
+            <% if (order.email) { %>
+              <div class="customer-detail-row">
+                <div class="customer-detail-label">Email</div>
+                <div class="customer-detail-value"><%= order.email %></div>
+              </div>
+            <% } %>
+            
+            <div class="customer-detail-row">
+              <div class="customer-detail-label">Order Count</div>
+              <div class="customer-detail-value">
+                <a href="/admin/users/<%= order.user_id %>/orders" class="text-decoration-none">
+                  View All Orders
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Order Summary Card -->
+        <div class="order-card mt-4">
+          <div class="order-details-section">
+            <h3 class="details-title">Order Summary</h3>
+            
+            <div class="detail-row">
+              <div class="detail-label">Order ID</div>
+              <div class="detail-value">#<%= order.id %></div>
+            </div>
+            
+            <div class="detail-row">
+              <div class="detail-label">Order Number</div>
+              <div class="detail-value"><%= order.order_number %></div>
+            </div>
+            
+            <div class="detail-row">
+              <div class="detail-label">Date</div>
+              <div class="detail-value"><%= new Date(order.created_at).toLocaleDateString() %></div>
+            </div>
+            
+            <div class="detail-row">
+              <div class="detail-label">Payment Method</div>
+              <div class="detail-value"><%= order.payment_method %></div>
+            </div>
+            
+            <div class="detail-row">
+              <div class="detail-label">Subtotal</div>
+              <div class="detail-value">Rp<%= new Intl.NumberFormat('id-ID').format(order.total_amount) %></div>
+            </div>
+            
+            <div class="detail-row">
+              <div class="detail-label">Cashback</div>
+              <div class="detail-value">Rp<%= new Intl.NumberFormat('id-ID').format(order.cashback_amount) %></div>
+            </div>
+            
+            <div class="detail-row">
+              <div class="detail-label">Profit</div>
+              <div class="detail-value fw-bold">
+                Rp<%= new Intl.NumberFormat('id-ID').format(order.total_amount - order.cashback_amount) %>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quick Actions Card -->
+        <div class="order-card mt-4">
+          <div class="order-details-section">
+            <h3 class="details-title">Quick Actions</h3>
+            
+            <div class="d-grid gap-2">
+              <% if (order.status !== 'completed') { %>
+                <form action="/admin/orders/<%= order.id %>/status" method="POST">
+                  <input type="hidden" name="status" value="completed">
+                  <button type="submit" class="btn btn-success w-100">
+                    <i class="fas fa-check-circle me-2"></i> Mark as Completed
+                  </button>
+                </form>
+              <% } %>
+              
+              <% if (order.status !== 'cancelled' && order.status !== 'completed') { %>
+                <form action="/admin/orders/<%= order.id %>/status" method="POST">
+                  <input type="hidden" name="status" value="cancelled">
+                  <button type="submit" class="btn btn-danger w-100">
+                    <i class="fas fa-times-circle me-2"></i> Cancel Order
+                  </button>
+                </form>
+              <% } %>
+              
+              <% if (order.shipping_status !== 'delivered' && order.status !== 'cancelled') { %>
+                <form action="/admin/orders/<%= order.id %>/shipping" method="POST">
+                  <input type="hidden" name="shipping_status" value="delivered">
+                  <button type="submit" class="btn btn-outline-success w-100">
+                    <i class="fas fa-truck me-2"></i> Mark as Delivered
+                  </button>
+                </form>
+              <% } %>
+              
+              <a href="/admin/orders" class="btn btn-outline-secondary w-100">
+                <i class="fas fa-list me-2"></i> View All Orders
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

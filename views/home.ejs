@@ -2,156 +2,549 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title><%= title %></title>
-  <link rel="stylesheet" href="/css/styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOVA - Belanja Sambil Cuan</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    body {
+      background-color: #f8f8f8;
+      color: #333;
+      padding-bottom: 80px;
+    }
+    
+    .app-container {
+      max-width: 480px;
+      margin: 0 auto;
+      background-color: white;
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header {
+      background-color: white;
+      padding: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .logo a {
+      color: #ff0033;
+      font-weight: 700;
+      font-size: 24px;
+      text-decoration: none;
+    }
+    
+    .tagline {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .faq-link {
+      color: #333;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    .search-bar {
+      margin-top: 10px;
+    }
+    
+    .search-bar form {
+      display: flex;
+    }
+    
+    .search-bar input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px 0 0 8px;
+      font-size: 14px;
+      outline: none;
+    }
+    
+    .search-bar button {
+      padding: 10px 15px;
+      background-color: #ff0033;
+      color: white;
+      border: none;
+      border-radius: 0 8px 8px 0;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    
+    .main-content {
+      padding: 15px;
+    }
+    
+    /* Categories Section */
+    .categories-section {
+      margin-top: 20px;
+    }
+    
+    /* Product Listing Styles */
+    /* Product Grid Layout */
+    .category-products {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 10px 0;
+      width: 100%;
+    }
+
+    /* Product Card Enhancements */
+    .product-card {
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-card a {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* Product Image */
+    .product-image {
+      position: relative;
+      padding-top: 100%; /* 1:1 Aspect ratio */
+      background-color: #f5f5f5;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image img {
+      transform: scale(1.05);
+    }
+
+    /* Cashback Badge */
+    .cashback-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: #ff0033;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      z-index: 2;
+      box-shadow: 0 2px 4px rgba(255, 0, 51, 0.3);
+    }
+
+    /* Product Info Container */
+    .product-info {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: space-between;
+    }
+
+    /* Product Name */
+    .product-name {
+      font-size: 13px;
+      font-weight: 500;
+      margin: 0 0 8px 0;
+      color: #333;
+      line-height: 1.3;
+      height: 34px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      text-overflow: ellipsis;
+    }
+
+    /* Product Price */
+    .product-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 5px;
+    }
+
+    /* Cashback Info */
+    .product-cashback {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .cashback-label {
+      color: #666;
+    }
+
+    .cashback-amount {
+      color: #ff0033;
+      font-weight: 600;
+    }
+    
+    /* Category Tabs */
+    .category-tabs {
+      display: flex;
+      overflow-x: auto;
+      padding: 5px 0 15px;
+      margin-bottom: 10px;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+    }
+
+    .category-tabs::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+
+    .tab-button {
+      background-color: #f5f5f5;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: #666;
+      margin-right: 10px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-button.active {
+      background-color: #ff0033;
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 2px 5px rgba(255, 0, 51, 0.3);
+    }
+    
+    /* Products Section Header */
+    .products-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .products-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    /* Sort Options */
+    .sort-options {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .sort-by {
+      font-size: 13px;
+      color: #666;
+      margin-right: 10px;
+    }
+
+    .sort-select {
+      border: 1px solid #ddd;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      background-color: white;
+    }
+    
+    /* Loading Indicator */
+    .loading-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      width: 100%;
+    }
+
+    .loading-spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(255, 0, 51, 0.1);
+      border-radius: 50%;
+      border-top: 3px solid #ff0033;
+      animation: spin 1s linear infinite;
+      margin-bottom: 12px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-indicator p {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    /* End of Catalog Message */
+    .end-catalog-message {
+      width: 100%;
+      text-align: center;
+      padding: 24px 20px;
+      color: #888;
+      font-size: 14px;
+      border-top: 1px solid #eee;
+      margin-top: 15px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .end-catalog-message p {
+      margin: 0;
+    }
+    
+    /* Scroll to Top Button */
+    .scroll-to-top {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      background-color: #ff0033;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 99;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    /* Bottom Nav */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background-color: white;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      color: #999;
+      text-decoration: none;
+      font-size: 10px;
+    }
+    
+    .nav-item i {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+    
+    .nav-item.active {
+      color: #ff0033;
+    }
+    
+    /* Responsive styles */
+    @media (min-width: 576px) {
+      .category-products {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .category-products {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
-    <div class="header-content">
-      <div class="logo">
-        <a href="/">MOVA</a>
-        <span class="tagline">Belanja Sambil Cuan</span>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <a href="/">MOVA</a>
+          <span class="tagline">Belanja Sambil Cuan</span>
+        </div>
+        <div class="header-right">
+          <a href="/faq" class="faq-link">FAQ</a>
+        </div>
       </div>
-      <div class="header-right">
-        <a href="/faq" class="faq-link">FAQ</a>
+      <div class="search-bar">
+        <form action="/search" method="GET">
+          <input type="text" name="q" placeholder="Tempelkan tautan Shopee/TikTok">
+          <button type="submit">Tempel</button>
+        </form>
       </div>
-    </div>
-    <% if (locals.showSearchBar) { %>
-    <div class="search-bar">
-      <form action="/search" method="GET">
-        <input type="text" name="q" placeholder="Tempelkan tautan Shopee/TikTok">
-        <button type="submit">Tempel</button>
-      </form>
-    </div>
-    <% } %>
-  </header>
+    </header>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <div class="hero-section">
-      <div class="hero-content">
-        <h1 class="hero-title">Dapatkan</h1>
-        <div class="hero-amount">Rp100.000.000</div>
-        <h2 class="hero-subtitle">per bulan</h2>
-        <p class="hero-description">Jadi yang pertama menguasai bisnis baru >>></p>
-      </div>
-    </div>
-  
-    <div class="cashback-section">
-      <h2>Mulai kumpulkan Cashback</h2>
-      <a href="#" class="view-more">Lihat</a>
-      
-      <div class="cashback-steps">
-        <div class="step">
-          <div class="step-icon">
-            <img src="/images/icons/link.svg" alt="Copy Link">
-          </div>
-          <p>Salin tautan produk</p>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Categories Section -->
+      <div class="categories-section">
+        <!-- Category Tabs -->
+        <div class="category-tabs">
+          <button class="tab-button active">For You</button>
+          <button class="tab-button">Terbaru</button>
+          <button class="tab-button">Telepon & Elektronik</button>
+          <button class="tab-button">Perawatan & Kecantikan</button>
+          <button class="tab-button">Fashion</button>
+          <button class="tab-button">Rumah Tangga</button>
         </div>
         
-        <div class="step">
-          <div class="step-icon">
-            <img src="/images/icons/mova.svg" alt="MOVA">
+        <!-- Products Section Header with Count and Sort -->
+        <div class="products-section-header">
+          <div class="products-section-title">Produk Terbaru</div>
+          <div class="sort-options">
+            <span class="sort-by">Urut berdasarkan:</span>
+            <select class="sort-select" id="product-sort">
+              <option value="newest">Terbaru</option>
+              <option value="price-low">Harga Terendah</option>
+              <option value="price-high">Harga Tertinggi</option>
+              <option value="cashback">Cashback Tertinggi</option>
+            </select>
           </div>
-          <p>Buka MOVA cek Cashback</p>
         </div>
         
-        <div class="step">
-          <div class="step-icon">
-            <img src="/images/icons/shop.svg" alt="Shop">
-          </div>
-          <p>Lanjutkan ke Shopee/TikTok</p>
-        </div>
-        
-        <div class="step">
-          <div class="step-icon">
-            <img src="/images/icons/cashback.svg" alt="Cashback">
-          </div>
-          <p>Dapatkan Cashback</p>
-        </div>
-      </div>
-    </div>
-  
-    <div class="free-gifts-section">
-      <h2>Ambil Hadiah Gratis</h2>
-      
-      <div class="gifts-slider">
-        <div class="gift-item">
-          <div class="gift-image">
-            <img src="/images/products/gift1.jpg" alt="Free Gift 1">
-          </div>
-          <div class="gift-price">
-            <div class="original-price">Rp129.000</div>
-            <div class="current-price">Rp0</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  
-    <div class="categories-section">
-      <div class="category-tabs">
-        <button class="tab-button active">For You</button>
-        <button class="tab-button">Telepon & Elektronik</button>
-        <button class="tab-button">Perawatan &</button>
-      </div>
-      
-      <div class="category-products">
-        <% if (featuredProducts && featuredProducts.length > 0) { %>
-          <% featuredProducts.forEach(function(product) { %>
-            <div class="product-card">
-              <a href="/products/<%= product.id %>">
-                <div class="product-image">
-                  <img src="<%= product.image_url %>" alt="<%= product.name %>">
-                </div>
-                <div class="product-info">
-                  <h3 class="product-name"><%= product.name %></h3>
-                  <div class="product-price">Rp<%= product.price.toLocaleString('id-ID') %></div>
-                  <div class="product-cashback">
-                    <span class="cashback-label">Est. Cashback</span>
-                    <span class="cashback-amount">Rp<%= product.cashback.toLocaleString('id-ID') %></span>
+        <!-- Dynamic Product Grid that loads from database -->
+        <div class="category-products">
+          <% if (typeof featuredProducts !== 'undefined' && featuredProducts && featuredProducts.length > 0) { %>
+            <% featuredProducts.forEach(function(product) { %>
+              <div class="product-card">
+                <a href="/products/<%= product.id %>">
+                  <!-- Image Container -->
+                  <div class="product-image">
+                    <img src="<%= product.image_url || '/images/product-placeholder.jpg' %>" alt="<%= product.name %>" loading="lazy">
+                    <%
+                      // Calculate cashback percentage
+                      let cashbackPercentage = 10;
+                      if (product.price && product.cashback) {
+                        cashbackPercentage = Math.round((product.cashback / product.price) * 100);
+                        // Ensure percentage is valid
+                        if (cashbackPercentage <= 0 || cashbackPercentage >= 100) {
+                          cashbackPercentage = 10;
+                        }
+                      }
+                    %>
+                    <div class="cashback-badge"><%= cashbackPercentage %>% Cashback</div>
                   </div>
-                </div>
-              </a>
+                  
+                  <!-- Info Container -->
+                  <div class="product-info">
+                    <!-- Product Name -->
+                    <h3 class="product-name" title="<%= product.name %>"><%= product.name %></h3>
+                    
+                    <!-- Price - with proper formatting -->
+                    <div class="product-price" data-price="<%= product.price %>">
+                      Rp<%= product.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") %>
+                    </div>
+                    
+                    <!-- Cashback - with proper formatting -->
+                    <div class="product-cashback">
+                      <span class="cashback-label">Est. Cashback</span>
+                      <span class="cashback-amount" data-cashback="<%= product.cashback %>">
+                        Rp<%= product.cashback.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") %>
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <!-- Jika tidak ada produk atau featuredProducts tidak didefinisikan -->
+            <div class="empty-state">
+              <p>Belum ada produk yang tersedia</p>
             </div>
-          <% }); %>
-        <% } else { %>
-          <div class="empty-state">
-            <p>No products found</p>
-          </div>
-        <% } %>
+          <% } %>
+        </div>
+        
+        <!-- Loading Indicator (hidden initially) -->
+        <div class="loading-indicator" style="display: none;">
+          <div class="loading-spinner"></div>
+          <p>Memuat lebih banyak produk...</p>
+        </div>
       </div>
+    </main>
+    
+    <!-- Scroll to Top Button -->
+    <div class="scroll-to-top">
+      <i class="fas fa-arrow-up"></i>
     </div>
-  </main>
 
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <a href="/" class="nav-item active">
-      <i class="fas fa-home"></i>
-      <span>Beranda</span>
-    </a>
-    <a href="/brands" class="nav-item">
-      <i class="fas fa-tag"></i>
-      <span>Brand</span>
-    </a>
-    <a href="/user/dashboard" class="nav-item">
-      <i class="fas fa-wallet"></i>
-      <span>Pendapatan</span>
-    </a>
-    <a href="/user/profile" class="nav-item">
-      <i class="fas fa-user"></i>
-      <span>Saya</span>
-    </a>
-  </nav>
-
-  <!-- Scripts -->
-  <script src="/js/main.js"></script>
-  <!-- Sebelum closing </body>-->
-<script src="/js/bottom-nav-fix.js"></script> 
-<script src="/js/page-specific-fix.js"></script>
-
-
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="/" class="nav-item active">
+        <i class="fas fa-home"></i>
+        <span>Beranda</span>
+      </a>
+      <a href="/brands" class="nav-item">
+        <i class="fas fa-tag"></i>
+        <span>Brand</span>
+      </a>
+      <a href="/user/dashboard" class="nav-item">
+        <i class="fas fa-wallet"></i>
+        <span>Pendapatan</span>
+      </a>
+      <a href="/user/profile" class="nav-item">
+        <i class="fas fa-user"></i>
+        <span>Saya</span>
+      </a>
+    </nav>
+  </div>
 </body>
 </html>

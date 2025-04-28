@@ -3,379 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Details - MOVA Admin</title>
+  <title>User Details - <%= user.username %> | MOVA Admin</title>
   <!-- Bootstrap CSS -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom CSS -->
   <style>
     :root {
-      --primary-color: #4361ee;
-      --secondary-color: #3f37c9;
-      --success-color: #4cc9f0;
-      --info-color: #4895ef;
-      --warning-color: #f72585;
-      --danger-color: #e63946;
-      --light-color: #f8f9fa;
-      --dark-color: #212529;
+      --primary: #4e73df;
+      --primary-dark: #3a5ccc;
+      --secondary: #1cc88a;
+      --secondary-dark: #17a673;
+      --light-bg: #f8f9fc;
+      --dark-text: #5a5c69;
+      --border-color: #e3e6f0;
+      --box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+      --transition: all 0.2s ease-in-out;
     }
     
-    body {
-      background-color: #f5f7fa;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #333;
-    }
-    
-    .page-header {
-      background-color: white;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      border-radius: 0.75rem;
-      margin-bottom: 1.5rem;
-      padding: 1.25rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .page-header h1 {
-      font-size: 1.75rem;
-      font-weight: 600;
-      margin: 0;
-      color: #333;
-    }
-    
-    .back-button {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #555;
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      transition: all 0.2s;
-      border: 1px solid #ddd;
-      font-weight: 500;
-    }
-    
-    .back-button:hover {
-      background-color: #f5f5f5;
-      color: #333;
-    }
-    
-    .action-buttons .btn-primary {
-      background-color: var(--primary-color);
-      border-color: var(--primary-color);
-    }
-    
-    .action-buttons .btn-primary:hover {
-      background-color: var(--secondary-color);
-      border-color: var(--secondary-color);
-    }
-    
-    .action-buttons .dropdown-menu {
-      border: none;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border-radius: 0.5rem;
-    }
-    
-    .action-buttons .dropdown-item {
-      padding: 0.6rem 1.25rem;
-    }
-    
-    .dropdown-item:hover {
-      background-color: #f8f9fa;
-    }
-    
-    .card {
-      background-color: white;
-      border-radius: 0.75rem;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-      overflow: hidden;
-      margin-bottom: 1.5rem;
-      border: none;
-    }
-    
-    .user-header {
-      display: flex;
-      align-items: center;
-      padding: 1.5rem;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    
-    .user-avatar {
+    .avatar-circle {
       width: 100px;
       height: 100px;
+      background-color: var(--primary);
       border-radius: 50%;
-      object-fit: cover;
-      background-color: #f0f0f0;
-      border: 1px solid #ddd;
-      padding: 0.25rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     
-    .user-info {
-      margin-left: 1.5rem;
-    }
-    
-    .user-name {
-      font-size: 1.5rem;
+    .avatar-text {
+      font-size: 3rem;
+      color: white;
       font-weight: 600;
-      margin-bottom: 0.25rem;
-      color: #222;
     }
     
-    .verification-badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      border-radius: 2rem;
-      font-size: 0.85rem;
-      font-weight: 500;
+    .stat-card-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #2d3748;
       margin-bottom: 0.5rem;
     }
     
-    .verified {
-      background-color: #d1fae5;
-      color: #047857;
-    }
-    
-    .unverified {
-      background-color: #fee2e2;
-      color: #b91c1c;
-    }
-    
-    .user-email {
-      color: #666;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .status-badge {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      margin-right: 0.5rem;
-    }
-    
-    .status-verified {
-      background-color: #10b981;
-    }
-    
-    .status-unverified {
-      background-color: #ef4444;
-    }
-    
-    .info-section {
-      padding: 1.5rem;
-    }
-    
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 1.25rem;
-      color: #333;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    
-    .detail-row {
-      display: flex;
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #f9f9f9;
-    }
-    
-    .detail-row:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
-      border-bottom: none;
-    }
-    
-    .detail-label {
-      width: 35%;
-      font-weight: 500;
-      color: #666;
-    }
-    
-    .detail-value {
-      width: 65%;
-      color: #333;
-    }
-    
-    .activity-item {
-      padding: 1rem;
-      border-radius: 0.5rem;
-      background-color: #f9f9f9;
-      margin-bottom: 0.75rem;
-    }
-    
-    .activity-item:last-child {
-      margin-bottom: 0;
-    }
-    
-    .activity-time {
+    .stat-card-label {
+      color: #718096;
       font-size: 0.85rem;
-      color: #666;
-      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     
-    .activity-description {
-      color: #333;
-      margin-bottom: 0;
-    }
-    
-    .badge-ip {
-      background-color: #e9ecef;
-      color: #495057;
-      padding: 0.25rem 0.5rem;
-      border-radius: 0.25rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-      font-family: monospace;
-    }
-    
-    .tab-content {
-      padding: 1.5rem;
-    }
-    
-    .nav-tabs {
-      padding: 0 1rem;
-      border-bottom-color: #f0f0f0;
-    }
-    
-    .nav-tabs .nav-link {
-      border: none;
-      color: #666;
-      padding: 1rem 1.25rem;
-      font-weight: 500;
-    }
-    
-    .nav-tabs .nav-link:hover {
-      color: #333;
-      border-color: transparent;
-    }
-    
-    .nav-tabs .nav-link.active {
-      color: var(--primary-color);
-      border-bottom: 2px solid var(--primary-color);
-      background-color: transparent;
-    }
-    
-    .order-card {
-      border: 1px solid #f0f0f0;
-      border-radius: 0.5rem;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      transition: all 0.2s;
-    }
-    
-    .order-card:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    
-    .order-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.75rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px dashed #f0f0f0;
-    }
-    
-    .order-id {
-      font-weight: 600;
-      color: #333;
-    }
-    
-    .order-date {
-      font-size: 0.9rem;
-      color: #666;
-    }
-    
-    .order-status {
-      padding: 0.25rem 0.75rem;
-      border-radius: 2rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-    
-    .status-completed {
-      background-color: #d1fae5;
-      color: #047857;
+    .status-pending {
+      background-color: #fff3cd;
+      color: #856404;
     }
     
     .status-processing {
-      background-color: #dbeafe;
-      color: #1e40af;
+      background-color: #cff4fc;
+      color: #055160;
+    }
+    
+    .status-completed {
+      background-color: #d1e7dd;
+      color: #0f5132;
     }
     
     .status-cancelled {
-      background-color: #fee2e2;
-      color: #b91c1c;
-    }
-    
-    .order-amount {
-      font-weight: 600;
-      color: #333;
-    }
-    
-    .alert {
-      border: none;
-      border-radius: 0.5rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 991.98px) {
-      .user-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      
-      .user-info {
-        margin-left: 0;
-        margin-top: 1rem;
-      }
-      
-      .detail-label {
-        width: 40%;
-      }
-      
-      .detail-value {
-        width: 60%;
-      }
+      background-color: #f8d7da;
+      color: #842029;
     }
     
     @media (max-width: 767.98px) {
-      .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-      }
-      
-      .action-buttons {
-        align-self: flex-end;
-      }
-    }
-    
-    @media (max-width: 575.98px) {
-      .detail-row {
-        flex-direction: column;
-      }
-      
-      .detail-label {
-        width: 100%;
-        margin-bottom: 0.25rem;
-      }
-      
-      .detail-value {
-        width: 100%;
-      }
-      
-      .order-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
+      .border-md-end {
+        border-right: none !important;
       }
     }
   </style>
@@ -397,273 +96,456 @@
     <% } %>
     
     <!-- Page Header -->
-    <div class="page-header">
-      <h1>User Details</h1>
-      <div class="d-flex align-items-center gap-2">
-        <a href="/admin/users" class="back-button">
-          <i class="fas fa-arrow-left"></i> Back to Users
+    <div class="page-header d-flex justify-content-between align-items-center bg-white p-4 rounded shadow-sm mb-4">
+      <h1 class="h3 mb-0">User Details: <%= user.username %></h1>
+      <div class="d-flex gap-2">
+        <a href="/admin/users" class="btn btn-sm btn-outline-secondary">
+          <i class="fas fa-arrow-left me-1"></i> Back to Users
         </a>
-        
-        <div class="action-buttons">
-          <div class="dropdown">
-            <button class="btn btn-primary dropdown-toggle" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-cog me-1"></i> Actions
+        <% if (user.is_active) { %>
+          <form action="/admin/users/<%= user.id %>/status" method="POST" class="d-inline">
+            <input type="hidden" name="status" value="inactive">
+            <button type="submit" class="btn btn-sm btn-warning" 
+              onclick="return confirm('Are you sure you want to deactivate this user?')">
+              <i class="fas fa-user-slash me-1"></i> Deactivate
             </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown">
-              <li>
-                <a class="dropdown-item" href="/admin/users/<%= user.id %>/edit">
-                  <i class="fas fa-edit me-2 text-primary"></i> Edit User
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="/admin/users/<%= user.id %>/reset-password">
-                  <i class="fas fa-key me-2 text-warning"></i> Reset Password
-                </a>
-              </li>
-              <li><hr class="dropdown-divider"></li>
-              <% if (user.is_verified) { %>
-              <li>
-                <a class="dropdown-item text-warning" href="/admin/users/<%= user.id %>/toggle-verification">
-                  <i class="fas fa-ban me-2"></i> Set as Unverified
-                </a>
-              </li>
-              <% } else { %>
-              <li>
-                <a class="dropdown-item text-success" href="/admin/users/<%= user.id %>/toggle-verification">
-                  <i class="fas fa-check-circle me-2"></i> Set as Verified
-                </a>
-              </li>
-              <% } %>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <a class="dropdown-item text-danger" href="/admin/users/<%= user.id %>/delete">
-                  <i class="fas fa-trash me-2"></i> Delete User
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
+          </form>
+        <% } else { %>
+          <form action="/admin/users/<%= user.id %>/status" method="POST" class="d-inline">
+            <input type="hidden" name="status" value="active">
+            <button type="submit" class="btn btn-sm btn-success">
+              <i class="fas fa-user-check me-1"></i> Activate
+            </button>
+          </form>
+        <% } %>
       </div>
     </div>
     
     <div class="row">
-      <div class="col-lg-8">
-        <!-- User Overview Card -->
-        <div class="card">
-          <div class="user-header">
-            <img src="<%= user.profile_image || '/images/default-avatar.jpg' %>" alt="<%= user.full_name || user.username %>" class="user-avatar">
-            <div class="user-info">
-              <h2 class="user-name"><%= user.full_name || user.username %></h2>
-              <div class="verification-badge <%= user.is_verified ? 'verified' : 'unverified' %>">
-                <i class="fas <%= user.is_verified ? 'fa-check-circle' : 'fa-times-circle' %> me-1"></i>
-                <%= user.is_verified ? 'Verified Account' : 'Unverified Account' %>
+      <!-- User Profile Card -->
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body text-center p-4">
+            <div class="mb-3">
+              <div class="avatar-circle mx-auto mb-3">
+                <span class="avatar-text"><%= user.username.charAt(0).toUpperCase() %></span>
               </div>
-              <div class="user-email">
-                <span class="status-badge <%= user.is_verified ? 'status-verified' : 'status-unverified' %>"></span>
-                <span><i class="fas fa-envelope me-1"></i> <%= user.email %></span>
+              <h4 class="mb-1"><%= user.full_name || user.username %></h4>
+              <p class="text-muted"><%= user.email %></p>
+              <div class="d-flex justify-content-center gap-2 mb-3">
+                <span class="badge <%= user.is_active ? 'bg-success' : 'bg-danger' %>">
+                  <%= user.is_active ? 'Active' : 'Inactive' %>
+                </span>
+                <span class="badge <%= user.is_verified ? 'bg-info' : 'bg-warning' %>">
+                  <%= user.is_verified ? 'Verified' : 'Unverified' %>
+                </span>
+              </div>
+            </div>
+            
+            <hr class="my-3">
+            
+            <div class="user-details text-start">
+              <div class="row mb-2">
+                <div class="col-5 text-muted">User ID</div>
+                <div class="col-7 fw-medium">#<%= user.id %></div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-5 text-muted">Joined</div>
+                <div class="col-7"><%= new Date(user.created_at).toLocaleDateString() %></div>
+              </div>
+              <% if (user.phone) { %>
+                <div class="row mb-2">
+                  <div class="col-5 text-muted">Phone</div>
+                  <div class="col-7"><%= user.phone %></div>
+                </div>
+              <% } %>
+              <% if (user.address) { %>
+                <div class="row mb-2">
+                  <div class="col-5 text-muted">Address</div>
+                  <div class="col-7"><%= user.address %></div>
+                </div>
+              <% } %>
+              <div class="row mb-2">
+                <div class="col-5 text-muted">Last Login</div>
+                <div class="col-7"><%= user.last_login ? new Date(user.last_login).toLocaleString() : 'Never' %></div>
               </div>
             </div>
           </div>
-          
-          <!-- Tabs -->
-          <ul class="nav nav-tabs" id="userDetailsTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">
-                <i class="fas fa-user me-1"></i> Details
+          <div class="card-footer bg-light p-3">
+            <div class="d-grid gap-2">
+              <a href="/admin/users/<%= user.id %>/edit" class="btn btn-outline-primary">
+                <i class="fas fa-edit me-1"></i> Edit User
+              </a>
+              <button type="button" class="btn btn-outline-danger" 
+                data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
+                <i class="fas fa-key me-1"></i> Reset Password
               </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab" aria-controls="orders" aria-selected="false">
-                <i class="fas fa-shopping-bag me-1"></i> Orders
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="activities-tab" data-bs-toggle="tab" data-bs-target="#activities" type="button" role="tab" aria-controls="activities" aria-selected="false">
-                <i class="fas fa-history me-1"></i> Activity
-              </button>
-            </li>
-          </ul>
-          
-          <div class="tab-content" id="userDetailsTabsContent">
-            <!-- Details Tab -->
-            <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
-              <h3 class="section-title">Personal Information</h3>
-              <div class="detail-row">
-                <div class="detail-label">Username</div>
-                <div class="detail-value"><%= user.username %></div>
-              </div>
-              <div class="detail-row">
-                <div class="detail-label">Full Name</div>
-                <div class="detail-value"><%= user.full_name || 'Not provided' %></div>
-              </div>
-              <div class="detail-row">
-                <div class="detail-label">Email</div>
-                <div class="detail-value"><%= user.email %></div>
-              </div>
-              
-              <h3 class="section-title mt-4">Account Information</h3>
-              <div class="detail-row">
-                <div class="detail-label">User ID</div>
-                <div class="detail-value"><%= user.id %></div>
-              </div>
-              <div class="detail-row">
-                <div class="detail-label">Verification Status</div>
-                <div class="detail-value">
-                  <span class="status-badge <%= user.is_verified ? 'status-verified' : 'status-unverified' %>"></span>
-                  <%= user.is_verified ? 'Verified' : 'Unverified' %>
-                </div>
-              </div>
-              <% if (user.verification_token) { %>
-              <div class="detail-row">
-                <div class="detail-label">Verification Token</div>
-                <div class="detail-value"><code><%= user.verification_token %></code></div>
-              </div>
-              <% } %>
-              <% if (user.verification_expires) { %>
-              <div class="detail-row">
-                <div class="detail-label">Token Expires</div>
-                <div class="detail-value"><%= new Date(user.verification_expires).toLocaleString() %></div>
-              </div>
-              <% } %>
-              <div class="detail-row">
-                <div class="detail-label">Joined</div>
-                <div class="detail-value"><%= new Date(user.created_at).toLocaleString() %></div>
-              </div>
-              <% if (user.updated_at) { %>
-              <div class="detail-row">
-                <div class="detail-label">Last Updated</div>
-                <div class="detail-value"><%= new Date(user.updated_at).toLocaleString() %></div>
-              </div>
-              <% } %>
             </div>
-            
-            <!-- Orders Tab -->
-            <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
-              <h3 class="section-title">Recent Orders</h3>
-              
-              <% if (locals.orders && orders.length > 0) { %>
-                <% orders.forEach(function(order) { %>
-                  <div class="order-card">
-                    <div class="order-header">
-                      <div class="order-id">#<%= order.order_number %></div>
-                      <div class="order-date"><%= new Date(order.created_at).toLocaleString() %></div>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div class="order-status status-<%= order.status ? order.status.toLowerCase() : 'processing' %>">
-                        <%= order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Processing' %>
-                      </div>
-                      <div class="order-amount">Rp<%= new Intl.NumberFormat('id-ID').format(order.total_amount || 0) %></div>
-                    </div>
-                  </div>
-                <% }); %>
-                
-                <div class="text-center mt-3">
-                  <a href="/admin/orders?user_id=<%= user.id %>" class="btn btn-outline-primary">
-                    <i class="fas fa-list me-1"></i> View All Orders
-                  </a>
-                </div>
-              <% } else { %>
-                <div class="text-center py-4 text-muted">
-                  <i class="fas fa-shopping-cart fa-2x mb-3"></i>
-                  <p class="mb-3">No orders found for this user.</p>
-                  <small class="d-block text-muted mb-3">Orders will appear here when the user makes a purchase.</small>
-                </div>
-              <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Statistics & Activity -->
+    <div class="col-lg-8">
+      <!-- User Statistics Card -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+          <h5 class="card-title m-0">User Statistics</h5>
+        </div>
+        <div class="card-body px-0 pb-0">
+          <div class="row g-0 text-center">
+            <div class="col-md-3 col-6 border-end border-bottom p-3">
+              <div class="stat-card-value text-primary">
+                <%= stats.totalOrders || 0 %>
+              </div>
+              <div class="stat-card-label">Total Orders</div>
             </div>
-            
-            <!-- Activities Tab -->
-            <div class="tab-pane fade" id="activities" role="tabpanel" aria-labelledby="activities-tab">
-              <h3 class="section-title">Recent Activity</h3>
-              
-              <% if (locals.activities && activities.length > 0) { %>
-                <% activities.forEach(function(activity) { %>
-                  <div class="activity-item">
-                    <div class="activity-time">
-                      <i class="fas fa-clock me-1"></i> <%= new Date(activity.timestamp).toLocaleString() %>
-                      <% if (activity.ip_address) { %>
-                        <span class="badge-ip ms-2"><i class="fas fa-network-wired me-1"></i> <%= activity.ip_address %></span>
-                      <% } %>
-                    </div>
-                    <p class="activity-description">
-                      <% if (activity.type) { %>
-                        <span class="badge bg-secondary me-2"><%= activity.type %></span>
-                      <% } %>
-                      <%= activity.description %>
-                    </p>
-                  </div>
-                <% }); %>
-                <div class="text-center mt-3">
-                  <small class="text-muted">Note: Activity logs are stored for 30 days</small>
-                </div>
-              <% } else { %>
-                <div class="text-center py-4 text-muted">
-                  <i class="fas fa-history fa-2x mb-3"></i>
-                  <p class="mb-3">No activity records found for this user.</p>
-                  <small class="d-block text-muted">User activities such as logins and actions will appear here when they are performed.</small>
-                </div>
-              <% } %>
+            <div class="col-md-3 col-6 border-bottom p-3 border-md-end">
+              <div class="stat-card-value text-success">
+                Rp<%= Number(stats.totalSpent || 0).toLocaleString('id-ID') %>
+              </div>
+              <div class="stat-card-label">Total Spent</div>
+            </div>
+            <div class="col-md-3 col-6 border-end p-3">
+              <div class="stat-card-value text-warning">
+                Rp<%= Number(stats.cashbackEarned || 0).toLocaleString('id-ID') %>
+              </div>
+              <div class="stat-card-label">Cashback Earned</div>
+            </div>
+            <div class="col-md-3 col-6 p-3">
+              <div class="stat-card-value text-info">
+                Rp<%= Number(stats.walletBalance || 0).toLocaleString('id-ID') %>
+              </div>
+              <div class="stat-card-label">Wallet Balance</div>
             </div>
           </div>
         </div>
       </div>
       
-      <div class="col-lg-4">
-        <!-- User Stats Card -->
-        <div class="card mb-4">
-          <div class="info-section">
-            <h3 class="section-title">User Statistics</h3>
-            
-            <div class="detail-row">
-              <div class="detail-label">Total Orders</div>
-              <div class="detail-value"><%= locals.stats ? stats.total_orders : 0 %></div>
-            </div>
-            <div class="detail-row">
-              <div class="detail-label">Total Spent</div>
-              <div class="detail-value">Rp<%= locals.stats ? new Intl.NumberFormat('id-ID').format(stats.total_spent) : 0 %></div>
-            </div>
-            <div class="detail-row">
-              <div class="detail-label">Cashback Earned</div>
-              <div class="detail-value">Rp<%= locals.stats ? new Intl.NumberFormat('id-ID').format(stats.total_cashback) : 0 %></div>
-            </div>
-            <div class="detail-row">
-              <div class="detail-label">Last Order</div>
-              <div class="detail-value"><%= locals.stats && stats.last_order ? new Date(stats.last_order).toLocaleDateString() : 'Never' %></div>
+      <!-- Last Order Card (only shown if user has orders) -->
+      <% if (stats.lastOrder) { %>
+        <div class="card shadow-sm mb-4">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title m-0">Last Order</h5>
+            <a href="/admin/orders/<%= stats.lastOrder.id %>" class="btn btn-sm btn-outline-primary">
+              <i class="fas fa-eye me-1"></i> View Details
+            </a>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-2">
+                  <span class="fw-medium text-muted">Order #:</span>
+                  <span class="fw-medium">#<%= stats.lastOrder.order_number %></span>
+                </div>
+                <div class="mb-2">
+                  <span class="fw-medium text-muted">Date:</span>
+                  <span><%= new Date(stats.lastOrder.created_at).toLocaleString() %></span>
+                </div>
+                <div class="mb-2">
+                  <span class="fw-medium text-muted">Amount:</span>
+                  <span class="fw-medium">Rp<%= Number(stats.lastOrder.total_amount).toLocaleString('id-ID') %></span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-2">
+                  <span class="fw-medium text-muted">Status:</span>
+                  <span class="badge status-<%= stats.lastOrder.status %>">
+                    <%= stats.lastOrder.status.charAt(0).toUpperCase() + stats.lastOrder.status.slice(1) %>
+                  </span>
+                </div>
+                <div class="mb-2">
+                  <span class="fw-medium text-muted">Items:</span>
+                  <span><%= stats.lastOrder.items_count || '0' %> items</span>
+                </div>
+                <div>
+                  <span class="fw-medium text-muted">Cashback:</span>
+                  <span class="text-success fw-medium">Rp<%= Number(stats.lastOrder.cashback_amount || 0).toLocaleString('id-ID') %></span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        
-        <!-- Quick Actions Card -->
-        <div class="card">
-          <div class="info-section">
-            <h3 class="section-title">Quick Actions</h3>
-            
-            <div class="d-grid gap-2">
-              <a href="/admin/users/<%= user.id %>/edit" class="btn btn-outline-primary">
-                <i class="fas fa-edit me-2"></i> Edit User
-              </a>
-              <a href="/admin/users/<%= user.id %>/reset-password" class="btn btn-outline-info">
-                <i class="fas fa-key me-2"></i> Reset Password
-              </a>
-              <% if (user.is_verified) { %>
-                <a href="/admin/users/<%= user.id %>/toggle-verification" class="btn btn-outline-warning">
-                  <i class="fas fa-ban me-2"></i> Set as Unverified
-                </a>
-              <% } else { %>
-                <a href="/admin/users/<%= user.id %>/toggle-verification" class="btn btn-outline-success">
-                  <i class="fas fa-check-circle me-2"></i> Set as Verified
-                </a>
-              <% } %>
-              <a href="/admin/users/<%= user.id %>/delete" class="btn btn-outline-danger mt-2">
-                <i class="fas fa-trash me-2"></i> Delete User
-              </a>
+      <% } %>
+
+      <!-- Recent Orders -->
+      <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h5 class="card-title m-0">Order History</h5>
+          <a href="/admin/orders?user_id=<%= user.id %>" class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-list me-1"></i> View All Orders
+          </a>
+        </div>
+        <div class="card-body p-0">
+          <% if (orders && orders.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Order #</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Cashback</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% orders.forEach(function(order) { %>
+                    <tr>
+                      <td>
+                        <a href="/admin/orders/<%= order.id %>" class="text-decoration-none fw-medium">
+                          #<%= order.order_number %>
+                        </a>
+                      </td>
+                      <td><%= new Date(order.created_at).toLocaleDateString() %></td>
+                      <td class="fw-medium">Rp<%= Number(order.total_amount).toLocaleString('id-ID') %></td>
+                      <td>
+                        <span class="badge status-<%= order.status %>">
+                          <%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %>
+                        </span>
+                      </td>
+                      <td class="text-success">Rp<%= Number(order.cashback_amount || 0).toLocaleString('id-ID') %></td>
+                      <td>
+                        <div class="btn-group btn-group-sm">
+                          <a href="/admin/orders/<%= order.id %>" class="btn btn-info text-white" title="View">
+                            <i class="fas fa-eye"></i>
+                          </a>
+                          <a href="/admin/orders/<%= order.id %>/edit" class="btn btn-primary" title="Edit">
+                            <i class="fas fa-edit"></i>
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
             </div>
-          </div>
+          <% } else { %>
+            <div class="text-center py-5">
+              <div class="mb-3 text-muted">
+                <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                <h6>No Orders Found</h6>
+                <p class="text-muted mb-0">This user hasn't placed any orders yet.</p>
+              </div>
+            </div>
+          <% } %>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <!-- Transaction History -->
+  <div class="card shadow-sm mt-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <h5 class="card-title m-0">Transaction History</h5>
+      <div class="d-flex gap-2">
+        <a href="/admin/transactions?user_id=<%= user.id %>" class="btn btn-sm btn-outline-primary">
+          <i class="fas fa-external-link-alt me-1"></i> View All
+        </a>
+        <button type="button" class="btn btn-sm btn-primary" 
+          data-bs-toggle="modal" data-bs-target="#addTransactionModal">
+          <i class="fas fa-plus me-1"></i> Add Transaction
+        </button>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <% if (transactions && transactions.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% transactions.forEach(function(transaction) { %>
+                <tr>
+                  <td class="fw-medium">#<%= transaction.id %></td>
+                  <td><%= new Date(transaction.created_at).toLocaleString() %></td>
+                  <td><span class="badge bg-<%= transaction.type === 'credit' ? 'success' : 'danger' %>">
+                    <%= transaction.type === 'credit' ? 'Credit' : 'Debit' %>
+                  </span></td>
+                  <td class="<%= transaction.type === 'credit' ? 'text-success' : 'text-danger' %> fw-medium">
+                    <%= transaction.type === 'credit' ? '+' : '-' %>
+                    Rp<%= Number(Math.abs(transaction.amount)).toLocaleString('id-ID') %>
+                  </td>
+                  <td>
+                    <span class="badge bg-<%= transaction.status === 'successful' ? 'success' : 
+                      transaction.status === 'pending' ? 'warning' : 'secondary' %>">
+                      <%= transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1) %>
+                    </span>
+                  </td>
+                  <td><%= transaction.description || '-' %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="text-center py-5">
+          <div class="mb-3 text-muted">
+            <i class="fas fa-exchange-alt fa-3x mb-3"></i>
+            <h6>No Transactions Found</h6>
+            <p class="text-muted mb-0">This user doesn't have any transaction records yet.</p>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Reset Password Modal -->
+  <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Reset Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/admin/users/<%= user.id %>/reset-password" method="POST">
+          <div class="modal-body">
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              You are about to reset the password for <strong><%= user.username %></strong>.
+              This action cannot be undone.
+            </div>
+            <div class="mb-3">
+              <label for="newPassword" class="form-label">New Password</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="newPassword" name="password" 
+                  minlength="8" required>
+                <span class="password-toggle input-group-text">
+                  <i class="fas fa-eye"></i>
+                </span>
+              </div>
+              <div class="form-text">Password must be at least 8 characters long.</div>
+            </div>
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="confirmPassword" 
+                  minlength="8" required>
+                <span class="password-toggle input-group-text">
+                  <i class="fas fa-eye"></i>
+                </span>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="notifyUser" name="notify_user" checked>
+                <label class="form-check-label" for="notifyUser">
+                  Notify user via email
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="resetPasswordBtn">Reset Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Transaction Modal -->
+  <div class="modal fade" id="addTransactionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Transaction</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/admin/users/<%= user.id %>/transactions" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="transactionType" class="form-label">Transaction Type</label>
+              <select class="form-select" id="transactionType" name="type" required>
+                <option value="credit">Credit (Add Funds)</option>
+                <option value="debit">Debit (Remove Funds)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="transactionAmount" class="form-label">Amount</label>
+              <div class="input-group">
+                <span class="input-group-text">Rp</span>
+                <input type="number" class="form-control" id="transactionAmount" 
+                  name="amount" min="1" step="1" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="transactionDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="transactionDescription" name="description" 
+                rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="notifyUserTransaction" 
+                  name="notify_user" checked>
+                <label class="form-check-label" for="notifyUserTransaction">
+                  Notify user via email
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Add Transaction</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom Scripts -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Password toggle functionality
+    const passwordToggles = document.querySelectorAll('.password-toggle');
+    
+    passwordToggles.forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        const passwordField = this.previousElementSibling;
+        
+        if (passwordField.type === 'password') {
+          passwordField.type = 'text';
+          this.querySelector('i').classList.remove('fa-eye');
+          this.querySelector('i').classList.add('fa-eye-slash');
+        } else {
+          passwordField.type = 'password';
+          this.querySelector('i').classList.remove('fa-eye-slash');
+          this.querySelector('i').classList.add('fa-eye');
+        }
+      });
+    });
+    
+    // Password confirmation validation
+    const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    
+    if (resetPasswordBtn && newPasswordInput && confirmPasswordInput) {
+      const validatePasswords = function() {
+        if (newPasswordInput.value !== confirmPasswordInput.value) {
+          confirmPasswordInput.setCustomValidity("Passwords don't match");
+        } else {
+          confirmPasswordInput.setCustomValidity('');
+        }
+      };
+      
+      newPasswordInput.addEventListener('input', validatePasswords);
+      confirmPasswordInput.addEventListener('input', validatePasswords);
+    }
+  });
+</script>
 </body>
 </html>
