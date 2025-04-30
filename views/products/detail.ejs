@@ -1,542 +1,121 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title><%= title %></title>
-  <link rel="stylesheet" href="/css/styles.css">
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-  <!-- Header -->
-  <header class="header">
-    <div class="header-content">
-      <div class="logo">
-        <a href="/">MOVA</a>
-        <span class="tagline">Belanja Sambil Cuan</span>
-      </div>
-      <div class="header-right">
-        <a href="/faq" class="faq-link">FAQ</a>
-      </div>
-    </div>
-  </header>
+<!-- Detail Product Content -->
+<div class="product-detail">
+  <!-- Detail Header with back button -->
+  <div class="detail-header">
+    <a href="javascript:history.back()" class="back-button">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    <h1 class="product-title">Detail Produk</h1>
+    <button class="share-button">
+      <i class="fas fa-share-alt"></i>
+    </button>
+  </div>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <div class="product-detail-container">
-      <div class="page-header">
-        <a href="javascript:history.back()" class="back-button">
-          <i class="fas fa-arrow-left"></i>
-        </a>
-        <h1>Detail Produk</h1>
-        <div class="share-button">
-          <i class="fas fa-share-alt"></i>
-        </div>
-      </div>
-    
-      <div class="product-gallery">
-        <div class="main-image">
-          <img src="<%= product.image_url || '/images/product-placeholder.jpg' %>" alt="<%= product.name %>">
-        </div>
-      </div>
-      
-      <div class="product-info">
-        <h1 class="product-name"><%= product.name %></h1>
-        
-        <% if (product.brand) { %>
-        <div class="product-brand">
-          <img src="/images/brands/<%= product.brand.toLowerCase() %>.png" onerror="this.src='/images/brand-placeholder.jpg'" alt="<%= product.brand %>" class="brand-logo">
-          <span><%= product.brand %></span>
-        </div>
-        <% } %>
-        
-        <div class="product-price-info">
-          <div class="product-price">Rp<%= product.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") %></div>
-        </div>
-        
-        <div class="product-cashback">
-          <span class="cashback-label">Estimasi Cashback</span>
-          <span class="cashback-amount">Rp<%= product.cashback.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") %></span>
-        </div>
-        
-        <div class="product-actions">
-          <button class="wishlist-button">
-            <i class="far fa-heart"></i> Wishlist
-          </button>
-          <a href="#" class="buy-button">
-            <i class="fas fa-shopping-cart"></i> Beli Sekarang
-          </a>
-        </div>
-      </div>
-      
-      <div class="product-description">
-        <h2>Deskripsi Produk</h2>
-        <div class="description-content">
-          <%= product.description || 'Tidak ada deskripsi untuk produk ini.' %>
-        </div>
-      </div>
-      
-      <% if (relatedProducts && relatedProducts.length > 0) { %>
-      <div class="related-products">
-        <h2>Produk Terkait</h2>
-        <div class="products-slider">
-          <% relatedProducts.forEach(function(relatedProduct) { %>
-          <div class="product-card">
-            <a href="/products/<%= relatedProduct.id %>">
-              <div class="product-image">
-                <img src="<%= relatedProduct.image_url || '/images/product-placeholder.jpg' %>" alt="<%= relatedProduct.name %>">
-                <% 
-                  // Calculate cashback percentage
-                  let cashbackPercentage = 0;
-                  if (relatedProduct.price && relatedProduct.cashback) {
-                    cashbackPercentage = Math.round((relatedProduct.cashback / relatedProduct.price) * 100);
-                  }
-                %>
-                <div class="cashback-badge"><%= cashbackPercentage %>% Cashback</div>
-              </div>
-              <div class="product-info">
-                <h3 class="product-name"><%= relatedProduct.name %></h3>
-                <div class="product-price">Rp<%= relatedProduct.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") %></div>
-                <div class="product-cashback">
-                  <span class="cashback-label">Cashback</span>
-                  <span class="cashback-amount">Rp<%= relatedProduct.cashback.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") %></span>
-                </div>
-              </div>
-            </a>
-          </div>
-          <% }); %>
-        </div>
-      </div>
-      <% } %>
+  <!-- Product Gallery -->
+  <div class="product-gallery">
+    <img src="<%= product.image_url || '/images/placeholder.jpg' %>" alt="<%= product.name %>" class="product-image-large">
+  </div>
+
+  <!-- Product Information -->
+  <div class="product-details">
+    <h2 class="product-name"><%= product.name %></h2>
+    <div class="product-price">
+      Rp<%= (product.price) ? product.price.toLocaleString('id-ID') : '0' %>
     </div>
-    
-    <!-- Login Modal for Guest Users -->
-    <% if (locals.requiresAuth) { %>
-    <div id="login-modal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Login Required</h2>
-          <span class="close-modal">&times;</span>
-        </div>
-        <div class="modal-body">
-          <p>Please login or register to access this feature.</p>
-          <div class="modal-actions">
-            <a href="/auth/login?redirect=/products/<%= product.id %>" class="modal-button primary">Login</a>
-            <a href="/auth/register?redirect=/products/<%= product.id %>" class="modal-button secondary">Register</a>
-          </div>
-        </div>
-      </div>
+    <div class="product-cashback">
+      <span class="cashback-label">Est. Cashback:</span>
+      <span class="cashback-amount">
+        Rp<%= (product.cashback && product.cashback.amount) ? product.cashback.amount.toLocaleString('id-ID') : '0' %> 
+        (<%= (product.cashback && product.cashback.percentage) ? product.cashback.percentage : 0 %>%)
+      </span>
+    </div>
+
+    <!-- Product Description -->
+    <div class="product-description">
+      <h3>Deskripsi Produk</h3>
+      <p><%= product.description || 'Tidak ada deskripsi tersedia' %></p>
+    </div>
+
+    <% if (product.specifications) { %>
+    <!-- Product Specifications -->
+    <div class="product-specs">
+      <h3>Spesifikasi</h3>
+      <table class="specs-table">
+        <% for (const [key, value] of Object.entries(product.specifications)) { %>
+        <tr>
+          <td><%= key %></td>
+          <td><%= value %></td>
+        </tr>
+        <% } %>
+      </table>
     </div>
     <% } %>
-    
-    <!-- Share Modal -->
-    <div id="share-modal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Share Product</h2>
-          <span class="close-modal">&times;</span>
-        </div>
-        <div class="modal-body">
-          <% if (locals.isAuthenticated) { %>
-            <!-- Logged in user - show affiliate link -->
-            <p>Share this product to earn cashback when someone purchases through your link:</p>
-            <div class="affiliate-link-container">
-              <input type="text" id="affiliate-link" class="affiliate-link-input" readonly>
-              <button id="copy-link-btn" class="copy-button">
-                <i class="fas fa-copy"></i>
-              </button>
-            </div>
-            <div class="share-buttons">
-              <a href="#" class="share-button-social whatsapp">
-                <i class="fab fa-whatsapp"></i>
-                <span>WhatsApp</span>
-              </a>
-              <a href="#" class="share-button-social facebook">
-                <i class="fab fa-facebook"></i>
-                <span>Facebook</span>
-              </a>
-              <a href="#" class="share-button-social twitter">
-                <i class="fab fa-twitter"></i>
-                <span>Twitter</span>
-              </a>
-            </div>
-          <% } else { %>
-            <!-- Guest user - prompt to login -->
-            <p>Login to generate a unique affiliate link and earn cashback when someone purchases through your link.</p>
-            <div class="modal-actions">
-              <a href="/auth/login?redirect=/products/<%= product.id %>" class="modal-button primary">Login</a>
-              <a href="/auth/register?redirect=/products/<%= product.id %>" class="modal-button secondary">Register</a>
-            </div>
-          <% } %>
-        </div>
-      </div>
+
+    <!-- Product Actions -->
+    <div class="product-actions">
+      <button class="add-to-wishlist-btn">
+        <i class="far fa-heart"></i>
+        Simpan
+      </button>
+      <button class="buy-now-btn">
+        <i class="fas fa-shopping-cart"></i>
+        Beli Sekarang
+      </button>
     </div>
-  </main>
+  </div>
 
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <a href="/" class="nav-item">
-      <i class="fas fa-home"></i>
-      <span>Beranda</span>
-    </a>
-    <a href="/brands" class="nav-item">
-      <i class="fas fa-tag"></i>
-      <span>Brand</span>
-    </a>
-    <a href="/user/dashboard" class="nav-item">
-      <i class="fas fa-wallet"></i>
-      <span>Pendapatan</span>
-    </a>
-    <a href="/user/profile" class="nav-item">
-      <i class="fas fa-user"></i>
-      <span>Saya</span>
-    </a>
-  </nav>
+  <!-- Related Products -->
+  <% if (relatedProducts && relatedProducts.length > 0) { %>
+  <div class="related-products">
+    <h3>Produk Terkait</h3>
+    <div class="product-slider">
+      <% relatedProducts.forEach(relProduct => { %>
+      <!-- Related Product -->
+      <div class="product-card">
+        <a href="/products/<%= relProduct.id %>">
+          <div class="product-image">
+            <img src="<%= relProduct.image_url || '/images/placeholder.jpg' %>" alt="<%= relProduct.name %>" loading="lazy">
+            <div class="cashback-badge">
+              <%= (relProduct.cashback && relProduct.cashback.percentage) ? relProduct.cashback.percentage : 0 %>% Cashback
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-name"><%= relProduct.name %></h3>
+            <div class="product-price">
+              Rp<%= (relProduct.price) ? relProduct.price.toLocaleString('id-ID') : '0' %>
+            </div>
+            <div class="product-cashback">
+              <span class="cashback-label">Est. Cashback</span>
+              <span class="cashback-amount">
+                Rp<%= (relProduct.cashback && relProduct.cashback.amount) ? relProduct.cashback.amount.toLocaleString('id-ID') : '0' %>
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+      <% }); %>
+    </div>
+  </div>
+  <% } %>
+</div>
 
-  <!-- Scripts -->
-  <script src="/js/main.js"></script>
-  <script src="/js/toast-notifications.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Wishlist functionality
-      const wishlistButton = document.querySelector('.wishlist-button:not(.login-required)');
-      if (wishlistButton) {
-        wishlistButton.addEventListener('click', function(e) {
-          e.preventDefault();
-          const productId = this.dataset.productId;
-          const isInWishlist = this.classList.contains('in-wishlist');
-          const icon = this.querySelector('i');
-          const text = this.querySelector('span');
-          
-          if (isInWishlist) {
-            // Remove from wishlist
-            fetch(`/products/${productId}/wishlist`, {
-              method: 'DELETE',
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                this.classList.remove('in-wishlist');
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-                text.textContent = 'Wishlist';
-                
-                // Show toast notification
-                if (window.toastNotifications) {
-                  window.toastNotifications.success('Removed from wishlist');
-                }
-              }
-            })
-            .catch(error => {
-              console.error('Error removing from wishlist:', error);
-              if (window.toastNotifications) {
-                window.toastNotifications.error('Failed to remove from wishlist');
-              }
-            });
-          } else {
-            // Add to wishlist
-            fetch(`/products/${productId}/wishlist`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                this.classList.add('in-wishlist');
-                icon.classList.remove('far');
-                icon.classList.add('fas');
-                text.textContent = 'In Wishlist';
-                
-                // Show toast notification
-                if (window.toastNotifications) {
-                  window.toastNotifications.success('Added to wishlist');
-                }
-              }
-            })
-            .catch(error => {
-              console.error('Error adding to wishlist:', error);
-              if (window.toastNotifications) {
-                window.toastNotifications.error('Failed to add to wishlist');
-              }
-            });
-          }
-        });
-      }
-      
-      // Buy button functionality
-      const buyButton = document.querySelector('.buy-button:not(.login-required)');
-      if (buyButton) {
-        buyButton.addEventListener('click', function(e) {
-          e.preventDefault();
-          // Generate affiliate link and redirect
-          const productId = this.dataset.productId;
-          
-          fetch(`/products/${productId}/affiliate-link`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            }
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Share button functionality
+    const shareButton = document.querySelector('.share-button');
+    if (shareButton) {
+      shareButton.addEventListener('click', function() {
+        if (navigator.share) {
+          navigator.share({
+            title: document.querySelector('.product-name').textContent,
+            text: 'Lihat produk ini di MOVA dan dapatkan cashback!',
+            url: window.location.href
           })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              // Redirect to the affiliate link
-              window.location.href = data.data.affiliateLink;
-            }
-          })
-          .catch(error => {
-            console.error('Error generating affiliate link:', error);
-            if (window.toastNotifications) {
-              window.toastNotifications.error('Failed to generate affiliate link');
-            }
-          });
-        });
-      }
-      
-      // Share modal functionality
-      const shareButton = document.getElementById('shareProduct');
-      const shareModal = document.getElementById('share-modal');
-      
-      if (shareButton && shareModal) {
-        shareButton.addEventListener('click', function(e) {
-          e.preventDefault();
-          shareModal.style.display = 'flex';
-          
-          // If user is logged in, generate affiliate link
-          if (!document.querySelector('.login-required')) {
-            const productId = document.querySelector('[data-product-id]').dataset.productId;
-            const affiliateLinkInput = document.getElementById('affiliate-link');
-            
-            if (affiliateLinkInput) {
-              fetch(`/products/${productId}/affiliate-link`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                }
-              })
-              .then(response => response.json())
-              .then(data => {
-                if (data.success) {
-                  affiliateLinkInput.value = data.data.affiliateLink;
-                  
-                  // Set up share buttons
-                  const whatsappBtn = document.querySelector('.share-button-social.whatsapp');
-                  const facebookBtn = document.querySelector('.share-button-social.facebook');
-                  const twitterBtn = document.querySelector('.share-button-social.twitter');
-                  
-                  const shareText = `Check out ${data.data.productName} and get cashback!`;
-                  
-                  if (whatsappBtn) {
-                    whatsappBtn.href = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + data.data.affiliateLink)}`;
-                  }
-                  
-                  if (facebookBtn) {
-                    facebookBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(data.data.affiliateLink)}`;
-                  }
-                  
-                  if (twitterBtn) {
-                    twitterBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(data.data.affiliateLink)}`;
-                  }
-                }
-              })
-              .catch(error => {
-                console.error('Error generating affiliate link for sharing:', error);
-              });
-            }
-          }
-        });
-      }
-      
-      // Copy link functionality
-      const copyLinkBtn = document.getElementById('copy-link-btn');
-      const affiliateLinkInput = document.getElementById('affiliate-link');
-      
-      if (copyLinkBtn && affiliateLinkInput) {
-        copyLinkBtn.addEventListener('click', function() {
-          affiliateLinkInput.select();
-          document.execCommand('copy');
-          
-          // Show feedback
-          this.innerHTML = '<i class="fas fa-check"></i>';
-          setTimeout(() => {
-            this.innerHTML = '<i class="fas fa-copy"></i>';
-          }, 2000);
-          
-          // Show toast notification
-          if (window.toastNotifications) {
-            window.toastNotifications.success('Link copied to clipboard');
-          }
-        });
-      }
-      
-      // Close modals
-      const closeButtons = document.querySelectorAll('.close-modal');
-      closeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const modal = this.closest('.modal');
-          if (modal) {
-            modal.style.display = 'none';
-          }
-        });
-      });
-      
-      // Close modal when clicking outside
-      window.addEventListener('click', function(e) {
-        if (e.target.classList.contains('modal')) {
-          e.target.style.display = 'none';
+          .catch(err => console.log('Error sharing:', err));
+        } else {
+          alert('Fitur berbagi tidak didukung pada browser ini');
         }
       });
-    });
-  </script>
-  <style>
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
     }
-    
-    .modal-content {
-      background-color: white;
-      width: 90%;
-      max-width: 400px;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      animation: slideUp 0.3s ease-out;
-    }
-    
-    .modal-header {
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #eee;
-    }
-    
-    .modal-header h2 {
-      margin: 0;
-      font-size: 18px;
-    }
-    
-    .close-modal {
-      font-size: 24px;
-      cursor: pointer;
-      color: #666;
-    }
-    
-    .modal-body {
-      padding: 20px;
-    }
-    
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    
-    .modal-button {
-      flex: 1;
-      padding: 12px;
-      border-radius: 4px;
-      text-align: center;
-      font-weight: bold;
-      text-decoration: none;
-    }
-    
-    .modal-button.primary {
-      background-color: #ff0033;
-      color: white;
-    }
-    
-    .modal-button.secondary {
-      background-color: #f5f5f5;
-      color: #333;
-      border: 1px solid #ddd;
-    }
-    
-    .affiliate-link-container {
-      display: flex;
-      margin: 15px 0;
-    }
-    
-    .affiliate-link-input {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px 0 0 4px;
-      font-size: 14px;
-    }
-    
-    .copy-button {
-      padding: 0 15px;
-      background-color: #f5f5f5;
-      border: 1px solid #ddd;
-      border-left: none;
-      border-radius: 0 4px 4px 0;
-      cursor: pointer;
-    }
-    
-    .share-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-    
-    .share-button-social {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 10px;
-      border-radius: 4px;
-      color: white;
-      text-decoration: none;
-    }
-    
-    .share-button-social i {
-      font-size: 24px;
-      margin-bottom: 5px;
-    }
-    
-    .whatsapp {
-      background-color: #25D366;
-    }
-    
-    .facebook {
-      background-color: #3b5998;
-    }
-    
-    .twitter {
-      background-color: #1DA1F2;
-    }
-    
-    .wishlist-button.in-wishlist {
-      color: #ff0033;
-    }
-    
-    .wishlist-button.in-wishlist i {
-      color: #ff0033;
-    }
-    
-    @keyframes slideUp {
-      from { transform: translateY(50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-  </style>
-    <script src="/js/page-specific-fix.js"></script>
-</body>
-</html>
+  });
+</script>

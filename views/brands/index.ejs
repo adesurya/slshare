@@ -1,215 +1,383 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title><%= title %></title>
-  <link rel="stylesheet" href="/css/styles.css">
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    .brands-container {
+<!-- Brands index page - with interactive brand cards -->
+<h1 class="section-title">Semua Brand</h1>
+
+<!-- Brand Card Example - Unilever -->
+<div class="brand-card">
+  <div class="brand-header">
+    <img src="/images/unilever-logo.jpg" alt="Unilever Indonesia" class="brand-logo" onerror="this.src='/images/brand-placeholder.jpg'">
+    <div class="brand-info">
+      <h2 class="brand-name">Unilever Indonesia</h2>
+      <p class="brand-desc">Unilever is a British multinational consumer goods company that produces food, beverages, cleaning agents, and personal care products.</p>
+      <div class="cashback-badge">1% - 5% Cashback</div>
+    </div>
+  </div>
+  
+  <div class="brand-products">
+    <h3 class="products-title">Produk Populer</h3>
+    <div class="products-slider">
+      <!-- Product 1 -->
+      <div class="product-item">
+        <div class="product-image">
+          <img src="/images/dove-serum.jpg" alt="Dove Deodorant Serum" onerror="this.src='/images/product-placeholder.jpg'">
+          <span class="product-cashback">10%</span>
+        </div>
+        <h4 class="product-name">Dove Deodorant Serum</h4>
+        <p class="product-price">Rp209.000</p>
+      </div>
+      
+      <!-- Product 2 -->
+      <div class="product-item">
+        <div class="product-image">
+          <img src="/images/vaseline.jpg" alt="Vaseline Lip Therapy 1" onerror="this.src='/images/product-placeholder.jpg'">
+          <span class="product-cashback">11%</span>
+        </div>
+        <h4 class="product-name">Vaseline Lip Therapy 1</h4>
+        <p class="product-price">Rp22.000</p>
+      </div>
+      
+      <!-- Product 3 -->
+      <div class="product-item">
+        <div class="product-image">
+          <img src="/images/dove-creambath.jpg" alt="Dove Creambath" onerror="this.src='/images/product-placeholder.jpg'">
+          <span class="product-cashback">12%</span>
+        </div>
+        <h4 class="product-name">Dove Creambath</h4>
+        <p class="product-price">Rp38.600</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- You can replicate this card for multiple brands -->
+
+<style>
+  /* Modern, interactive styling */
+  :root {
+    --primary-color: #ff0033;
+    --text-dark: #333333;
+    --text-light: #666666;
+    --bg-light: #ffffff;
+    --bg-hover: #f9f9f9;
+    --shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    --border-radius: 12px;
+    --animation-speed: 0.3s;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.5;
+    color: var(--text-dark);
+    background-color: #f5f5f5;
+  }
+  
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 20px;
+    color: var(--text-dark);
+    position: relative;
+    padding-bottom: 10px;
+  }
+  
+  .section-title:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: var(--primary-color);
+    border-radius: 3px;
+  }
+  
+  /* Brand Card */
+  .brand-card {
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+    overflow: hidden;
+    transition: transform var(--animation-speed), box-shadow var(--animation-speed);
+  }
+  
+  .brand-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  }
+  
+  .brand-header {
+    display: flex;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color var(--animation-speed);
+  }
+  
+  .brand-header:hover {
+    background-color: var(--bg-hover);
+  }
+  
+  .brand-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: contain;
+    background-color: #f9f9f9;
+    padding: 5px;
+    margin-right: 20px;
+    border: 1px solid #f0f0f0;
+    transition: transform var(--animation-speed);
+  }
+  
+  .brand-header:hover .brand-logo {
+    transform: scale(1.05);
+  }
+  
+  .brand-info {
+    flex: 1;
+  }
+  
+  .brand-name {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+  }
+  
+  .brand-desc {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .cashback-badge {
+    display: inline-block;
+    background-color: rgba(255, 0, 51, 0.08);
+    color: var(--primary-color);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+  
+  /* Products section */
+  .brand-products {
+    padding: 20px;
+  }
+  
+  .products-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-dark);
+    position: relative;
+    padding-left: 12px;
+  }
+  
+  .products-title:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 16px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+  }
+  
+  .products-slider {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .products-slider::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+  
+  .product-item {
+    flex: 0 0 140px;
+    cursor: pointer;
+    transition: transform var(--animation-speed);
+  }
+  
+  .product-item:hover {
+    transform: translateY(-5px);
+  }
+  
+  .product-image {
+    position: relative;
+    height: 140px;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #f5f5f5;
+    margin-bottom: 8px;
+  }
+  
+  .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--animation-speed);
+  }
+  
+  .product-item:hover .product-image img {
+    transform: scale(1.1);
+  }
+  
+  .product-cashback {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 15px;
+    z-index: 1;
+  }
+  
+  .product-name {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--text-dark);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 40px;
+  }
+  
+  .product-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 480px) {
+    .brand-header {
       padding: 15px;
     }
-
-    .brands-header {
-      margin-bottom: 20px;
-    }
-
-    .brands-header h1 {
-      font-size: 20px;
-      margin-bottom: 5px;
-    }
-
-    .brands-header p {
-      color: #666;
-      font-size: 14px;
-    }
-
-    .brands-list {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-    }
-
-    .brand-card {
-      background-color: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease;
-    }
-
-    .brand-card:hover {
-      transform: translateY(-3px);
-    }
-
-    .brand-card a {
-      display: block;
-      padding: 15px;
-    }
-
+    
     .brand-logo {
       width: 60px;
       height: 60px;
-      border-radius: 50%;
-      margin-bottom: 10px;
-      background-color: #f5f5f5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
+      margin-right: 15px;
     }
-
-    .brand-logo img {
-      max-width: 80%;
-      max-height: 80%;
-      object-fit: contain;
-    }
-
+    
     .brand-name {
       font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 5px;
     }
-
-    .brand-cashback {
-      font-size: 12px;
-      color: #32a852;
-      margin-bottom: 10px;
+    
+    .brand-desc {
+      font-size: 13px;
     }
-
-    .brand-product-count {
-      font-size: 12px;
-      color: #666;
+    
+    .products-slider {
+      gap: 10px;
     }
-
-    .featured-brand {
-      grid-column: span 2;
-      background-color: #fff9f9;
-      border: 1px solid #ffdddd;
+    
+    .product-item {
+      flex: 0 0 120px;
     }
-
-    .featured-brand .brand-logo {
-      width: 80px;
-      height: 80px;
+    
+    .product-image {
+      height: 120px;
     }
-
-    .featured-brand .brand-name {
-      font-size: 18px;
+  }
+  
+  @media (min-width: 768px) {
+    .products-slider {
+      flex-wrap: wrap;
     }
-
-    .featured-brand .brand-cashback {
-      font-size: 14px;
+    
+    .product-item {
+      flex: 0 0 calc(25% - 12px);
+      max-width: calc(25% - 12px);
     }
+  }
+</style>
 
-    /* For tablets and up */
-    @media (min-width: 768px) {
-      .brands-list {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .featured-brand {
-        grid-column: span 3;
-      }
-    }
-
-    /* For desktop */
-    @media (min-width: 1024px) {
-      .brands-list {
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      .featured-brand {
-        grid-column: span 2;
-      }
-    }
-  </style>
-</head>
-<body>
-  <!-- Header -->
-  <header class="header">
-    <div class="header-content">
-      <div class="logo">
-        <a href="/">MOVA</a>
-        <span class="tagline">Belanja Sambil Cuan</span>
-      </div>
-      <div class="header-right">
-        <a href="/faq" class="faq-link">FAQ</a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="main-content">
-    <!-- Search Bar -->
-    <% if (locals.showSearchBar) { %>
-    <div class="search-container">
-      <form action="/search" method="get" class="search-form">
-        <input type="text" name="q" placeholder="Tempelkan tautan Shopee/TikTok" class="search-input">
-        <button type="submit" class="search-button">Tempel</button>
-      </form>
-    </div>
-    <% } %>
-
-    <div class="brands-container">
-      <div class="brands-header">
-        <h1>Brand Populer</h1>
-        <p>Temukan brand favorit Anda dengan penawaran cashback terbaik</p>
-      </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add horizontal scroll with mousewheel support for products slider
+    const productsSliders = document.querySelectorAll('.products-slider');
+    
+    productsSliders.forEach(slider => {
+      // Mouse wheel horizontal scrolling
+      slider.addEventListener('wheel', function(e) {
+        if (e.deltaY !== 0) {
+          e.preventDefault();
+          this.scrollLeft += e.deltaY;
+        }
+      });
       
-      <div class="brands-list">
-        <% if (brands && brands.length > 0) { %>
-          <% brands.forEach((brand, index) => { %>
-            <div class="brand-card <%= index === 0 && brand.cashback_percentage >= 8 ? 'featured-brand' : '' %>">
-              <a href="/brands/<%= brand.id %>">
-                <div class="brand-logo">
-                  <img src="/images/brands/<%= brand.name.toLowerCase() %>.png" onerror="this.src='/images/brand-placeholder.jpg'" alt="<%= brand.name %>">
-                </div>
-                <h3 class="brand-name"><%= brand.name %></h3>
-                <div class="brand-cashback">Cashback hingga <%= brand.cashback_percentage %>%</div>
-                <div class="brand-product-count">
-                  <%= brand.products ? brand.products.length : 0 %> produk tersedia
-                </div>
-              </a>
-            </div>
-          <% }); %>
-        <% } else { %>
-          <div style="grid-column: span 2; text-align: center; padding: 30px 0; color: #666;">
-            Belum ada brand yang tersedia
-          </div>
-        <% } %>
-      </div>
-    </div>
-  </main>
-
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <a href="/" class="nav-item <%= currentPage === 'home' ? 'active' : '' %>">
-      <i class="fas fa-home"></i>
-      <span>Beranda</span>
-    </a>
-    <a href="/brands" class="nav-item <%= currentPage === 'brands' ? 'active' : '' %>">
-      <i class="fas fa-tag"></i>
-      <span>Brand</span>
-    </a>
-    <a href="/user/dashboard" class="nav-item <%= currentPage === 'earnings' ? 'active' : '' %>">
-      <i class="fas fa-wallet"></i>
-      <span>Pendapatan</span>
-    </a>
-    <a href="/user/profile" class="nav-item <%= currentPage === 'profile' ? 'active' : '' %>">
-      <i class="fas fa-user"></i>
-      <span>Saya</span>
-    </a>
-  </nav>
-
-  <!-- Scripts -->
-  <script src="/js/main.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // JavaScript khusus untuk halaman brands jika diperlukan
-      console.log("Brands page loaded");
+      // Touch events for mobile swipe
+      let isDown = false;
+      let startX;
+      let scrollLeft;
+      
+      slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.classList.add('active');
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+      });
+      
+      slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.classList.remove('active');
+      });
+      
+      slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.classList.remove('active');
+      });
+      
+      slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2; // Scroll speed
+        slider.scrollLeft = scrollLeft - walk;
+      });
     });
-  </script>
-</body>
-</html>
+    
+    // Ripple effect for product items
+    const productItems = document.querySelectorAll('.product-item');
+    
+    productItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        const ripple = document.createElement('div');
+        const rect = this.getBoundingClientRect();
+        
+        ripple.className = 'ripple';
+        ripple.style.left = `${e.clientX - rect.left}px`;
+        ripple.style.top = `${e.clientY - rect.top}px`;
+        
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+      });
+    });
+  });
+</script>

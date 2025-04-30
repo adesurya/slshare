@@ -6,6 +6,42 @@ const { Product, Brand } = require('../models/Product-brand-models');
 const User = require('../models/User');
 const { isAuthenticated } = require('../middlewares/auth');
 
+const processCashbackData = (product) => {
+  if (!product) return product;
+  
+  // Default cashback structure
+  let defaultCashback = {
+    percentage: 0,
+    amount: 0
+  };
+  
+  try {
+    // Ensure cashback has proper structure
+    if (!product.cashback) {
+      product.cashback = defaultCashback;
+    } else if (typeof product.cashback === 'number') {
+      // If cashback is just a number, format it properly
+      product.cashback = {
+        percentage: Math.round((product.cashback / product.price) * 100),
+        amount: product.cashback
+      };
+    } else if (!product.cashback.amount) {
+      // Ensure amount property exists
+      product.cashback.amount = 0;
+    }
+    
+    // Ensure price is a number
+    if (typeof product.price !== 'number') {
+      product.price = parseFloat(product.price) || 0;
+    }
+  } catch (error) {
+    console.error('Error processing cashback data:', error);
+    product.cashback = defaultCashback;
+  }
+  
+  return product;
+};
+
 // PENTING: Pindahkan rute dengan parameter menjadi lebih bawah
 // dari rute yang lebih spesifik
 
@@ -98,57 +134,78 @@ router.get('/:id', async (req, res) => {
   try {
     const productId = req.params.id;
     
-    // Log untuk debugging
-    console.log(`Accessing product detail for ID: ${productId}`);
-    
-    // Coba dapatkan produk dari database
-    const product = await Product.findById(productId);
-    
-    // Jika produk tidak ditemukan, tampilkan halaman khusus
-    if (!product) {
-      console.log(`Product with ID ${productId} not found`);
-      return res.status(404).render('error', {
-        title: 'Produk Tidak Ditemukan',
-        message: 'Produk yang Anda cari tidak ditemukan',
-        currentPage: 'home',
-        showSearchBar: true
+    // Fetch product details
+    let product;
+    try {
+      product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).render('error', { 
+          title: 'Product Not Found',
+          message: 'The product you requested could not be found.',
+          currentPage: ''
+        });
+      }
+      
+      // Calculate cashback
+      try {
+        product.cashback = await Product.calculateCashback(productId);
+      } catch (cashbackError) {
+        console.error('Error calculating cashback:', cashbackError);
+        product.cashback = {
+          percentage: 0,
+          amount: 0
+        };
+      }
+      
+      // Process cashback data
+      product = processCashbackData(product);
+      
+    } catch (productError) {
+      console.error('Error fetching product:', productError);
+      return res.status(500).render('error', { 
+        title: 'Error',
+        message: 'Failed to load product details.',
+        currentPage: ''
       });
     }
     
-    // Hitung cashback untuk produk
-    product.cashback = await Product.calculateCashback(product.id);
-    
-    // Dapatkan produk terkait
-    const relatedProducts = await Product.getRelatedProducts(product.id, 4);
-    
-    // Hitung cashback untuk produk terkait
-    for (let relatedProduct of relatedProducts) {
-      relatedProduct.cashback = await Product.calculateCashback(relatedProduct.id);
+    // Fetch related products
+    let relatedProducts = [];
+    try {
+      relatedProducts = await Product.findRelated(productId, 5);
+      
+      // Calculate cashback for related products
+      for (let relProduct of relatedProducts) {
+        try {
+          relProduct.cashback = await Product.calculateCashback(relProduct.id);
+          // Process cashback data
+          relProduct = processCashbackData(relProduct);
+        } catch (relCashbackError) {
+          console.error('Error calculating related product cashback:', relCashbackError);
+          relProduct.cashback = {
+            percentage: 0,
+            amount: 0
+          };
+        }
+      }
+    } catch (relatedError) {
+      console.error('Error fetching related products:', relatedError);
+      // Continue with empty related products
     }
     
-    // Cek apakah pengguna telah menambahkan produk ke wishlist
-    let isInWishlist = false;
-    if (res.locals.isAuthenticated && req.user) {
-      isInWishlist = await User.isInWishlist(req.user.id, product.id);
-    }
-    
-    // Render halaman detail produk
-    res.render('products/show', {
+    res.render('products/detail', {
       title: `${product.name} - MOVA`,
       product,
       relatedProducts,
-      isInWishlist,
-      currentPage: 'home', // Set ke 'home' karena produk diakses dari beranda
-      showSearchBar: true
+      currentPage: 'product-detail',
+      showSearchBar: false
     });
-    
   } catch (error) {
-    console.error('Product detail error:', error);
+    console.error('Product detail page error:', error);
     res.status(500).render('error', {
       title: 'Error',
-      message: 'Gagal memuat detail produk',
-      currentPage: 'home',
-      showSearchBar: true
+      message: 'Failed to load product details.',
+      currentPage: ''
     });
   }
 });

@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title><%= title %></title>
-  <link rel="stylesheet" href="/css/styles.css">
-  <!-- Font Awesome for icons -->
+  <!-- Font Awesome untuk icon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Open Graph meta tags -->
   <meta property="og:title" content="MOVA - Belanja Sambil Cuan">
@@ -15,36 +14,508 @@
   <!-- App linking -->
   <meta name="apple-itunes-app" content="app-id=123456789, app-argument=mova://home">
   <meta name="google-play-app" content="app-id=com.mova.app">
+  <style>
+    /* Base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    :root {
+      --primary-color: #ff0033;
+      --secondary-color: #f2f2f2;
+      --text-color: #333;
+      --light-text: #666;
+      --border-color: #e0e0e0;
+      --border-radius: 8px;
+      --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    body {
+      background-color: #f8f8f8;
+      color: var(--text-color);
+      min-height: 100vh;
+    }
+    
+    /* App container */
+    .app-container {
+      max-width: 480px;
+      margin: 0 auto;
+      background-color: white;
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Header */
+    .header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .logo a {
+      color: white;
+      font-weight: 700;
+      font-size: 24px;
+      text-decoration: none;
+    }
+    
+    .tagline {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .header-right a {
+      color: white;
+      text-decoration: none;
+    }
+    
+    .search-bar {
+      margin-top: 10px;
+    }
+    
+    .search-bar form {
+      display: flex;
+      background-color: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+    
+    .search-bar input {
+      flex: 1;
+      padding: 10px 15px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+    
+    .search-bar button {
+      padding: 10px 15px;
+      background-color: white;
+      color: var(--primary-color);
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    
+    /* Main Content */
+    .main-content {
+      padding: 15px;
+      padding-bottom: 70px; /* Ruang untuk bottom nav */
+    }
+    
+    /* Category Tabs */
+    .category-tabs {
+      display: flex;
+      overflow-x: auto;
+      padding: 5px 0 15px;
+      margin-bottom: 10px;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      gap: 10px;
+    }
+    
+    .category-tabs::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+    
+    .tab-button {
+      background-color: #f5f5f5;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: #666;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .tab-button.active {
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: 500;
+    }
+    
+    /* Products Section Header */
+    .products-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .products-section-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    /* Sort Options */
+    .sort-options {
+      display: flex;
+      align-items: center;
+    }
+    
+    .sort-by {
+      font-size: 13px;
+      color: #666;
+      margin-right: 10px;
+    }
+    
+    .sort-select {
+      border: 1px solid #ddd;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      background-color: white;
+    }
+    
+    /* Product Grid */
+    .category-products {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      width: 100%;
+      padding-bottom: 20px;
+    }
+    
+    /* Product Card */
+    .product-card {
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-card a {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    /* Product Image */
+    .product-image {
+      position: relative;
+      padding-top: 100%; /* 1:1 Aspect ratio */
+      background-color: #f5f5f5;
+      overflow: hidden;
+    }
+    
+    .product-image img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover .product-image img {
+      transform: scale(1.05);
+    }
+    
+    /* Cashback Badge */
+    .cashback-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: var(--primary-color);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      z-index: 2;
+    }
+    
+    /* Product Info */
+    .product-info {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    
+    .product-name {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #333;
+      line-height: 1.3;
+      height: 34px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    
+    .product-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 5px;
+    }
+    
+    .product-cashback {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+    
+    .cashback-label {
+      color: #666;
+    }
+    
+    .cashback-amount {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    
+    /* Bottom Navigation */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background-color: white;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      color: #999;
+      text-decoration: none;
+      font-size: 10px;
+    }
+    
+    .nav-item i {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+    
+    .nav-item.active {
+      color: var(--primary-color);
+    }
+    
+    /* Loading indicator */
+    .loading-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      width: 100%;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 0, 51, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid var(--primary-color);
+      animation: spin 1s linear infinite;
+      margin-bottom: 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-indicator p {
+      margin: 0;
+      color: var(--light-text);
+      font-size: 14px;
+    }
+    
+    /* Empty state */
+    .empty-state {
+      width: 100%;
+      padding: 40px 20px;
+      text-align: center;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+    }
+    
+    .empty-state p {
+      margin: 0;
+      color: #999;
+      font-size: 16px;
+    }
+    
+    /* App Download Prompt */
+    #app-download-prompt {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .prompt-content {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    
+    .prompt-content h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .prompt-content p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    .prompt-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .download-btn {
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: var(--border-radius);
+      font-weight: bold;
+      text-decoration: none;
+    }
+    
+    .close-btn {
+      padding: 12px;
+      background-color: #f5f5f5;
+      border-radius: var(--border-radius);
+      border: none;
+      cursor: pointer;
+    }
+    
+    /* Detail Product Page Styles */
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .back-button {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 24px;
+    }
+    
+    .share-button {
+      color: var(--text-color);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    
+    .product-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .product-image-large {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    
+    /* Desktop styles - maintain mobile appearance */
+    @media (min-width: 768px) {
+      body {
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 20px 0;
+      }
+      
+      .app-container {
+        width: 480px;
+        margin: 0 auto;
+      }
+      
+      /* Adjust bottom navigation for desktop */
+      .bottom-nav {
+        max-width: 480px;
+        width: 480px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+      }
+
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 375px) {
+      .category-products {
+        gap: 10px;
+      }
+      
+      .product-name {
+        font-size: 12px;
+      }
+      
+      .product-price {
+        font-size: 14px;
+      }
+    }
+  </style>
 </head>
 <body data-current-page="<%= currentPage %>">
-  <!-- Desktop-only background elements -->
-  <div class="desktop-background desktop-only">
-    <div class="desktop-logo">MOVA</div>
-    <div class="desktop-slogan">Belanja Sambil Cuan</div>
-    
-    <div class="desktop-links">
-      <a href="/" class="desktop-link">Home</a>
-      <a href="/about" class="desktop-link">About</a>
-      <a href="/faq" class="desktop-link">FAQ</a>
-      <a href="/contact" class="desktop-link">Contact</a>
-    </div>
-    
-    <div class="desktop-background-shape shape-1"></div>
-    <div class="desktop-background-shape shape-2"></div>
-    <div class="desktop-background-shape shape-3"></div>
-    
-    <div class="desktop-footer">
-      &copy; <%= new Date().getFullYear() %> MOVA App. All rights reserved.
-    </div>
-  </div>
-
-  <!-- Mobile view container (same width on desktop) -->
   <div class="app-container">
-    <!-- Phone frame elements (visible only on desktop) -->
-    <div class="phone-frame-top desktop-only">
-      <div class="phone-frame-notch"></div>
-    </div>
-    
     <!-- App Download Popup -->
     <% if (locals.showAppPrompt) { %>
     <div id="app-download-prompt">
@@ -65,7 +536,7 @@
       </div>
     </div>
     <% } %>
-  
+
     <!-- Header -->
     <header class="header">
       <div class="header-content">
@@ -77,7 +548,7 @@
           <a href="/faq" class="faq-link">FAQ</a>
         </div>
       </div>
-      <% if (locals.showSearchBar) { %>
+      <% if (locals.showSearchBar !== false) { %>
       <div class="search-bar">
         <form action="/search" method="GET">
           <input type="text" name="q" placeholder="Tempelkan tautan Shopee/TikTok">
@@ -86,12 +557,12 @@
       </div>
       <% } %>
     </header>
-  
+
     <!-- Main Content -->
     <main class="main-content">
       <%- body %>
     </main>
-  
+
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
       <a href="/" class="nav-item <%= currentPage === 'home' ? 'active' : '' %>">
@@ -111,34 +582,10 @@
         <span>Saya</span>
       </a>
     </nav>
-    
-    <!-- Phone frame bottom (visible only on desktop) -->
-    <div class="phone-frame-bottom desktop-only">
-      <div class="phone-home-button"></div>
-    </div>
-  </div>
-
-  <!-- Desktop-only download indicator -->
-  <div class="download-indicator desktop-only">
-    <i class="fas fa-download"></i>
-  </div>
-  
-  <!-- Desktop-only download popup -->
-  <div class="download-popup desktop-only">
-    <h3>Download MOVA App</h3>
-    <p>Dapatkan pengalaman terbaik dengan aplikasi mobile kami</p>
-    <div class="download-popup-buttons">
-      <a href="<%= locals.playStoreUrl %>" class="download-popup-btn playstore-btn">
-        <i class="fab fa-google-play"></i> Google Play
-      </a>
-      <a href="<%= locals.appStoreUrl %>" class="download-popup-btn appstore-btn">
-        <i class="fab fa-apple"></i> App Store
-      </a>
-    </div>
   </div>
 
   <script>
-    // Fix for bottom navigation bar on desktop
+    // Adjust layout for desktop view
     document.addEventListener('DOMContentLoaded', function() {
       // Function to adjust bottom nav based on container width
       function adjustBottomNav() {
@@ -158,20 +605,22 @@
         }
       }
       
-      // Run on page load
+      // Run when page loads
       adjustBottomNav();
       
-      // Also run on window resize
+      // Also run when window is resized
       window.addEventListener('resize', adjustBottomNav);
+      
+      // Close app download prompt
+      const closePromptBtn = document.getElementById('close-prompt');
+      const appPrompt = document.getElementById('app-download-prompt');
+      
+      if (closePromptBtn && appPrompt) {
+        closePromptBtn.addEventListener('click', function() {
+          appPrompt.style.display = 'none';
+        });
+      }
     });
   </script>
-  <!-- Scripts -->
-  <script src="/js/main.js"></script>
-  <% if (locals.showAppPrompt) { %>
-  <script src="/js/app-prompt.js"></script>
-  <% } %>
-  <script src="/js/bottom-nav-fix.js"></script>
-  <script src="/js/bottom-nav-fix.js"></script> 
-  <script src="/js/page-specific-fix.js"></script>
 </body>
 </html>

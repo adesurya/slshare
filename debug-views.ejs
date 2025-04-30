@@ -1,0 +1,93 @@
+// debug-views.js
+// Script untuk memvalidasi struktur folder views
+
+const fs = require('fs');
+const path = require('path');
+
+// Fungsi untuk memeriksa apakah file/folder ada
+function checkPath(filePath, isDirectory = false) {
+  try {
+    const stats = fs.statSync(filePath);
+    if (isDirectory && !stats.isDirectory()) {
+      return `❌ ${filePath} ada tapi bukan folder`;
+    } else if (!isDirectory && !stats.isFile()) {
+      return `❌ ${filePath} ada tapi bukan file`;
+    }
+    return `✅ ${filePath} ada`;
+  } catch (error) {
+    return `❌ ${filePath} tidak ditemukan`;
+  }
+}
+
+// Fungsi untuk mencari semua file di folder (rekursif)
+function findAllFiles(dir, fileList = []) {
+  const files = fs.readdirSync(dir);
+  
+  files.forEach(file => {
+    const filePath = path.join(dir, file);
+    const stats = fs.statSync(filePath);
+    
+    if (stats.isDirectory()) {
+      findAllFiles(filePath, fileList);
+    } else {
+      fileList.push(filePath);
+    }
+  });
+  
+  return fileList;
+}
+
+// Dapatkan path root aplikasi
+const rootDir = process.cwd();
+console.log(`Root directory: ${rootDir}`);
+
+// Periksa struktur folder views
+console.log('\n== STRUKTUR FOLDER VIEWS ==');
+const viewsDir = path.join(rootDir, 'views');
+console.log(checkPath(viewsDir, true));
+
+// Periksa folder-folder penting dalam views
+const viewFolders = [
+  'home',
+  'brands',
+  'user',
+  'admin',
+  'error'
+];
+
+viewFolders.forEach(folder => {
+  const folderPath = path.join(viewsDir, folder);
+  console.log(checkPath(folderPath, true));
+});
+
+// Periksa file brands/index.ejs
+console.log('\n== PEMERIKSAAN DETAIL FILE ==');
+const brandsIndexPath = path.join(viewsDir, 'brands', 'index.ejs');
+console.log(checkPath(brandsIndexPath));
+
+// Periksa file layout
+const layoutPath = path.join(viewsDir, 'home.ejs');
+console.log(checkPath(layoutPath));
+
+// Daftar semua file EJS di folder views
+console.log('\n== DAFTAR SEMUA FILE EJS ==');
+try {
+  const allViewFiles = findAllFiles(viewsDir).filter(file => file.endsWith('.ejs'));
+  allViewFiles.forEach(file => {
+    const relativePath = path.relative(rootDir, file);
+    console.log(`- ${relativePath}`);
+  });
+} catch (error) {
+  console.error('Error saat mencari file:', error);
+}
+
+// Periksa routes
+console.log('\n== PEMERIKSAAN FILE ROUTES ==');
+const routesDir = path.join(rootDir, 'routes');
+console.log(checkPath(routesDir, true));
+
+// Periksa file brands.js
+const brandsRoutePath = path.join(routesDir, 'brands.js');
+console.log(checkPath(brandsRoutePath));
+
+console.log('\nScript debugging selesai. Jika ada masalah, pastikan struktur folder dan file sudah benar.');

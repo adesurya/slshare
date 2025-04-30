@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || 'Admin Area - MOVA' %></title>
+  <!-- Include Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Include Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #f8f9fc;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-container {
+      max-width: 450px;
+      width: 100%;
+      padding: 1rem;
+    }
+    .card {
+      border: none;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+      border-radius: 0.5rem;
+    }
+    .card-header {
+      background-color: #4e73df;
+      color: white;
+      text-align: center;
+      padding: 1.5rem;
+      border-radius: 0.5rem 0.5rem 0 0 !important;
+    }
+    .brand {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    .brand span {
+      color: #1cc88a;
+    }
+    .btn-primary {
+      background-color: #4e73df;
+      border-color: #4e73df;
+    }
+    .btn-primary:hover {
+      background-color: #2e59d9;
+      border-color: #2e59d9;
+    }
+  </style>
+  <%- typeof styles != 'undefined' ? styles : '' %>
+</head>
+<body>
+  <div class="auth-container">
+    <%- body %>
+    
+    <div class="text-center mt-3 text-muted">
+      <small>&copy; <%= new Date().getFullYear() %> MOVA Admin | All rights reserved</small>
+    </div>
+  </div>
+  
+  <!-- Include Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <%- typeof scripts != 'undefined' ? scripts : '' %>
+</body>
+</html>

@@ -1,220 +1,633 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title || 'MOVA - Home' %></title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title><%= title %></title>
+  <!-- Font Awesome untuk icon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Custom CSS -->
+  <!-- Open Graph meta tags -->
+  <meta property="og:title" content="MOVA - Belanja Sambil Cuan">
+  <meta property="og:description" content="Dapatkan cashback untuk setiap belanja di MOVA">
+  <meta property="og:image" content="/images/mova-og-image.jpg">
+  <meta property="og:url" content="https://mova.app">
+  <!-- App linking -->
+  <meta name="apple-itunes-app" content="app-id=123456789, app-argument=mova://home">
+  <meta name="google-play-app" content="app-id=com.mova.app">
   <style>
-    /* Global styles */
+    /* Base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    :root {
+      --primary-color: #ff0033;
+      --secondary-color: #f2f2f2;
+      --text-color: #333;
+      --light-text: #666;
+      --border-color: #e0e0e0;
+      --border-radius: 8px;
+      --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
     body {
+      background-color: #f8f8f8;
+      color: var(--text-color);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      font-family: 'Roboto', sans-serif;
-      background-color: #f8f9fa;
-      color: #333;
+    }
+    
+    /* App container yang konsisten */
+    .app-container {
+      max-width: 480px;
+      margin: 0 auto;
+      background-color: white;
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     }
     
     /* Header */
-    .navbar {
-      background-color: white;
-      box-shadow: 0 2px 4px rgba(0,0,0,.1);
-    }
-    
-    .navbar-brand {
-      font-weight: 700;
-      color: #4e73df;
-    }
-    
-    .navbar-brand span {
-      color: #1cc88a;
-    }
-    
-    /* Main content */
-    main {
-      flex: 1;
-      padding: 2rem 0;
-    }
-    
-    /* Footer */
-    footer {
-      background-color: #343a40;
+    .header {
+      background-color: var(--primary-color);
       color: white;
-      padding: 2rem 0;
+      padding: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     
-    /* Cards */
-    .card {
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .logo a {
+      color: white;
+      font-weight: 700;
+      font-size: 24px;
+      text-decoration: none;
+    }
+    
+    .tagline {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .header-right a {
+      color: white;
+      text-decoration: none;
+    }
+    
+    .search-bar {
+      margin-top: 10px;
+    }
+    
+    .search-bar form {
+      display: flex;
+      background-color: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+    
+    .search-bar input {
+      flex: 1;
+      padding: 10px 15px;
       border: none;
+      outline: none;
+      font-size: 14px;
+    }
+    
+    .search-bar button {
+      padding: 10px 15px;
+      background-color: white;
+      color: var(--primary-color);
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    
+    /* Main Content */
+    .main-content {
+      padding: 15px;
+      padding-bottom: 70px; /* Ruang untuk bottom nav */
+    }
+    
+    /* Category Tabs */
+    .category-tabs {
+      display: flex;
+      overflow-x: auto;
+      padding: 5px 0 15px;
+      margin-bottom: 10px;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      gap: 10px;
+    }
+    
+    .category-tabs::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+    
+    .tab-button {
+      background-color: #f5f5f5;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: #666;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .tab-button.active {
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: 500;
+    }
+    
+    /* Detail Product Page */
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .back-button {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 24px;
+    }
+    
+    .share-button {
+      color: var(--text-color);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    
+    .product-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .product-image-large {
+      width: 100%;
       border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,.1);
+      margin-bottom: 15px;
+    }
+    
+    /* Products Section Header */
+    .products-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .products-section-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    /* Sort Options */
+    .sort-options {
+      display: flex;
+      align-items: center;
+    }
+    
+    .sort-by {
+      font-size: 13px;
+      color: #666;
+      margin-right: 10px;
+    }
+    
+    .sort-select {
+      border: 1px solid #ddd;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      background-color: white;
+    }
+    
+    /* Product Grid */
+    .category-products {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      width: 100%;
+      padding-bottom: 20px;
+    }
+    
+    /* Product Card */
+    .product-card {
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-card a {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    /* Product Image */
+    .product-image {
+      position: relative;
+      padding-top: 100%; /* 1:1 Aspect ratio */
+      background-color: #f5f5f5;
+      overflow: hidden;
+    }
+    
+    .product-image img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       transition: transform 0.3s ease;
     }
     
-    .card:hover {
-      transform: translateY(-5px);
+    .product-card:hover .product-image img {
+      transform: scale(1.05);
     }
     
-    /* Buttons */
-    .btn-primary {
-      background-color: #4e73df;
-      border-color: #4e73df;
+    /* Cashback Badge */
+    .cashback-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: var(--primary-color);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      z-index: 2;
     }
     
-    .btn-primary:hover {
-      background-color: #3a5dca;
-      border-color: #3a5dca;
+    /* Product Info */
+    .product-info {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
     }
     
-    .btn-success {
-      background-color: #1cc88a;
-      border-color: #1cc88a;
+    .product-name {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #333;
+      line-height: 1.3;
+      height: 34px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
     
-    .btn-success:hover {
-      background-color: #16a173;
-      border-color: #16a173;
+    .product-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 5px;
+    }
+    
+    .product-cashback {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+    
+    .cashback-label {
+      color: #666;
+    }
+    
+    .cashback-amount {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    
+    /* Bottom Navigation */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background-color: white;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      color: #999;
+      text-decoration: none;
+      font-size: 10px;
+    }
+    
+    .nav-item i {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+    
+    .nav-item.active {
+      color: var(--primary-color);
+    }
+    
+    /* Loading indicator */
+    .loading-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      width: 100%;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 0, 51, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid var(--primary-color);
+      animation: spin 1s linear infinite;
+      margin-bottom: 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-indicator p {
+      margin: 0;
+      color: var(--light-text);
+      font-size: 14px;
+    }
+    
+    /* Empty state */
+    .empty-state {
+      width: 100%;
+      padding: 40px 20px;
+      text-align: center;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+    }
+    
+    .empty-state p {
+      margin: 0;
+      color: #999;
+      font-size: 16px;
+    }
+    
+    /* App Download Prompt */
+    #app-download-prompt {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .prompt-content {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    
+    .prompt-content h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .prompt-content p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    .prompt-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .download-btn {
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: var(--border-radius);
+      font-weight: bold;
+      text-decoration: none;
+    }
+    
+    .close-btn {
+      padding: 12px;
+      background-color: #f5f5f5;
+      border-radius: var(--border-radius);
+      border: none;
+      cursor: pointer;
+    }
+    
+    /* Desktop styles - maintain mobile appearance */
+    @media (min-width: 768px) {
+      body {
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 20px 0;
+      }
+      
+      .app-container {
+        border-radius: 15px;
+        overflow: hidden;
+        min-height: calc(100vh - 40px);
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+      }
+      
+      /* Adjust bottom navigation for desktop */
+      .bottom-nav {
+        max-width: 480px;
+        margin: 0 auto;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 375px) {
+      .category-products {
+        gap: 10px;
+      }
+      
+      .product-name {
+        font-size: 12px;
+      }
+      
+      .product-price {
+        font-size: 14px;
+      }
     }
   </style>
-  <%- typeof styles != 'undefined' ? styles : '' %>
 </head>
-<body>
-
-<!-- Header/Navbar -->
-<header>
-  <nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container">
-      <a class="navbar-brand" href="/">MOVA<span>Shop</span></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarMain">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'home' ? 'active' : '' %>" aria-current="page" href="/">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'brands' ? 'active' : '' %>" href="/brands">Brands</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'products' ? 'active' : '' %>" href="/products">Products</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'about' ? 'active' : '' %>" href="/about">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'contact' ? 'active' : '' %>" href="/contact">Contact</a>
-          </li>
-        </ul>
-        <div class="d-flex">
-          <% if (locals.user) { %>
-            <div class="dropdown">
-              <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user me-1"></i> <%= user.username %>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="/user/profile">My Profile</a></li>
-                <li><a class="dropdown-item" href="/user/orders">My Orders</a></li>
-                <li><a class="dropdown-item" href="/user/cashback">My Cashback</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
-              </ul>
-            </div>
+<body data-current-page="<%= currentPage %>">
+  <div class="app-container">
+    <!-- App Download Popup -->
+    <% if (locals.showAppPrompt) { %>
+    <div id="app-download-prompt">
+      <div class="prompt-content">
+        <h3>Pengalaman Lebih Baik di App</h3>
+        <p>Download MOVA App untuk pengalaman lengkap dan cashback lebih besar</p>
+        <div class="prompt-buttons">
+          <% if (locals.isAndroid) { %>
+            <a href="<%= locals.playStoreUrl %>" class="download-btn">Download dari Play Store</a>
+          <% } else if (locals.isIOS) { %>
+            <a href="<%= locals.appStoreUrl %>" class="download-btn">Download dari App Store</a>
           <% } else { %>
-            <a href="/auth/login" class="btn btn-outline-primary me-2">Login</a>
-            <a href="/auth/register" class="btn btn-primary">Register</a>
+            <a href="<%= locals.playStoreUrl %>" class="download-btn">Download dari Play Store</a>
+            <a href="<%= locals.appStoreUrl %>" class="download-btn">Download dari App Store</a>
           <% } %>
+          <button id="close-prompt" class="close-btn">Lanjutkan ke Web</button>
         </div>
       </div>
     </div>
-  </nav>
-</header>
-
-<!-- Main Content -->
-<main>
-  <div class="container">
-    <!-- Success/Error Message -->
-    <% if (locals.successMessage) { %>
-      <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-        <i class="fas fa-check-circle me-2"></i> <%= successMessage %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
     <% } %>
-    <% if (locals.errorMessage) { %>
-      <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-        <i class="fas fa-exclamation-circle me-2"></i> <%= errorMessage %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <% } %>
-    
-    <!-- Page Content -->
-    <%- body %>
-  </div>
-</main>
 
-<!-- Footer -->
-<footer>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-4 mb-4 mb-md-0">
-        <h5 class="mb-3">MOVA Shop</h5>
-        <p>Your one-stop shop for cashback and incredible deals on top brands and products.</p>
-        <div class="d-flex mt-3">
-          <a href="#" class="me-3 text-white"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" class="me-3 text-white"><i class="fab fa-twitter"></i></a>
-          <a href="#" class="me-3 text-white"><i class="fab fa-instagram"></i></a>
-          <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <a href="/">MOVA</a>
+          <span class="tagline">Belanja Sambil Cuan</span>
+        </div>
+        <div class="header-right">
+          <a href="/faq" class="faq-link">FAQ</a>
         </div>
       </div>
-      <div class="col-md-2 mb-4 mb-md-0">
-        <h5 class="mb-3">Shop</h5>
-        <ul class="list-unstyled">
-          <li class="mb-2"><a href="/brands" class="text-white text-decoration-none">Brands</a></li>
-          <li class="mb-2"><a href="/products" class="text-white text-decoration-none">Products</a></li>
-          <li class="mb-2"><a href="/deals" class="text-white text-decoration-none">Deals</a></li>
-          <li><a href="/cashback" class="text-white text-decoration-none">Cashback</a></li>
-        </ul>
-      </div>
-      <div class="col-md-2 mb-4 mb-md-0">
-        <h5 class="mb-3">Help</h5>
-        <ul class="list-unstyled">
-          <li class="mb-2"><a href="/faq" class="text-white text-decoration-none">FAQ</a></li>
-          <li class="mb-2"><a href="/shipping" class="text-white text-decoration-none">Shipping</a></li>
-          <li class="mb-2"><a href="/returns" class="text-white text-decoration-none">Returns</a></li>
-          <li><a href="/contact" class="text-white text-decoration-none">Contact</a></li>
-        </ul>
-      </div>
-      <div class="col-md-4">
-        <h5 class="mb-3">Newsletter</h5>
-        <p>Subscribe to our newsletter for exclusive offers.</p>
-        <form class="mt-3">
-          <div class="input-group mb-3">
-            <input type="email" class="form-control" placeholder="Your email" aria-label="Your email">
-            <button class="btn btn-success" type="button">Subscribe</button>
-          </div>
+      <% if (locals.showSearchBar !== false) { %>
+      <div class="search-bar">
+        <form action="/search" method="GET">
+          <input type="text" name="q" placeholder="Tempelkan tautan Shopee/TikTok">
+          <button type="submit">Tempel</button>
         </form>
       </div>
-    </div>
-    <hr class="my-4 bg-light">
-    <div class="row">
-      <div class="col-md-6 mb-3 mb-md-0">
-        <p class="mb-0">&copy; <%= new Date().getFullYear() %> MOVA Shop. All rights reserved.</p>
-      </div>
-      <div class="col-md-6 text-md-end">
-        <a href="/privacy" class="text-white text-decoration-none me-3">Privacy Policy</a>
-        <a href="/terms" class="text-white text-decoration-none">Terms & Conditions</a>
-      </div>
-    </div>
-  </div>
-</footer>
+      <% } %>
+    </header>
 
-<!-- Bootstrap JS Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<%- typeof scripts != 'undefined' ? scripts : '' %>
+    <!-- Main Content -->
+    <main class="main-content">
+      <%- body %>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="/" class="nav-item <%= currentPage === 'home' ? 'active' : '' %>">
+        <i class="fas fa-home"></i>
+        <span>Beranda</span>
+      </a>
+      <a href="/brands" class="nav-item <%= currentPage === 'brands' ? 'active' : '' %>">
+        <i class="fas fa-tag"></i>
+        <span>Brand</span>
+      </a>
+      <a href="/user/dashboard" class="nav-item <%= currentPage === 'earnings' ? 'active' : '' %>">
+        <i class="fas fa-wallet"></i>
+        <span>Pendapatan</span>
+      </a>
+      <a href="/user/profile" class="nav-item <%= currentPage === 'profile' ? 'active' : '' %>">
+        <i class="fas fa-user"></i>
+        <span>Saya</span>
+      </a>
+    </nav>
+  </div>
+
+  <script>
+    // Detect if device is desktop and adjust layout
+    document.addEventListener('DOMContentLoaded', function() {
+      // Fungsi untuk menyesuaikan bottom nav berdasarkan lebar container
+      function adjustBottomNav() {
+        const appContainer = document.querySelector('.app-container');
+        const bottomNav = document.querySelector('.bottom-nav');
+        
+        if (window.innerWidth >= 768) {
+          // Desktop view - sejajarkan dengan container
+          bottomNav.style.maxWidth = '480px';
+          bottomNav.style.left = '50%';
+          bottomNav.style.transform = 'translateX(-50%)';
+        } else {
+          // Mobile view - reset styles
+          bottomNav.style.maxWidth = '';
+          bottomNav.style.left = '0';
+          bottomNav.style.transform = '';
+        }
+      }
+      
+      // Jalankan saat halaman dimuat
+      adjustBottomNav();
+      
+      // Jalankan juga saat window di-resize
+      window.addEventListener('resize', adjustBottomNav);
+      
+      // Close app download prompt
+      const closePromptBtn = document.getElementById('close-prompt');
+      const appPrompt = document.getElementById('app-download-prompt');
+      
+      if (closePromptBtn && appPrompt) {
+        closePromptBtn.addEventListener('click', function() {
+          appPrompt.style.display = 'none';
+        });
+      }
+    });
+  </script>
+  
+  <!-- Hanya sertakan script yang diperlukan -->
+  <script src="/js/main.js"></script>
+  <% if (locals.showAppPrompt) { %>
+  <script src="/js/app-prompt.js"></script>
+  <% } %>
 </body>
 </html>

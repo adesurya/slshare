@@ -21,16 +21,6 @@ const PORT = process.env.PORT || 3000;
 // Import database connection
 const db = require('./config/database');
 
-// Test database connection
-db.getConnection()
-  .then(connection => {
-    console.log('Database connection successful');
-    connection.release();
-  })
-  .catch(err => {
-    console.error('Database connection error:', err);
-  });
-
 // Middleware
 app.use(morgan('dev'));
 app.use(cors());
@@ -58,9 +48,13 @@ console.log('  view engine:', app.get('view engine'));
 
 // Configure express-ejs-layouts
 app.use(expressLayouts);
-app.set('layout', 'home'); // Default layout
+app.set('layout', 'layout'); // Default layout
 app.set("layout extractScripts", true);
 app.set("layout extractStyles", true);
+
+// Import and use layout helper
+const { selectLayout } = require('./middlewares/layoutHelper');
+app.use(selectLayout);
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -85,7 +79,7 @@ app.use(setCurrentUser);
 
 // Special layout handling for admin routes
 app.use('/admin', (req, res, next) => {
-  res.locals.layout = 'admin/layouts/main';
+  res.locals.layout = 'layouts/main';
   next();
 });
 
@@ -94,12 +88,6 @@ app.use('/admin', setCurrentAdmin);
 
 // Use middleware to set admin template defaults
 app.use('/admin', setAdminTemplateDefaults);
-
-app.use('/brands', (req, res, next) => {
-  console.log('Brands middleware triggered');
-  res.locals.layout = 'home'; // Force set layout
-  next();
-});
 
 // Request logging for development
 if (process.env.NODE_ENV !== 'production') {
@@ -119,72 +107,23 @@ const homeRoutes = require('./routes/home');
 const brandRoutes = require('./routes/brands');
 const productRoutes = require('./routes/products');
 const userRoutes = require('./routes/user');
-const adminRoutes = require('./routes/admin/index');
 
-// DEBUGGING: Cetak semua properti dan metode pada routes
+// Log routes for debugging
 console.log('Routes loaded:');
 console.log('  home routes:', Object.keys(homeRoutes));
 console.log('  auth routes:', Object.keys(authRoutes));
 console.log('  brand routes:', Object.keys(brandRoutes));
 console.log('  product routes:', Object.keys(productRoutes));
 console.log('  user routes:', Object.keys(userRoutes));
-console.log('  admin routes:', Object.keys(adminRoutes));
 
-// Use routes - PENTING: Urutan routes sangat berpengaruh!
-app.use('/', homeRoutes); // Home route harus pertama
+// Use routes - IMPORTANT: Route order matters!
 app.use('/auth', authRoutes);
-
 app.use('/brands', brandRoutes);
-
-app.use('/products', productRoutes); // Produk routes
+app.use('/products', productRoutes);
 app.use('/user', userRoutes);
+app.use('/', homeRoutes); // Home route should be last to avoid catching other routes
 
-// Default route untuk halaman home
-app.get('/', (req, res) => {
-  // Log untuk debugging
-  console.log('Rendering home page');
-  console.log('Current view locals:', res.locals);
-  
-  res.render('home/index', { 
-    title: 'MOVA - Belanja Sambil Cuan',
-    currentPage: 'home',
-    showSearchBar: true
-  });
-});
-
-// View testing route
-app.get('/view-test', (req, res) => {
-  res.render('test', { layout: false, message: 'Test view is working!' });
-});
-
-// Admin routes - all admin routes go through main admin router
-app.use('/admin', adminRoutes);
-
-// Route for admin root path - redirects to login or dashboard
-app.get('/admin', (req, res) => {
-  if (req.session.adminId) {
-    res.redirect('/admin/dashboard');
-  } else {
-    res.redirect('/admin/auth/login');
-  }
-});
-
-// 404 handler for admin routes
-app.use('/admin/*', (req, res) => {
-  res.status(404).render('admin/error', {
-    title: 'Page Not Found',
-    message: 'The admin page you requested could not be found.',
-    layout: 'admin/layouts/main',
-    section: 'dashboard', // Default section
-    admin: req.session.adminId ? {
-      id: req.session.adminId,
-      username: req.session.adminUsername,
-      role: req.session.adminRole
-    } : null
-  });
-});
-
-// Error handling middleware
+// Error handling middleware - 404 handler
 app.use((req, res, next) => {
   console.log('404 handler triggered for URL:', req.originalUrl);
   res.status(404).render('error', { 
@@ -194,6 +133,7 @@ app.use((req, res, next) => {
   });
 });
 
+// Global error handler
 app.use((err, req, res, next) => {
   console.error('Server error:', err.stack);
   res.status(500).render('error', { 

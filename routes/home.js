@@ -15,9 +15,40 @@ router.get('/', async (req, res) => {
       // Fetch products dengan sorting created_at DESC
       featuredProducts = await Product.findAll(10, 0, 'created_at', 'DESC');
       
-      // Calculate cashback for each product
+      // Calculate cashback for each product and ensure proper structure
       for (let product of featuredProducts) {
-        product.cashback = await Product.calculateCashback(product.id);
+        // Default cashback structure if calculation fails
+        let defaultCashback = {
+          percentage: 0,
+          amount: 0
+        };
+        
+        try {
+          // Try to calculate cashback
+          product.cashback = await Product.calculateCashback(product.id);
+          
+          // Ensure cashback has proper structure
+          if (!product.cashback) {
+            product.cashback = defaultCashback;
+          } else if (typeof product.cashback === 'number') {
+            // If cashback is just a number, format it properly
+            product.cashback = {
+              percentage: Math.round((product.cashback / product.price) * 100),
+              amount: product.cashback
+            };
+          } else if (!product.cashback.amount) {
+            // Ensure amount property exists
+            product.cashback.amount = 0;
+          }
+        } catch (cashbackError) {
+          console.error('Error calculating cashback for product', product.id, cashbackError);
+          product.cashback = defaultCashback;
+        }
+        
+        // Ensure price is a number
+        if (typeof product.price !== 'number') {
+          product.price = parseFloat(product.price) || 0;
+        }
       }
     } catch (productError) {
       console.error('Error fetching products:', productError);
@@ -42,7 +73,6 @@ router.get('/', async (req, res) => {
     });
   }
 });
-
 
 router.get('/api/products', async (req, res) => {
   try {
